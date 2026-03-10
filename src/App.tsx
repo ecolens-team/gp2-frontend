@@ -1,13 +1,24 @@
-import ReactLogo from 'assets/react.svg?react';
-import ViteLogo from '../public/vite.svg?react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-function App() {
+import Explore from './pages/Explore';
+import Camera from './pages/Camera';
+import Quests from './pages/Quests';
+import Map from './pages/Map';
+import Layout from './layouts/Layout';
+import Profile from './pages/Profile';
+
+export default function App() {
   return (
-    <div className='w-screen h-screen flex gap-4 items-center justify-center'>
-      <ReactLogo />
-      <ViteLogo />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Explore />} />
+          <Route path="map" element={<Map />} />
+          <Route path="camera" element={<Camera />} />
+          <Route path="quests" element={<Quests />} />
+          <Route path="profile" element={<Profile />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
-
-export default App;
