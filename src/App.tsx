@@ -1,78 +1,50 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { lazy } from 'react';
 
-import Explore from './pages/Explore';
-import Camera from './pages/Camera';
-import Quests from './pages/Quests';
-import Map from './pages/Map';
+const Explore = lazy(() => import('./pages/Explore'));
+const Camera = lazy(() => import('./pages/Camera'));
+const Quests = lazy(() => import('./pages/Quests'));
+const Map = lazy(() => import('./pages/Map'));
+const Profile = lazy(() => import('./pages/Profile'));
 import Layout from './layouts/Layout';
-import Profile from './pages/Profile';
+import Login from './pages/login';
+import ProtectedRoutes from './routes/ProtectedRoutes.tsx';
+import ErrorPage from './pages/ErrorPage';
+import AuthProvider from './contexts/AuthContext/AuthProvider';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const router = createBrowserRouter([
+  { 
+    path: '/', 
+    element:  <Layout />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        element: <ProtectedRoutes />,
+        children: [
+          { index: true, element: <Explore /> },
+          { path: 'map', element: <Map /> },
+          { path: 'camera', element: <Camera /> },
+          { path: 'quests', element: <Quests /> },
+          { path: 'profile', element: <Profile /> },
+          { path: 'explore', element: <Explore /> },
+        ]
+      }
+    ]
+  },
+  { path: '/login', element: <Login />},
+  { path: '/register', element: <Login />} //replace with register later
+]);
+
+
+const queryClient = new QueryClient();
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Explore />} />
-          <Route path="map" element={<Map />} />
-          <Route path="camera" element={<Camera />} />
-          <Route path="quests" element={<Quests />} />
-          <Route path="profile" element={<Profile />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  );
-}
-import { useState } from "react";
-import "./index.css";
-
-export default function App() {
-
-  const [email,setEmail] = useState("");
-  const [password,setPassword] = useState("");
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if(email==="test@test.com" && password==="123456"){
-      alert("Login Success");
-    }else{
-      alert("Wrong email or password");
-    }
-  };
-
-  return (
-
-    <div className="container">
-
-      <div className="card">
-
-        <h2>EcoLens Login</h2>
-
-        <form onSubmit={handleSubmit}>
-
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e)=>setEmail(e.target.value)}
-          />
-
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e)=>setPassword(e.target.value)}
-          />
-
-          <button type="submit">
-            Login
-          </button>
-
-        </form>
-
-      </div>
-
-    </div>
-
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <RouterProvider router={router}/>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
