@@ -13,7 +13,7 @@ function Register() {
     password: "",
     confirmPassword: "",
     institute: "",
-    credentials: null
+    credentials:  null as File | null
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
