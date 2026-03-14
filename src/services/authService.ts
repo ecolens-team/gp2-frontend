@@ -1,7 +1,7 @@
-import type { LoginData } from "../interfaces/auth";
+import type { LoginData, RegistrationData } from "../interfaces/auth";
 import { api } from "../lib/axiosConfig";
 
-export const login = async(data: LoginData) => {
+export const loginUser = async(data: LoginData) => {
     try {
         const response = await api.post('/auth/login', data);
         return response.data;
@@ -10,6 +10,27 @@ export const login = async(data: LoginData) => {
         throw error;
     }
 }
+
+export const registerUser = async(data: RegistrationData) => {
+    try {
+        const formData = new FormData();
+
+        Object.keys(data).forEach((key) => {
+            const value = data[key as keyof RegistrationData];
+            
+            if (value !== null && value !== undefined) {
+            // If it's the file, append it directly
+            formData.append(key, value);
+            }
+        });
+        const response = await api.post('/auth/registration/', formData);
+        return response.data;
+    }
+    catch (error) {
+        throw error;
+    }
+}
+
 
 export const getUser = async() => {
     try {
@@ -21,7 +42,7 @@ export const getUser = async() => {
     }
 }
 
-export const logout= async() => {
+export const logoutUser= async() => {
     try {
         const response = await api.post('/auth/logout');
         return response.data;

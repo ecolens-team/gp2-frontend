@@ -19,3 +19,15 @@ export interface IAuthContext {
     loading: boolean;
 }
 
+export interface RegistrationData { 
+    role: 'USER' | 'RESEARCHER' | 'ADMIN'; 
+    username: string;
+    email: string;
+    password1: string;
+    password2: string;
+    first_name: string;
+    last_name: string;
+    phone_number: string;
+    institute?: string;
+    credentials?: File | null;
+}
