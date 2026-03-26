@@ -8,6 +8,7 @@ const Map = lazy(() => import('./pages/Map'));
 const Profile = lazy(() => import('./pages/Profile'));
 import Layout from './layouts/Layout';
 import Login from './pages/login';
+import Register from './pages/Register.tsx';
 import ProtectedRoutes from './routes/ProtectedRoutes.tsx';
 import ErrorPage from './pages/ErrorPage';
 import AuthProvider from './contexts/AuthContext/AuthProvider';
@@ -33,7 +34,7 @@ const router = createBrowserRouter([
     ]
   },
   { path: '/login', element: <Login />},
-  { path: '/register', element: <Login />} //replace with register later
+  { path: '/register', element: <Register/>}
 ]);
 
 

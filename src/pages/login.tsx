@@ -1,49 +1,12 @@
-<<<<<<< HEAD
-import { useState } from "react";
-import { loginUser } from "../services/authService";
-=======
 
 import { useState } from "react";
 import { useAuth } from "../contexts/AuthContext/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
->>>>>>> bccaed9c312afe6543444dfb84ddbbb5c7116559
 export default function Login() {
 
   const [email,setEmail] = useState("");
   const [password,setPassword] = useState("");
-<<<<<<< HEAD
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const response = await loginUser({
-      email,
-      password
-    });
-
-    alert(response.message);
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="email"
-        value={email}
-        onChange={(e)=>setEmail(e.target.value)}
-      />
-
-      <input
-        type="password"
-        value={password}
-        onChange={(e)=>setPassword(e.target.value)}
-      />
-
-      <button type="submit">Login</button>
-    </form>
-  );
-}
-=======
   const {login} = useAuth();
   const navigate = useNavigate();
 
@@ -56,7 +19,7 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-teal-50/60 flex items-center justify-center">
       <div className="w-full max-w-sm rounded-xl border border-teal-100 bg-white p-6 shadow-sm">
-        <h1 className="text-2xl font-black text-teal-700">EcoLens</h1>
+        <h1 className="text-2xl font-black text-teal-700">EcoLens | Login</h1>
         
         <form onSubmit={handleSubmit} className="mt-5 space-y-4">
           <div>
@@ -93,9 +56,14 @@ export default function Login() {
           >
             Login
           </button>
+          <div className="font-sm text-gray-500">
+            Don't have an account? <Link to={'/register'} className="font-bold text-teal-600">Register</Link>
+          </div>
+          <div className="font-sm text-gray-500">
+             <Link to={'/register'} className=" text-teal-600">Forgot Password?</Link>
+          </div>
         </form>
       </div>
     </div>
   );
 }
->>>>>>> bccaed9c312afe6543444dfb84ddbbb5c7116559
