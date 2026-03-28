@@ -1,10 +1,11 @@
 export interface IAuthUser {
     username: string;
-    firstName: string;
-    lastName: string;
+    first_name: string;
+    last_name: string;
     bio: string;
-    phoneNumber: string;
-    role: 'USER' | 'RESEARCHER' | 'ADMIN'
+    phone_number: string;
+    role: 'USER' | 'RESEARCHER' | 'ADMIN',
+    profile_picture: string
 }
 
 export interface LoginData { 
