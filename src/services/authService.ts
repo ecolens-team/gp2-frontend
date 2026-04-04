@@ -3,7 +3,7 @@ import { api } from "../lib/axiosConfig";
 
 export const loginUser = async(data: LoginData) => {
     try {
-        const response = await api.post('/auth/login', data);
+        const response = await api.post('/auth/login/', data);
         return response.data;
     }
     catch (error) {
@@ -19,7 +19,6 @@ export const registerUser = async(data: RegistrationData) => {
             const value = data[key as keyof RegistrationData];
             
             if (value !== null && value !== undefined) {
-            // If it's the file, append it directly
             formData.append(key, value);
             }
         });
@@ -34,7 +33,7 @@ export const registerUser = async(data: RegistrationData) => {
 
 export const getUser = async() => {
     try {
-        const response = await api.get('/auth/user');
+        const response = await api.get('/auth/user/');
         return response.data;
     }
     catch (error) {
@@ -44,7 +43,7 @@ export const getUser = async() => {
 
 export const logoutUser= async() => {
     try {
-        const response = await api.post('/auth/logout');
+        const response = await api.post('/auth/logout/');
         return response.data;
     }
     catch (error) {

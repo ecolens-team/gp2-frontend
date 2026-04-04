@@ -11,7 +11,6 @@ export default defineConfig({
     host: true,
     allowedHosts: [],
   },
-  envDir: './env',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src/'),

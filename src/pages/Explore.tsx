@@ -1,63 +1,32 @@
 import { useState } from "react";
-import "./explore.css";
+import { useQuery } from "@tanstack/react-query";
+import { getObservations } from "../services/observationsService";
+import type { IObservation } from "../interfaces/observations";
+import Map from "./Map";
 
-const data = [
-  {
-    id: 1,
-    user: "user_name_01",
-    time: "2h ago",
-    speciesName: "Rosa Canina",
-    location: "Amman, Jordan",
-    image: "https://images.unsplash.com/photo-1586790170083-2f9ceadc732d",
-  },
-  {
-    id: 2,
-    user: "user_name_02",
-    time: "5h ago",
-    speciesName: "Peace Lily",
-    location: "Irbid, Jordan",
-    image: "https://images.unsplash.com/photo-1501004318641-b39e6451bec6",
-  },
-  {
-    id: 3,
-    user: "user_name_03",
-    time: "1d ago",
-    speciesName: "Solanum Lycopersicum",
-    location: "Zarqa, Jordan",
-    image: "https://images.unsplash.com/photo-1560493676-04071c5f467b",
-  },
-  {
-    id: 4,
-    user: "user_name_04",
-    time: "2d ago",
-    speciesName: "Sunflower",
-    location: "Aqaba, Jordan",
-    image: "https://images.unsplash.com/photo-1524593119773-38b3b8c8d2c3",
-  },
-];
-
-function Card({ item }) {
+function Card({ item }: {item: IObservation}) {
   const [liked, setLiked] = useState(false);
 
   return (
-    <div className="card">
-      <div className="card-header">
-        <div className="avatar">
+    <div className="bg-white rounded-xl mb-3 shadow-sm overflow-hidden max-w-2xl">
+      <div className="flex items-center p-2">
+        <div className="w-11 h-11 border-2 border-teal-600 mr-3 rounded-full flex justify-center items-center font-bold text-teal-600">
           {item.user[0].toUpperCase()}
         </div>
         <div>
-          <p className="username">{item.user}</p>
-          <p className="time">{item.time}</p>
+          <p className="font-bold">{item.user}</p>
+          <p className="text-sm text-gray-500">{item.timestamp}</p>
         </div>
       </div>
 
-      <img src={item.image} className="image" alt={item.speciesName} />
+      <img src={item.image? item.image : ''} className="w-full h-80 object-cover" alt={item.speciesName} />
 
-      <div className="card-body">
-        <h4 className="species-name">{item.speciesName}</h4>
-        <p className="location">📍 {item.location}</p>
+      <div className="p-4">
+        <h4 className="font-bold">{item.speciesName}</h4>
+        <p className="text-sm text-gray-500">📍 {item.location}</p>
+        <p>{item.description}</p>
 
-        <div className="actions">
+        <div className="flex justify-between mt-3">
           <button className={`action-btn ${liked ? "liked" : ""}`} onClick={() => setLiked(!liked)}>
             {liked ? "❤️" : "🤍"} Like
           </button>
@@ -70,41 +39,30 @@ function Card({ item }) {
 }
 
 export default function Explore() {
-  const [query, setQuery] = useState("");
 
-  const filtered = data.filter((item) =>
-    item.speciesName.toLowerCase().includes(query.toLowerCase()) ||
-    item.user.toLowerCase().includes(query.toLowerCase()) ||
-    item.location.toLowerCase().includes(query.toLowerCase())
-  );
+  const { data, isLoading } = useQuery({
+    queryKey: ['observations'],
+    queryFn:  getObservations,
+  });
+
+  if(isLoading) return null;
 
   return (
-    <div className="container">
-      <div className="search-wrapper">
-        <span className="search-icon">🔍</span>
-        <input
-          className="search"
-          placeholder="Search for species..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-      </div>
-
-      {filtered.length > 0 ? (
-        filtered.map((item) => <Card key={item.id} item={item} />)
-      ) : (
-        <div className="no-results">
-          <span>🌿</span>
-          No species found for "{query}"
+    <div className="min-h-screen bg-teal-600/10 flex justify-center gap-6 p-5">
+      <div className="flex w-full max-w-6xl gap-6"> 
+      <div className="lg:w-1/2 w-full">
+          {data && data.length > 0 ? (
+            data.map((item) => <Card key={item.id} item={item} />)
+          ) : (
+            <div className="no-results">
+              <span>🌿</span>
+              No species found "
+            </div>
+          )}
         </div>
-      )}
-
-      <div className="bottom-nav">
-        <span className="nav-item">🏠</span>
-        <span className="nav-item">🗺️</span>
-        <button className="camera-btn">📷</button>
-        <span className="nav-item">👤</span>
-        <span className="nav-item">🏆</span>
+        <div className="hidden lg:block w-1/2 sticky p-1 top-5 h-[calc(100vh-90px)] bg-white rounded-xl mb-3 shadow-sm overflow-hidden max-w-2xl">
+          <Map />
+        </div>
       </div>
     </div>
   );
