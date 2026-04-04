@@ -4,12 +4,15 @@ import { getObservations } from "../services/observationsService";
 import type { IObservation } from "../interfaces/observations";
 import Map from "./Map";
 import { MessageCircle, Share2, Heart, MapPin } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function Card({ item }: {item: IObservation}) {
   const [liked, setLiked] = useState(false);
+  const navigate = useNavigate();
 
   return (
-    <div className="bg-white rounded-xl mb-3 shadow-sm overflow-hidden max-w-2xl">
+    <div className="bg-white rounded-xl mb-3 shadow-sm overflow-hidden max-w-2xl active:scale-99 transition-transform"
+    onClick={() => navigate(`observations/${item.id}`)}>
       <div className="flex items-center p-2">
         <div className="w-11 h-11 border-2 border-teal-600 mr-3 rounded-full flex justify-center items-center font-bold text-teal-600">
           {item.user[0].toUpperCase()}

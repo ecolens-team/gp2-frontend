@@ -30,7 +30,7 @@ const router = createBrowserRouter([
           { path: 'quests', element: <Quests /> },
           { path: 'profile', element: <Profile /> },
           { path: 'explore', element: <Explore /> },
-          { path: 'observations', element: <ObservationDetail />}
+          { path: 'observations/:id', element: <ObservationDetail />}
         ]
       }
     ]

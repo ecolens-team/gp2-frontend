@@ -92,6 +92,15 @@ export const getObservations = async (): Promise<IObservation[]> => {
 	}
 };
 
+export const getObservationById = async (id: number): Promise<IObservation> => {
+	try {
+		const response = await api.get<IObservationApi>(`/observations/${id}`);
+		return mapObservation(response.data);
+	} catch (error) {
+		throw error;
+	}
+};
+
 
 export const predictSpecies = async(image: File) => {
     try {

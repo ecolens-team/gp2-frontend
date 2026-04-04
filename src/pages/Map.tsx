@@ -1,7 +1,18 @@
-import{ Map as MapboxMap }from 'react-map-gl/mapbox';
+import{ Map as MapboxMap, Marker }from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { useQuery } from '@tanstack/react-query';
+import { getObservations } from '../services/observationsService';
+import { MapPin } from 'lucide-react';
 
 export default function Map() {
+  const { data, isLoading } = useQuery({
+    queryKey: ['observations'],
+    queryFn:  getObservations,
+  });
+
+  if(isLoading) return null;
+  
+  
   return (
     <div className="flex items-center justify-center h-full bg-gray-50">
       <MapboxMap
@@ -12,7 +23,19 @@ export default function Map() {
           zoom: 10
         }}
         mapStyle="mapbox://styles/mapbox/streets-v9"
-      />
+      >
+        {data?.map(obs => 
+        <Marker 
+          key={obs.id}
+          latitude={Number(obs.latitude)} 
+          longitude={Number(obs.longitude)} 
+          anchor="bottom"
+        >
+          <div className="text-teal-600 drop-shadow-md hover:scale-110 transition-transform">
+              <MapPin size={40} fill="teal" className="text-white" />
+          </div>
+        </Marker>)}
+      </MapboxMap>
     </div>
   );
 }

@@ -70,7 +70,7 @@ function Register() {
   return (
 
     <div className="min-h-screen bg-teal-50/60 flex items-center justify-center">
-      <div className="w-full max-w-sm border-1 border-teal-100 p-6 rounded-xl shadow-sm space-y-4">
+      <div className="w-full max-w-sm border border-teal-100 p-6 rounded-xl shadow-sm space-y-4">
   
         <h2 className="font-black text-teal-700 text-2xl bg-white">EcoLens | Create Account</h2>
   

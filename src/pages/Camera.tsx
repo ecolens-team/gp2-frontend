@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ChangeEvent, type RefObject } from "r
 import { WebCamera, type WebCameraHandler } from "@shivantra/react-web-camera";
 import { ArrowLeft, SwitchCamera, Image as ImageIcon, CheckCircle2, Loader2, MapPin, Plus, Upload} from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import Map, { GeolocateControlRef, Marker, GeolocateControl, NavigationControl, type MapRef, FullscreenControl } from "react-map-gl/mapbox";
+import Map, { Marker, GeolocateControl, NavigationControl, type MapRef, FullscreenControl,type GeolocateControlInstance} from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { createObservation, predictSpecies, type IObservationPayload } from "../services/observationsService";
 import toast from "react-hot-toast";
@@ -54,7 +54,7 @@ interface LocationPickerProps {
 
 function LocationPicker({ lat, lng, onLocationChange }: LocationPickerProps) {
   const mapRef = useRef<MapRef>(null);
-  const geolocateRef = useRef<GeolocateControlRef>(null);
+  const geolocateRef = useRef<GeolocateControlInstance>(null);
   
   const [viewState, setViewState] = useState({
      longitude: lng || 35.9,

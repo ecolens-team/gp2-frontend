@@ -1,4 +1,9 @@
 import { useState } from "react";
+import { useParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { getObservationById } from '../services/observationsService'; 
+import { Marker, Map, FullscreenControl, NavigationControl } from "react-map-gl/mapbox";
+import { MapPin } from "lucide-react";
 
 const comments = [
   {
@@ -21,33 +26,67 @@ const comments = [
 export default function ObservationDetail() {
   const [newComment, setNewComment] = useState("");
   const [verified, setVerified] = useState(false);
+  const { id } = useParams<{ id: string }>();
+
+  const { data: observation, isLoading } = useQuery({
+    queryKey: ['observation', id],
+    queryFn: () => getObservationById(Number(id)!),
+    enabled: !!id,
+  });
+
+  if (isLoading) return <div>Loading details...</div>;
+  if (!observation) return <div>Observation not found</div>;
+
+  const confidenceLabel =
+  observation.confidenceLevel == null
+    ? "N/A"
+    : `${(observation.confidenceLevel * 100).toFixed(0)}%`;
+
 
   return (
     <div className="min-h-screen bg-slate-50 flex justify-center">
       <div className="w-full max-w-4xl  min-h-screen overflow-y-auto">
 
-        <div className="w-full h-60 bg-linear-to-br from-green-800 via-green-700 to-green-900 flex items-center justify-center">
-          <span className="text-7xl">🌸</span>
+        <div className="w-full h-80 bg-linear-to-br from-green-800 via-green-700 to-green-900 flex items-center justify-center">
+          <img src={observation.image || ''} className="object-cover h-80 w-full"/>
         </div>
 
         <div className="bg-white rounded-2xl border border-teal-100 shadow-sm p-4 m-4">
-          <div className="text-xs text-slate-400 font-semibold tracking-wider uppercase mb-1">Species Name</div>
           <div className="flex justify-between items-center mb-3 gap-2">
-            <div className="text-xl font-bold text-slate-800 leading-tight flex-1">Species Name (Scientific name)</div>
-            <div className="bg-teal-50 text-teal-600 font-bold text-sm px-3 py-1 rounded-full border border-teal-300 whitespace-nowrap">rate</div>
+            <div className="text-xl font-bold text-slate-800 leading-tight flex-1">{observation.speciesName}</div>
+            <div className="bg-teal-50 text-teal-600 font-bold text-sm px-3 py-1 rounded-full border border-teal-300 whitespace-nowrap">{confidenceLabel}</div>
           </div>
 
-          <div className="rounded-xl overflow-hidden border border-teal-100 mb-3 relative h-28 bg-teal-50">
-            <div className="absolute top-2 left-2 bg-white/90 rounded-lg px-2 py-1 text-xs text-slate-600 font-medium z-10 shadow-sm">
-              31.9522°N, 35.9239°E
-            </div>
-            <div className="w-full h-full flex items-center justify-center">
-              <div className="w-7 h-7 rounded-full bg-teal-500 border-4 border-white shadow-md" />
-            </div>
+        <div className="px-4 mb-4 ">
+          <div className="h-64 overflow-hidden rounded-2xl">
+            <Map
+              mapStyle="mapbox://styles/mapbox/streets-v11"
+              mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
+              initialViewState={{
+                latitude: Number(observation.latitude),
+                longitude: Number(observation.longitude),
+                zoom: 16
+              }}
+            >
+              <FullscreenControl />
+              <NavigationControl position="top-right" />
+              {observation.location && (
+                <Marker
+                  latitude={Number(observation.latitude)}
+                  longitude={Number(observation.longitude)}
+                  anchor="bottom"
+                >
+                  <div className="text-teal-600 drop-shadow-md hover:scale-110 transition-transform">
+                    <MapPin size={40} fill="teal" className="text-white" />
+                  </div>
+                </Marker>
+              )}
+            </Map>
           </div>
+        </div>
 
           <div className="bg-slate-50 rounded-lg p-3 border border-teal-100 text-sm text-slate-500 italic leading-normal">
-            description... Add optional notes about the observation (habitat, appearance, behavior)
+            {observation.description}
           </div>
         </div>
 
