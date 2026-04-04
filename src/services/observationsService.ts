@@ -1,8 +1,18 @@
 import type { IObservation, IObservationApi, IObservationImageApi, ISpeciesApi } from '../interfaces/observations';
 import { api } from '../lib/axiosConfig';
 
-interface IObservationListApiResponse {
+export interface IObservationListApiResponse {
 	results?: IObservationApi[];
+}
+
+export interface IObservationPayload {
+	species: string,
+	confidence_level: number,
+	timestamp: string,
+	description: string,
+	longitude: number ,
+	latitude: number,
+	images: File[]
 }
 
 function getUsername(user: IObservationApi['user']): string {
@@ -81,3 +91,38 @@ export const getObservations = async (): Promise<IObservation[]> => {
 		throw error;
 	}
 };
+
+
+export const predictSpecies = async(image: File) => {
+    try {
+		const formData = new FormData();
+        formData.append("image", image);
+        const response = await api.post('/species/predict/', formData);
+        return response.data;
+    }
+    catch (error) {
+        throw error;
+    }
+}
+
+export const createObservation = async(payload: IObservationPayload) => {
+    try {
+		const formData = new FormData();
+		payload.images.forEach(img => {
+			formData.append("images", img);
+		});
+		formData.append("description", payload.description);
+        formData.append("latitude", String(payload.latitude));
+        formData.append("longitude", String(payload.longitude));
+        
+        formData.append("species_prediction", payload.species || "Unknown");
+        formData.append("confidence_level", String(payload.confidence_level));
+		formData.append("timestamp", payload.timestamp);
+        
+        const response = await api.post('/observations/', formData);
+        return response.data;
+    }
+    catch (error) {
+        throw error;
+    }
+}

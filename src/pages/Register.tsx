@@ -1,7 +1,8 @@
 import { useState } from "react";
 import type { RegistrationData } from "../interfaces/auth";
-import { registerUser } from "../services/authService";
+import { loginUser, registerUser } from "../services/authService";
 import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 function Register() {
 
@@ -52,12 +53,18 @@ function Register() {
       credentials: formData.credentials,
       role: isResearcher? 'RESEARCHER' : 'USER',
     }
-    console.log("User Data:", regData);
-    await registerUser(regData);
-
-    navigate('/');
     
-    alert("Registered successfully");
+    const res = await registerUser(regData);
+    if(res) {
+      const user = await loginUser({
+        email: formData.email,
+        password: formData.password
+      });
+      if(user) {
+        navigate('/');
+      }
+      toast.success('Registered Successfully! 🌱🦋');
+    }
   };
 
   return (

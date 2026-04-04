@@ -13,6 +13,7 @@ import ProtectedRoutes from './routes/ProtectedRoutes.tsx';
 import ErrorPage from './pages/ErrorPage';
 import AuthProvider from './contexts/AuthContext/AuthProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import ObservationDetail from './pages/Observationdetail.tsx';
 
 const router = createBrowserRouter([
   { 
@@ -29,6 +30,7 @@ const router = createBrowserRouter([
           { path: 'quests', element: <Quests /> },
           { path: 'profile', element: <Profile /> },
           { path: 'explore', element: <Explore /> },
+          { path: 'observations', element: <ObservationDetail />}
         ]
       }
     ]

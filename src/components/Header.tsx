@@ -54,7 +54,7 @@ export default function Header() {
                                     className="flex items-center justify-center w-9 h-9 bg-teal-100 text-teal-700 rounded-full font-bold text-sm hover:ring-2 hover:ring-teal-500 transition-all"
                                     title="Go to Profile"
                                 >
-                                    {authUser.profile_picture?  <img src={authUser.profile_picture} className='w-15 h-15 rounded-full'/>
+                                    {authUser.profile_picture?  <img src={authUser.profile_picture} className='w-9 h-9 rounded-full'/>
                                         :
                                     authUser?.first_name ? authUser.first_name[0].toUpperCase() : 'U'}
                                 </button>
