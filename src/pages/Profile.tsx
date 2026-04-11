@@ -66,7 +66,7 @@ export default function Profile() {
           <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
             <div className="rounded-lg bg-teal-50 p-3">
               <p className="text-gray-500">Role</p>
-              <p className="font-semibold text-teal-700">{authUser.role}</p>
+              <p className="font-semibold text-teal-700">{authUser.role} {authUser.role == 'RESEARCHER' ? `(${authUser.researcher_profile?.application_status})` : ''}</p>
             </div>
             <div className="rounded-lg bg-teal-50 p-3">
               <p className="text-gray-500">Phone Number</p>

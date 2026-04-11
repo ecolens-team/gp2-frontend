@@ -1,18 +1,30 @@
-
-import { useState } from "react";
 import { useAuth } from "../contexts/AuthContext/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const loginSchema = z.object({
+  email: z.email(),
+  password: z.string().min(1, "Password is required"),
+});
+
+type LoginForm = z.infer<typeof loginSchema>;
 
 export default function Login() {
-
-  const [email,setEmail] = useState("");
-  const [password,setPassword] = useState("");
-  const {login} = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    await login({ email, password });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginForm>({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const onSubmit = async (data: LoginForm) => {
+    await login(data);
     navigate("/", { replace: true });
   };
 
@@ -21,19 +33,20 @@ export default function Login() {
       <div className="w-full max-w-sm rounded-xl border border-teal-100 bg-white p-6 shadow-sm">
         <h1 className="text-2xl font-black text-teal-700">EcoLens | Login</h1>
         
-        <form onSubmit={handleSubmit} className="mt-5 space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-5 space-y-4">
           <div>
             <label htmlFor="email" className="mb-1 block text-sm font-medium text-gray-700">
               Email
             </label>
             <input
+              {...register("email")}
               type="email"
               placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-200"
-              required
+              className={`w-full rounded-lg border px-3 py-2 text-sm outline-none transition focus:ring-2 ${
+                errors.email ? "border-red-500 focus:ring-red-200" : "border-gray-300 focus:border-teal-500 focus:ring-teal-200"
+              }`}
             />
+            {errors.email && <p className="mt-1 text-xs text-red-400">{errors.email.message}</p>}
           </div>
 
           <div>
@@ -41,13 +54,14 @@ export default function Login() {
               Password
             </label>
             <input
+              {...register("password")}
               type="password"
               placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-200"
-              required
+              className={`w-full rounded-lg border px-3 py-2 text-sm outline-none transition focus:ring-2 ${
+                errors.password ? "border-red-500 focus:ring-red-200" : "border-gray-300 focus:border-teal-500 focus:ring-teal-200"
+              }`}
             />
+            {errors.password && <p className="mt-1 text-xs text-red-400">{errors.password.message}</p>}
           </div>
 
           <button

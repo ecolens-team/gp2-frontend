@@ -3,10 +3,17 @@ export interface IAuthUser {
     first_name: string;
     last_name: string;
     bio: string;
+    email: string;
     phone_number: string;
-    role: 'USER' | 'RESEARCHER' | 'ADMIN',
-    profile_picture: string
+    role: 'USER' | 'RESEARCHER' | 'ADMIN';
+    profile_picture: string;
+    researcher_profile?: {
+        application_status: string;
+        credentials: string;
+        institute: string;
+    }
 }
+
 
 export interface LoginData { 
     email: string;

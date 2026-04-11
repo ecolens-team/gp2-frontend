@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "@shivantra/react-web-camera": "^1.1.0",
     "@tailwindcss/vite": "^4.1.11",
     "@tanstack/react-query": "^5.90.21",
@@ -19,10 +20,12 @@
     "mapbox-gl": "^3.20.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-hook-form": "^7.72.1",
     "react-hot-toast": "^2.6.0",
     "react-map-gl": "^8.1.0",
     "react-router-dom": "^7.13.1",
     "tailwindcss": "^4.2.2",
+    "zod": "^4.3.6",
     "zustand": "^5.0.12"
   },
   "devDependencies": {
