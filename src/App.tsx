@@ -6,7 +6,7 @@ const Camera = lazy(() => import('./pages/Camera'));
 const Quests = lazy(() => import('./pages/Quests'));
 const Map = lazy(() => import('./pages/Map'));
 const Profile = lazy(() => import('./pages/Profile'));
-const UserProfile = lazy(() => import('./pages/userprofile')); 
+
 
 import Layout from './layouts/Layout';
 import Login from './pages/login';
@@ -17,6 +17,7 @@ import AuthProvider from './contexts/AuthContext/AuthProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ObservationDetail from './pages/Observationdetail.tsx';
 import SpeciesProfile from './pages/Species.tsx';
+import UserProfile from './pages/userprofile.tsx';
 
 const router = createBrowserRouter([
   { 
