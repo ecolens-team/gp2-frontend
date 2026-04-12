@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";import "./UserProfile.css";
+import { useQuery } from "@tanstack/react-query";
+import { useParams, useNavigate } from "react-router-dom";
+import "./UserProfile.css";
+
 import { getObservationsByUser } from "../services/observationsService";
 import type { IObservation } from "../interfaces/observations";
 
@@ -32,20 +35,23 @@ const colors = [
   "#3b2060", "#0F6E56", "#2d1b4e", "#085041", "#5c2e8a",
 ];
 
-export default function UserProfile({ username = "solaf_ahmad" }: { username?: string }) {
+export default function UserProfile() {
+  const { username } = useParams<{ username: string }>();
+    const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [following, setFollowing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchProfile() {
+    async function fetchUserProfile() {
       try {
-        const res = await fetch(`${API_BASE}/users/${username}/`, {
-          headers: { Authorization: `Bearer ${getToken()}` },
+       setLoading(true);
+  const res = await fetch(`${API_BASE}/users/${username}/`, {
+          headers: { Authorization: `Bearer ${getToken()}` }
         });
         if (!res.ok) throw new Error("Failed to fetch profile");
-        const data = await res.json();
+      const data = await res.json();
         setUser(data);
         setFollowing(data.is_following);
       } catch (err: any) {
@@ -54,9 +60,9 @@ export default function UserProfile({ username = "solaf_ahmad" }: { username?: s
     setLoading(false);
   }
     }
-
-
-    fetchProfile();
+     if (username) {
+      fetchUserProfile();
+    }
   }, [username]);
 
   async function handleFollow() {
@@ -89,15 +95,16 @@ export default function UserProfile({ username = "solaf_ahmad" }: { username?: s
   const [minConfidence, setMinConfidence] = useState(0);
   const [sortByConfidence, setSortByConfidence] = useState(false);
 
-   const { data: posts = [], isLoading: postsLoading } = useQuery<IObservation[]>({
-  queryKey: ["userObservations", username, speciesFilter, minConfidence, sortByConfidence],
-  queryFn: () =>
-    getObservationsByUser(username, {
-      species: speciesFilter || undefined,
-      min_confidence: minConfidence || undefined,
-      ordering: sortByConfidence ? "-confidence_level" : undefined,
-    }),
-});
+const { data: posts = [] } = useQuery<IObservation[]>({ 
+    queryKey: ["userObservations", username, speciesFilter, minConfidence, sortByConfidence],
+    queryFn: () =>
+      getObservationsByUser(username!, {
+        species: speciesFilter || undefined,
+        min_confidence: minConfidence || undefined,
+        ordering: sortByConfidence ? "-confidence_level" : undefined,
+      }),
+    enabled: !!username,
+  });
 
   if (loading) return <div className="profile-app">Loading...</div>;
   if (error) return <div className="profile-app">Error: {error}</div>;
@@ -114,7 +121,7 @@ export default function UserProfile({ username = "solaf_ahmad" }: { username?: s
       <div className="profile-phone">
 
         <div className="profile-header">
-          <button className="profile-back-btn">&#8592;</button>
+       <button className="profile-back-btn" onClick={() => navigate(-1)}>&#8592;</button>        
           <span className="profile-header-title">{user.username}</span>
         </div>
 
@@ -207,8 +214,13 @@ export default function UserProfile({ username = "solaf_ahmad" }: { username?: s
             <div
               key={post.id}
               className="post-card"
-              style={{ background: colors[i % colors.length] }}
+             onClick={() => navigate(`/observation/${post.id}`)}
+              style={{ background: !post.image ? colors[i % colors.length] : 'transparent' }}
+            
             >
+             {post.image && (
+                <img src={post.image} alt={post.speciesName} className="post-img-full" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+              )}
            <div className="post-badge">
              {post.confidenceLevel != null
                    ? `${(post.confidenceLevel * 100).toFixed(0)}%`

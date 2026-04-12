@@ -11,6 +11,10 @@ function Card({ item }: {item: IObservation}) {
   const [likesCount, setLikesCount] = useState(item.likes);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const handleUserClick = (e: React.MouseEvent) => { 
+    e.stopPropagation();
+    navigate(`/users/${item.user}`); 
+  };
 
   useEffect(() => {
     setLiked(item.hasLiked);
@@ -62,12 +66,18 @@ function Card({ item }: {item: IObservation}) {
   return (
     <div className="bg-white rounded-xl mb-3 shadow-sm overflow-hidden max-w-2xl active:scale-99 transition-transform"
     onClick={openDetails}>
+      
       <div className="flex items-center p-2">
+        <div 
+          className="flex items-center cursor-pointer group" 
+          onClick={handleUserClick} 
+        ></div>
         <div className="w-11 h-11 border-2 border-teal-600 mr-3 rounded-full flex justify-center items-center font-bold text-teal-600">
           {item.user[0].toUpperCase()}
         </div>
         <div>
-          <p className="font-bold">{item.user}</p>
+         <p className="font-bold group-hover:text-teal-600 group-hover:underline transition-all"> 
+               {item.user} </p>
           <p className="text-sm text-gray-500">{item.timestamp}</p>
         </div>
       </div>

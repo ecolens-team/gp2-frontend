@@ -37,6 +37,8 @@ const router = createBrowserRouter([
           { path: 'observations/:id', element: <ObservationDetail />},
           { path: 'user/:id', element: <UserProfile /> },
           { path: 'species/:id', element: <SpeciesProfile /> },
+          { path: 'users/:username', element: <UserProfile /> },
+          { path: "*", element: <div>404 - Page Not Found</div> }
         ]
       }
     ]
