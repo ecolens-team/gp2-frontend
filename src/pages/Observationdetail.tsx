@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getObservationById } from '../services/observationsService'; 
 import { Marker, Map, FullscreenControl, NavigationControl } from "react-map-gl/mapbox";
@@ -34,6 +34,8 @@ export default function ObservationDetail() {
     enabled: !!id,
   });
 
+  const navigate = useNavigate();
+
   if (isLoading) return <div>Loading details...</div>;
   if (!observation) return <div>Observation not found</div>;
 
@@ -53,7 +55,8 @@ export default function ObservationDetail() {
 
         <div className="bg-white rounded-2xl border border-teal-100 shadow-sm p-4 m-4">
           <div className="flex justify-between items-center mb-3 gap-2">
-            <div className="text-xl font-bold text-slate-800 leading-tight flex-1">{observation.speciesName}</div>
+            <div onClick={() => navigate('/species/'+observation.speciesId)}
+            className="text-xl font-bold text-slate-800 leading-tight flex-1">{observation.speciesName}</div>
             <div className="bg-teal-50 text-teal-600 font-bold text-sm px-3 py-1 rounded-full border border-teal-300 whitespace-nowrap">{confidenceLabel}</div>
           </div>
 

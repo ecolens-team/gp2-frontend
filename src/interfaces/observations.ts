@@ -17,7 +17,7 @@ export interface ISpeciesApi {
 export interface IObservationApi {
   id: number;
   user?: string | { id?: number; username?: string };
-  species?: ISpeciesApi | null;
+  species: ISpeciesApi | null;
   timestamp?: string;
   longitude?: number | null;
   latitude?: number | null;
@@ -32,6 +32,7 @@ export interface IObservation {
   user: string;
   timestamp: string;
   speciesName: string;
+  speciesId: number;
   location: string;
   image: string | null;
   description: string;

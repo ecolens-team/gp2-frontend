@@ -16,6 +16,8 @@ import ErrorPage from './pages/ErrorPage';
 import AuthProvider from './contexts/AuthContext/AuthProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ObservationDetail from './pages/Observationdetail.tsx';
+import SpeciesProfile from './pages/Species.tsx';
+import UserProfile from './pages/userprofile.tsx';
 
 const router = createBrowserRouter([
   { 
@@ -33,8 +35,8 @@ const router = createBrowserRouter([
           { path: 'profile', element: <Profile /> },
           { path: 'explore', element: <Explore /> },
           { path: 'observations/:id', element: <ObservationDetail />},
-          
-
+          { path: 'user/:id', element: <UserProfile /> },
+          { path: 'species/:id', element: <SpeciesProfile /> },
         ]
       }
     ]

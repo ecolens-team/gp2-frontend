@@ -1,4 +1,5 @@
 import type { IObservation, IObservationApi, IObservationImageApi, ISpeciesApi } from '../interfaces/observations';
+import type { ISpecies } from '../interfaces/species';
 import { api } from '../lib/axiosConfig';
 
 export interface IObservationListApiResponse {
@@ -71,6 +72,7 @@ function mapObservation(observation: IObservationApi): IObservation {
 		user: getUsername(observation.user),
 		timestamp: observation.timestamp ?? '',
 		speciesName: getSpeciesName(observation.species),
+		speciesId: observation.species?.id!,
 		location: formatLocation(observation.latitude, observation.longitude),
 		image: getImageUrl(observation.images),
 		description: observation.description ?? '',
@@ -106,10 +108,10 @@ export const getObservationsByUser = async (
       : response.data.results ?? [];
 
     return payload.map(mapObservation);
-  }
-   catch (error) {
+  }catch (error) {
     throw error;
-  };
+  }
+ };
 
 
 
@@ -160,10 +162,9 @@ export const createObservation = async(payload: IObservationPayload) => {
         formData.append("confidence_level", String(payload.confidence_level));
 		formData.append("timestamp", payload.timestamp);
         
-        const response = await api.post('/observations/', formData);
-        return response.data;
- 
-	  } catch (error) {
-    throw error;
-  }
-};
+          const response = await api.post('/observations/', formData);
+          return response.data;
+            } catch (error) {
+              throw error;
+               }
+               };
