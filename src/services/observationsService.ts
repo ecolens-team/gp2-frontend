@@ -168,3 +168,11 @@ export const createObservation = async(payload: IObservationPayload) => {
               throw error;
                }
                };
+			   export const getSpeciesById = async (id: number) => {
+  try {
+    const response = await api.get(`/species/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
