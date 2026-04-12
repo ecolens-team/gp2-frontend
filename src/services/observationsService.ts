@@ -1,4 +1,11 @@
-import type { IObservation, IObservationApi, IObservationImageApi, ISpeciesApi } from '../interfaces/observations';
+import type {
+	IObservation,
+	IObservationApi,
+	IObservationComment,
+	IObservationCommentApi,
+	IObservationImageApi,
+	ISpeciesApi
+} from '../interfaces/observations';
 import type { ISpecies } from '../interfaces/species';
 import { api } from '../lib/axiosConfig';
 
@@ -14,6 +21,18 @@ export interface IObservationPayload {
 	longitude: number ,
 	latitude: number,
 	images: File[]
+}
+
+export interface ILikeObservationResponse {
+	liked?: boolean;
+	has_liked?: boolean;
+	likes_count?: number;
+	likes?: number;
+	message?: string;
+}
+
+export interface ICreateCommentPayload {
+	content: string;
 }
 
 function getUsername(user: IObservationApi['user']): string {
@@ -80,6 +99,18 @@ function mapObservation(observation: IObservationApi): IObservation {
 		verified: observation.verified ?? false,
 		latitude: observation.latitude ?? null,
 		longitude: observation.longitude ?? null,
+		comments: observation.comments_count,
+		likes: observation.likes_count,
+		hasLiked: observation.has_liked
+	};
+}
+
+function mapObservationComment(comment: IObservationCommentApi): IObservationComment {
+	return {
+		id: comment.id,
+		user: getUsername(comment.user),
+		text: comment.content ?? comment.text ?? '',
+		createdAt: comment.timestamp ?? comment.created_at ?? ''
 	};
 }
 
@@ -98,6 +129,37 @@ export const getObservationById = async (id: number): Promise<IObservation> => {
 	try {
 		const response = await api.get<IObservationApi>(`/observations/${id}`);
 		return mapObservation(response.data);
+	} catch (error) {
+		throw error;
+	}
+};
+
+export const likeObservation = async (id: number): Promise<ILikeObservationResponse> => {
+	try {
+		const response = await api.post<ILikeObservationResponse>(`/observations/${id}/like/`);
+		return response.data ?? {};
+	} catch (error) {
+		throw error;
+	}
+};
+
+export const getObservationComments = async (id: number): Promise<IObservationComment[]> => {
+	try {
+		const response = await api.get<IObservationCommentApi[]>(`/observations/${id}/comments/`);
+		const payload = Array.isArray(response.data) ? response.data : [];
+		return payload.map(mapObservationComment);
+	} catch (error) {
+		throw error;
+	}
+};
+
+export const createObservationComment = async (
+	id: number,
+	payload: ICreateCommentPayload
+): Promise<IObservationComment> => {
+	try {
+		const response = await api.post<IObservationCommentApi>(`/observations/${id}/comments/`, payload);
+		return mapObservationComment(response.data);
 	} catch (error) {
 		throw error;
 	}
@@ -141,6 +203,22 @@ export const createObservation = async(payload: IObservationPayload) => {
 export const getSpeciesById = async (id: number): Promise<ISpecies> => {
 	try {
 		const response = await api.get<ISpecies>(`/species/${id}`);
+		return response.data;
+	} catch (error) {
+		throw error;
+	}
+};
+
+export const verifyObservation = async (observationId: number, speciesId: number) => {
+    const response = await api.patch(`/observations/${observationId}/verify/`, {
+        species_id: speciesId
+    });
+    return response.data;
+};
+
+export const getSpeciesList = async (): Promise<ISpecies[]> => {
+	try {
+		const response = await api.get<ISpecies[]>('/species/');
 		return response.data;
 	} catch (error) {
 		throw error;

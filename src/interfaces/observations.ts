@@ -25,6 +25,18 @@ export interface IObservationApi {
   confidence_level?: number | null;
   verified?: boolean;
   images?: IObservationImageApi[];
+  likes_count: number;
+  comments_count: number;
+  has_liked: boolean;
+}
+
+export interface IObservationCommentApi {
+  id: number;
+  user?: string | { id?: number; username?: string };
+  content?: string;
+  text?: string;
+  created_at?: string;
+  timestamp?: string;
 }
 
 export interface IObservation {
@@ -40,4 +52,14 @@ export interface IObservation {
   verified: boolean;
   latitude: number | null;
   longitude: number | null;
+  likes: number;
+  comments: number;
+  hasLiked: boolean;
+}
+
+export interface IObservationComment {
+  id: number;
+  user: string;
+  text: string;
+  createdAt: string;
 }
