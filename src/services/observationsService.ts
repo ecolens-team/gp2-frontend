@@ -72,6 +72,7 @@ function mapObservation(observation: IObservationApi): IObservation {
 		user: getUsername(observation.user),
 		timestamp: observation.timestamp ?? '',
 		speciesName: getSpeciesName(observation.species),
+		speciesId: observation.species?.id!,
 		location: formatLocation(observation.latitude, observation.longitude),
 		image: getImageUrl(observation.images),
 		description: observation.description ?? '',
