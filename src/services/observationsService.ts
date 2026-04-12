@@ -80,6 +80,38 @@ function mapObservation(observation: IObservationApi): IObservation {
 		longitude: observation.longitude ?? null,
 	};
 }
+export interface IObservationFilters {
+  location?: string;
+  species?: string;
+  min_confidence?: number;
+  ordering?: string;
+}
+export const getObservationsByUser = async ( 
+	username: string, filters: IObservationFilters = {}
+ ): Promise<IObservation[]> => {
+	  try {
+    const params = new URLSearchParams();
+    params.append("user", username);
+    if (filters.location) params.append("location", filters.location);
+    if (filters.species) params.append("species", filters.species);
+    if (filters.min_confidence !== undefined)
+      params.append("min_confidence", String(filters.min_confidence));
+    if (filters.ordering) params.append("ordering", filters.ordering);
+
+    const response = await api.get<IObservationApi[] | IObservationListApiResponse>(
+      `/observations/?${params.toString()}`
+    );
+    const payload = Array.isArray(response.data)
+      ? response.data
+      : response.data.results ?? [];
+
+    return payload.map(mapObservation);
+  }
+   catch (error) {
+    throw error;
+  };
+
+
 
 export const getObservations = async (): Promise<IObservation[]> => {
 	try {
@@ -130,8 +162,8 @@ export const createObservation = async(payload: IObservationPayload) => {
         
         const response = await api.post('/observations/', formData);
         return response.data;
-    }
-    catch (error) {
-        throw error;
-    }
-}
+ 
+	  } catch (error) {
+    throw error;
+  }
+};
