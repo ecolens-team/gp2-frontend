@@ -1,4 +1,5 @@
 import type { IObservation, IObservationApi, IObservationImageApi, ISpeciesApi } from '../interfaces/observations';
+import type { ISpecies } from '../interfaces/species';
 import { api } from '../lib/axiosConfig';
 
 export interface IObservationListApiResponse {
@@ -135,3 +136,12 @@ export const createObservation = async(payload: IObservationPayload) => {
         throw error;
     }
 }
+
+export const getSpeciesById = async (id: number): Promise<ISpecies> => {
+	try {
+		const response = await api.get<ISpecies>(`/species/${id}`);
+		return response.data;
+	} catch (error) {
+		throw error;
+	}
+};
