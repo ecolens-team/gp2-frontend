@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import "./UserProfile.css";
+import { useQuery } from "@tanstack/react-query";import "./UserProfile.css";
+import { getObservationsByUser } from "../services/observationsService";
+import type { IObservation } from "../interfaces/observations";
 
 const API_BASE = "http://localhost:8000/api";
 
@@ -32,7 +34,6 @@ const colors = [
 
 export default function UserProfile({ username = "solaf_ahmad" }: { username?: string }) {
   const [user, setUser] = useState<User | null>(null);
-  const [posts, setPosts] = useState<Post[]>([]);
   const [following, setFollowing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -49,26 +50,13 @@ export default function UserProfile({ username = "solaf_ahmad" }: { username?: s
         setFollowing(data.is_following);
       } catch (err: any) {
         setError(err.message);
-      }
+      }finally {
+    setLoading(false);
+  }
     }
 
-    async function fetchObservations() {
-      try {
-        const res = await fetch(`${API_BASE}/observations/?user=${username}`, {
-          headers: { Authorization: `Bearer ${getToken()}` },
-        });
-        if (!res.ok) throw new Error("Failed to fetch observations");
-        const data = await res.json();
-        setPosts(data.results || data);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    }
 
     fetchProfile();
-    fetchObservations();
   }, [username]);
 
   async function handleFollow() {
@@ -97,6 +85,19 @@ export default function UserProfile({ username = "solaf_ahmad" }: { username?: s
       console.error(err);
     }
   }
+  const [speciesFilter, setSpeciesFilter] = useState("");
+  const [minConfidence, setMinConfidence] = useState(0);
+  const [sortByConfidence, setSortByConfidence] = useState(false);
+
+   const { data: posts = [], isLoading: postsLoading } = useQuery<IObservation[]>({
+  queryKey: ["userObservations", username, speciesFilter, minConfidence, sortByConfidence],
+  queryFn: () =>
+    getObservationsByUser(username, {
+      species: speciesFilter || undefined,
+      min_confidence: minConfidence || undefined,
+      ordering: sortByConfidence ? "-confidence_level" : undefined,
+    }),
+});
 
   if (loading) return <div className="profile-app">Loading...</div>;
   if (error) return <div className="profile-app">Error: {error}</div>;
@@ -162,6 +163,33 @@ export default function UserProfile({ username = "solaf_ahmad" }: { username?: s
         </div>
 
         <div className="profile-divider" />
+        <div className="filters-section">
+  <input
+    type="text"
+    placeholder="Filter by species..."
+    value={speciesFilter}
+    onChange={(e) => setSpeciesFilter(e.target.value)}
+    className="filter-input"
+  />
+  <div className="filter-confidence">
+    <label>Min confidence: {minConfidence}%</label>
+    <input
+      type="range"
+      min={0}
+      max={100}
+      value={minConfidence}
+      onChange={(e) => setMinConfidence(Number(e.target.value))}
+      className="filter-range"
+      title="Minimum confidence"
+    />
+  </div>
+  <button
+    className={`filter-sort-btn ${sortByConfidence ? "active" : ""}`}
+    onClick={() => setSortByConfidence(!sortByConfidence)}
+  >
+    {sortByConfidence ? "↓ Confidence" : "Sort by Confidence"}
+  </button>
+</div>
 
         <div className="grid-label">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -174,16 +202,21 @@ export default function UserProfile({ username = "solaf_ahmad" }: { username?: s
         </div>
 
         <div className="posts-grid">
-          {posts.map((post, i) => (
+            {(posts as IObservation[]).map((post, i) => (
+
             <div
               key={post.id}
               className="post-card"
               style={{ background: colors[i % colors.length] }}
             >
-              <div className="post-badge">{post.confidence}%</div>
+           <div className="post-badge">
+             {post.confidenceLevel != null
+                   ? `${(post.confidenceLevel * 100).toFixed(0)}%`
+                  : "N/A"}
+                  </div>
               <div className="post-info">
                 <div className="post-species">
-                  {typeof post.species === "object" ? post.species.name : post.species}
+                {post.speciesName}
                 </div>
                 <div className="post-location">📍 {post.location}</div>
               </div>

@@ -1,212 +1,241 @@
 import type {
-	IObservation,
-	IObservationApi,
-	IObservationComment,
-	IObservationCommentApi,
-	IObservationImageApi,
-	ISpeciesApi
+    IObservation,
+    IObservationApi,
+    IObservationComment,
+    IObservationCommentApi,
+    IObservationImageApi,
+    ISpeciesApi
 } from '../interfaces/observations';
 import type { ISpecies } from '../interfaces/species';
 import { api } from '../lib/axiosConfig';
 
 export interface IObservationListApiResponse {
-	results?: IObservationApi[];
+    results?: IObservationApi[];
 }
 
 export interface IObservationPayload {
-	species: string,
-	confidence_level: number,
-	timestamp: string,
-	description: string,
-	longitude: number ,
-	latitude: number,
-	images: File[]
+    species: string,
+    confidence_level: number,
+    timestamp: string,
+    description: string,
+    longitude: number ,
+    latitude: number,
+    images: File[]
 }
 
 export interface ILikeObservationResponse {
-	liked?: boolean;
-	has_liked?: boolean;
-	likes_count?: number;
-	likes?: number;
-	message?: string;
+    liked?: boolean;
+    has_liked?: boolean;
+    likes_count?: number;
+    likes?: number;
+    message?: string;
 }
 
 export interface ICreateCommentPayload {
-	content: string;
+    content: string;
 }
 
 function getUsername(user: IObservationApi['user']): string {
-	if (typeof user === 'string' && user.trim().length > 0) {
-		return user;
-	}
+    if (typeof user === 'string' && user.trim().length > 0) {
+        return user;
+    }
 
-	if (user && typeof user === 'object' && user.username) {
-		return user.username;
-	}
+    if (user && typeof user === 'object' && user.username) {
+        return user.username;
+    }
 
-	return 'Unknown user';
+    return 'Unknown user';
 }
 
 function getSpeciesName(species: ISpeciesApi | null | undefined): string {
-	if (!species) {
-		return 'Unknown species';
-	}
+    if (!species) {
+        return 'Unknown species';
+    }
 
-	return (
-		species.common_name_en ||
-		species.common_name_ar ||
-		species.scientific_name ||
-		'Unknown species'
-	);
+    return (
+        species.common_name_en ||
+        species.common_name_ar ||
+        species.scientific_name ||
+        'Unknown species'
+    );
 }
 
 function getImageUrl(images: IObservationImageApi[] | undefined): string | null {
-	const firstImage = images?.[0]?.image;
+    const firstImage = images?.[0]?.image;
 
-	if (!firstImage) {
-		return null;
-	}
+    if (!firstImage) {
+        return null;
+    }
 
-	if (firstImage.startsWith('http://') || firstImage.startsWith('https://')) {
-		return firstImage;
-	}
+    if (firstImage.startsWith('http://') || firstImage.startsWith('https://')) {
+        return firstImage;
+    }
 
-	const baseURL = api.defaults.baseURL ?? '';
-	const backendOrigin = baseURL.replace(/\/api\/?$/, '');
+    const baseURL = api.defaults.baseURL ?? '';
+    const backendOrigin = baseURL.replace(/\/api\/?$/, '');
 
-	return `${backendOrigin}${firstImage}`;
+    return `${backendOrigin}${firstImage}`;
 }
 
 function formatLocation(latitude: number | null | undefined, longitude: number | null | undefined): string {
-	if (latitude == null || longitude == null) {
-		return 'Unknown location';
-	}
+    if (latitude == null || longitude == null) {
+        return 'Unknown location';
+    }
 
-	return `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+    return `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
 }
 
 function mapObservation(observation: IObservationApi): IObservation {
-	return {
-		id: observation.id,
-		user: getUsername(observation.user),
-		timestamp: observation.timestamp ?? '',
-		speciesName: getSpeciesName(observation.species),
-		speciesId: observation.species?.id!,
-		location: formatLocation(observation.latitude, observation.longitude),
-		image: getImageUrl(observation.images),
-		description: observation.description ?? '',
-		confidenceLevel: observation.confidence_level ?? null,
-		verified: observation.verified ?? false,
-		latitude: observation.latitude ?? null,
-		longitude: observation.longitude ?? null,
-		comments: observation.comments_count,
-		likes: observation.likes_count,
-		hasLiked: observation.has_liked
-	};
+    return {
+        id: observation.id,
+        user: getUsername(observation.user),
+        timestamp: observation.timestamp ?? '',
+        speciesName: getSpeciesName(observation.species),
+        speciesId: observation.species?.id!,
+        location: formatLocation(observation.latitude, observation.longitude),
+        image: getImageUrl(observation.images),
+        description: observation.description ?? '',
+        confidenceLevel: observation.confidence_level ?? null,
+        verified: observation.verified ?? false,
+        latitude: observation.latitude ?? null,
+        longitude: observation.longitude ?? null,
+        comments: observation.comments_count,
+        likes: observation.likes_count,
+        hasLiked: observation.has_liked
+    };
 }
 
 function mapObservationComment(comment: IObservationCommentApi): IObservationComment {
-	return {
-		id: comment.id,
-		user: getUsername(comment.user),
-		text: comment.content ?? comment.text ?? '',
-		createdAt: comment.timestamp ?? comment.created_at ?? ''
-	};
+    return {
+        id: comment.id,
+        user: getUsername(comment.user),
+        text: comment.content ?? comment.text ?? '',
+        createdAt: comment.timestamp ?? comment.created_at ?? ''
+    };
 }
 
-export const getObservations = async (): Promise<IObservation[]> => {
-	try {
-		const response = await api.get<IObservationApi[] | IObservationListApiResponse>('/observations/');
-		const payload = Array.isArray(response.data) ? response.data : response.data.results ?? [];
+export interface IObservationFilters {
+  location?: string;
+  species?: string;
+  min_confidence?: number;
+  ordering?: string;
+}
 
-		return payload.map(mapObservation);
-	} catch (error) {
-		throw error;
-	}
+export const getObservationsByUser = async ( 
+    username: string, filters: IObservationFilters = {}
+ ): Promise<IObservation[]> => {
+    try {
+        const params = new URLSearchParams();
+        params.append("user", username);
+        if (filters.location) params.append("location", filters.location);
+        if (filters.species) params.append("species", filters.species);
+        if (filters.min_confidence !== undefined)
+            params.append("min_confidence", String(filters.min_confidence));
+        if (filters.ordering) params.append("ordering", filters.ordering);
+
+        const response = await api.get<IObservationApi[] | IObservationListApiResponse>(
+            `/observations/?${params.toString()}`
+        );
+        const payload = Array.isArray(response.data)
+            ? response.data
+            : response.data.results ?? [];
+
+        return payload.map(mapObservation);
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getObservations = async (): Promise<IObservation[]> => {
+    try {
+        const response = await api.get<IObservationApi[] | IObservationListApiResponse>('/observations/');
+        const payload = Array.isArray(response.data) ? response.data : response.data.results ?? [];
+
+        return payload.map(mapObservation);
+    } catch (error) {
+        throw error;
+    }
 };
 
 export const getObservationById = async (id: number): Promise<IObservation> => {
-	try {
-		const response = await api.get<IObservationApi>(`/observations/${id}`);
-		return mapObservation(response.data);
-	} catch (error) {
-		throw error;
-	}
+    try {
+        const response = await api.get<IObservationApi>(`/observations/${id}`);
+        return mapObservation(response.data);
+    } catch (error) {
+        throw error;
+    }
 };
 
 export const likeObservation = async (id: number): Promise<ILikeObservationResponse> => {
-	try {
-		const response = await api.post<ILikeObservationResponse>(`/observations/${id}/like/`);
-		return response.data ?? {};
-	} catch (error) {
-		throw error;
-	}
+    try {
+        const response = await api.post<ILikeObservationResponse>(`/observations/${id}/like/`);
+        return response.data ?? {};
+    } catch (error) {
+        throw error;
+    }
 };
 
 export const getObservationComments = async (id: number): Promise<IObservationComment[]> => {
-	try {
-		const response = await api.get<IObservationCommentApi[]>(`/observations/${id}/comments/`);
-		const payload = Array.isArray(response.data) ? response.data : [];
-		return payload.map(mapObservationComment);
-	} catch (error) {
-		throw error;
-	}
+    try {
+        const response = await api.get<IObservationCommentApi[]>(`/observations/${id}/comments/`);
+        const payload = Array.isArray(response.data) ? response.data : [];
+        return payload.map(mapObservationComment);
+    } catch (error) {
+        throw error;
+    }
 };
 
 export const createObservationComment = async (
-	id: number,
-	payload: ICreateCommentPayload
+    id: number,
+    payload: ICreateCommentPayload
 ): Promise<IObservationComment> => {
-	try {
-		const response = await api.post<IObservationCommentApi>(`/observations/${id}/comments/`, payload);
-		return mapObservationComment(response.data);
-	} catch (error) {
-		throw error;
-	}
+    try {
+        const response = await api.post<IObservationCommentApi>(`/observations/${id}/comments/`, payload);
+        return mapObservationComment(response.data);
+    } catch (error) {
+        throw error;
+    }
 };
-
 
 export const predictSpecies = async(image: File) => {
     try {
-		const formData = new FormData();
+        const formData = new FormData();
         formData.append("image", image);
         const response = await api.post('/species/predict/', formData);
         return response.data;
-    }
-    catch (error) {
+    } catch (error) {
         throw error;
     }
 }
 
 export const createObservation = async(payload: IObservationPayload) => {
     try {
-		const formData = new FormData();
-		payload.images.forEach(img => {
-			formData.append("images", img);
-		});
-		formData.append("description", payload.description);
+        const formData = new FormData();
+        payload.images.forEach(img => {
+            formData.append("images", img);
+        });
+        formData.append("description", payload.description);
         formData.append("latitude", String(payload.latitude));
         formData.append("longitude", String(payload.longitude));
         
         formData.append("species_prediction", payload.species || "Unknown");
         formData.append("confidence_level", String(payload.confidence_level));
-		formData.append("timestamp", payload.timestamp);
+        formData.append("timestamp", payload.timestamp);
         
         const response = await api.post('/observations/', formData);
         return response.data;
-    }
-    catch (error) {
+    } catch (error) {
         throw error;
     }
 }
 
 export const getSpeciesById = async (id: number): Promise<ISpecies> => {
-	try {
-		const response = await api.get<ISpecies>(`/species/${id}`);
-		return response.data;
-	} catch (error) {
-		throw error;
-	}
+    try {
+        const response = await api.get<ISpecies>(`/species/${id}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
 };
 
 export const verifyObservation = async (observationId: number, speciesId: number) => {
@@ -217,10 +246,10 @@ export const verifyObservation = async (observationId: number, speciesId: number
 };
 
 export const getSpeciesList = async (): Promise<ISpecies[]> => {
-	try {
-		const response = await api.get<ISpecies[]>('/species/');
-		return response.data;
-	} catch (error) {
-		throw error;
-	}
+    try {
+        const response = await api.get<ISpecies[]>('/species/');
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
 };
