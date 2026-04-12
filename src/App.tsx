@@ -6,7 +6,7 @@ const Camera = lazy(() => import('./pages/Camera'));
 const Quests = lazy(() => import('./pages/Quests'));
 const Map = lazy(() => import('./pages/Map'));
 const Profile = lazy(() => import('./pages/Profile'));
-const UserProfile = lazy(() => import('./pages/userprofile')); 
+
 
 import Layout from './layouts/Layout';
 import Login from './pages/login';
@@ -33,7 +33,7 @@ const router = createBrowserRouter([
           { path: 'profile', element: <Profile /> },
           { path: 'explore', element: <Explore /> },
           { path: 'observations/:id', element: <ObservationDetail />},
-          { path: 'user/:id', element: <UserProfile /> },
+          
 
         ]
       }
