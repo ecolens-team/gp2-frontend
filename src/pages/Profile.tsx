@@ -1,103 +1,224 @@
-import { useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { useAuth } from '../contexts/AuthContext/AuthContext';
-import { getObservations } from '../services/observationsService';
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext/AuthContext";
+import { getObservationsByUser } from "../services/observationsService";
+import { api } from "../lib/axiosConfig";
+import type { IObservation } from "../interfaces/observations";
+import "./UserProfile.css";
 
-function formatDate(timestamp: string) {
-  if (!timestamp) return 'N/A';
-
-  const date = new Date(timestamp);
-  if (Number.isNaN(date.getTime())) return 'N/A';
-
-  return date.toLocaleDateString();
-}
+const colors = [
+  "#2d5016", "#1a3a0d", "#4a2575", "#1D9E75",
+  "#3b2060", "#0F6E56", "#2d1b4e", "#085041", "#5c2e8a",
+];
 
 export default function Profile() {
   const { authUser, loading } = useAuth();
-  const { data: observations = [], isLoading: observationsLoading } = useQuery({
-    queryKey: ['observations'],
-    queryFn: getObservations,
+  const navigate = useNavigate();
+
+  const [name, setName] = useState("");
+  const [bio, setBio] = useState("");
+  const [phone, setPhone] = useState("");
+  const [editingName, setEditingName] = useState(false);
+  const [editingBio, setEditingBio] = useState(false);
+  const [editingPhone, setEditingPhone] = useState(false);
+  const [speciesFilter, setSpeciesFilter] = useState("");
+  const [sortByConfidence, setSortByConfidence] = useState(false);
+
+  useEffect(() => {
+    if (authUser) {
+      setName(`${authUser.first_name} ${authUser.last_name}`.trim());
+      setBio(authUser.bio || "");
+      setPhone(authUser.phone_number || "");
+    }
+  }, [authUser]);
+
+  const { data: posts = [] } = useQuery<IObservation[]>({
+    queryKey: ["userObservations", authUser?.username, speciesFilter, sortByConfidence],
+    queryFn: () =>
+      getObservationsByUser(authUser!.username, {
+        species: speciesFilter || undefined,
+        ordering: sortByConfidence ? "-confidence_level" : undefined,
+      }),
+    enabled: !!authUser?.username,
   });
 
-
-  const myObservations = useMemo(
-    () => observations.filter((observation) => observation.user === authUser?.username),
-    [observations, authUser?.username]
-  );
-
-  const lastObservationDate = myObservations.length
-    ? formatDate(myObservations[0].timestamp)
-    : 'No observations yet';
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-teal-600/10 flex items-center justify-center">
-        <p className="text-teal-700 font-semibold">Loading profile...</p>
-      </div>
-    );
+  async function saveField(field: string, value: string) {
+    try {
+      await api.patch("/auth/user/", { [field]: value });
+    } catch (err) {
+      console.error(err);
+    }
   }
 
-  if (!authUser) {
-    return (
-      <div className="min-h-screen bg-teal-600/10 flex items-center justify-center px-4">
-        <div className="bg-white rounded-xl p-6 shadow-sm text-center w-full max-w-lg">
-          <h1 className="text-2xl font-bold text-teal-700">Profile</h1>
-          <p className="text-gray-500 mt-2">No authenticated user found.</p>
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <div className="profile-app">Loading...</div>;
+  if (!authUser) return null;
 
+  const initials = name
+    ?.split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase();
 
   return (
-    <div className="min-h-screen bg-teal-600/10 flex justify-center p-5">
-      <div className="w-full max-w-4xl space-y-4">
-        <section className="bg-white rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 border-2 border-teal-600 rounded-full flex items-center justify-center text-2xl font-bold text-teal-600">
-              {authUser.profile_picture? <img src={authUser.profile_picture} className='w-15 h-15 rounded-full'/> : authUser.username.charAt(0).toUpperCase()}
+    <div className="profile-app">
+      <div className="profile-phone">
+
+        <div className="profile-header">
+          <span className="profile-header-title">{authUser.username}</span>
+        </div>
+
+        <div className="profile-info">
+          <div className="profile-avatar">
+            {authUser.profile_picture ? (
+              <img src={authUser.profile_picture} alt="avatar"
+                style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }} />
+            ) : (initials)}
+          </div>
+          <div className="profile-stats">
+            <div className="stat-item">
+              <div className="stat-number">{posts.length}</div>
+              <div className="stat-label">Observations</div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">{authUser.first_name} {authUser.last_name}</h1>
-              <p className="text-gray-500">@{authUser.username}</p>
+            <div className="stat-item">
+              <div className="stat-number">0</div>
+              <div className="stat-label">Followers</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-number">0</div>
+              <div className="stat-label">Following</div>
             </div>
           </div>
+        </div>
 
-          <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-            <div className="rounded-lg bg-teal-50 p-3">
-              <p className="text-gray-500">Role</p>
-              <p className="font-semibold text-teal-700">{authUser.role} {authUser.role == 'RESEARCHER' ? `(${authUser.researcher_profile?.application_status})` : ''}</p>
+        <div className="profile-bio-section">
+          {editingName ? (
+            <div className="flex gap-2 mb-2">
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Full name"
+                className="filter-input flex-1"
+              />
+              <button className="filter-sort-btn active" onClick={async () => {
+                const [first, ...rest] = name.split(" ");
+                await saveField("first_name", first);
+                await saveField("last_name", rest.join(" "));
+                setEditingName(false);
+              }}>Save</button>
+              <button className="filter-sort-btn" onClick={() => setEditingName(false)}>✕</button>
             </div>
-            <div className="rounded-lg bg-teal-50 p-3">
-              <p className="text-gray-500">Phone Number</p>
-              <p className="font-semibold text-gray-800">{authUser.phone_number || 'N/A'}</p>
-            </div>
-          </div>
-
-          <div className="mt-4 rounded-lg bg-gray-50 p-4">
-            <p className="text-gray-500 text-sm">Bio</p>
-            <p className="text-gray-800 mt-1">{authUser.bio || 'No bio added yet.'}</p>
-          </div>
-        </section>
-
-        <section className="bg-white rounded-xl p-6 shadow-sm">
-          <h2 className="text-xl font-bold text-gray-900">Observation Activity</h2>
-
-          {observationsLoading ? (
-            <p className="text-gray-500 mt-3">Loading observation stats...</p>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4 text-sm">
-              <div className="rounded-lg bg-teal-50 p-3">
-                <p className="text-gray-500">My Observations</p>
-                <p className="font-semibold text-teal-700 text-lg">{myObservations.length}</p>
-              </div>
-              <div className="rounded-lg bg-teal-50 p-3">
-                <p className="text-gray-500">Last Observation</p>
-                <p className="font-semibold text-gray-800">{lastObservationDate}</p>
-              </div>
+            <div className="flex items-center justify-between mb-1">
+              <div className="profile-name">{name || authUser.username}</div>
+              <button onClick={() => setEditingName(true)} className="text-xs text-teal-600 font-semibold hover:underline">Edit</button>
             </div>
           )}
-        </section>
+
+       
+          {editingBio ? (
+            <div className="flex gap-2">
+              <textarea
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                placeholder="Write your bio..."
+                className="filter-input flex-1 resize-none"
+                rows={2}
+              />
+              <div className="flex flex-col gap-1">
+                <button className="filter-sort-btn active" onClick={async () => {
+                  await saveField("bio", bio);
+                  setEditingBio(false);
+                }}>Save</button>
+                <button className="filter-sort-btn" onClick={() => setEditingBio(false)}>✕</button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-start justify-between">
+              <div className="profile-bio">{bio || "No bio yet."}</div>
+              <button onClick={() => setEditingBio(true)} className="text-xs text-teal-600 font-semibold hover:underline ml-2">Edit</button>
+            </div>
+          )}
+
+          
+          <div className="mt-3 p-3 bg-gray-50 rounded-xl">
+            <p className="text-xs text-gray-400 mb-1 font-medium">Phone Number</p>
+            {editingPhone ? (
+              <div className="flex gap-2">
+                <input
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="Enter phone number"
+                  className="filter-input flex-1"
+                />
+                <button className="filter-sort-btn active" onClick={async () => {
+                  await saveField("phone_number", phone);
+                  setEditingPhone(false);
+                }}>Save</button>
+                <button className="filter-sort-btn" onClick={() => setEditingPhone(false)}>✕</button>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-semibold text-gray-700">{phone || "N/A"}</p>
+                <button onClick={() => setEditingPhone(true)} className="text-xs text-teal-600 font-semibold hover:underline">Edit</button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="profile-divider" />
+
+        <div className="filters-section">
+          <input
+            type="text"
+            placeholder="Filter by species..."
+            value={speciesFilter}
+            onChange={(e) => setSpeciesFilter(e.target.value)}
+            className="filter-input"
+          />
+          <button
+            className={`filter-sort-btn ${sortByConfidence ? "active" : ""}`}
+            onClick={() => setSortByConfidence(!sortByConfidence)}
+          >
+            {sortByConfidence ? "↓ Confidence" : "Sort by Confidence"}
+          </button>
+        </div>
+
+        <div className="grid-label">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <rect x="1" y="1" width="6" height="6" rx="1" fill="#1D9E75"/>
+            <rect x="9" y="1" width="6" height="6" rx="1" fill="#1D9E75"/>
+            <rect x="1" y="9" width="6" height="6" rx="1" fill="#1D9E75"/>
+            <rect x="9" y="9" width="6" height="6" rx="1" fill="#1D9E75"/>
+          </svg>
+          <span>Observations</span>
+        </div>
+
+        <div className="posts-grid">
+          {(posts as IObservation[]).map((post, i) => (
+            <div
+              key={post.id}
+              className="post-card"
+              onClick={() => navigate(`/observations/${post.id}`)}
+              style={{ background: !post.image ? colors[i % colors.length] : 'transparent' }}
+            >
+              {post.image && (
+                <img src={post.image} alt={post.speciesName} className="post-img-full"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              )}
+              <div className="post-badge">
+                {post.confidenceLevel != null
+                  ? `${(post.confidenceLevel * 100).toFixed(0)}%`
+                  : "N/A"}
+              </div>
+              <div className="post-info">
+                <div className="post-species">{post.speciesName}</div>
+                <div className="post-location">📍 {post.location}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
       </div>
     </div>
   );
