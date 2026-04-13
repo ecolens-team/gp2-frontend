@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect , useRef} from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext/AuthContext";
@@ -6,7 +6,6 @@ import { getObservationsByUser } from "../services/observationsService";
 import { api } from "../lib/axiosConfig";
 import type { IObservation } from "../interfaces/observations";
 import "./UserProfile.css";
-
 const colors = [
   "#2d5016", "#1a3a0d", "#4a2575", "#1D9E75",
   "#3b2060", "#0F6E56", "#2d1b4e", "#085041", "#5c2e8a",
@@ -15,7 +14,8 @@ const colors = [
 export default function Profile() {
   const { authUser, loading } = useAuth();
   const navigate = useNavigate();
-
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
   const [phone, setPhone] = useState("");
@@ -50,6 +50,23 @@ export default function Profile() {
       console.error(err);
     }
   }
+  async function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  setUploadingPhoto(true);
+  try {
+    const formData = new FormData();
+    formData.append("profile_picture", file);
+    await api.patch("/auth/user/", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    window.location.reload();
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setUploadingPhoto(false);
+  }
+}
 
   if (loading) return <div className="profile-app">Loading...</div>;
   if (!authUser) return null;
@@ -69,12 +86,30 @@ export default function Profile() {
         </div>
 
         <div className="profile-info">
-          <div className="profile-avatar">
-            {authUser.profile_picture ? (
-              <img src={authUser.profile_picture} alt="avatar"
-                style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }} />
-            ) : (initials)}
-          </div>
+         <div className="profile-avatar" style={{ cursor: "pointer", position: "relative" }}
+               onClick={() => fileInputRef.current?.click()}>
+                {authUser.profile_picture ? (
+                     <img src={authUser.profile_picture} alt="avatar"
+                 style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }} />
+                  ) : (initials)}
+                    <div style={{
+                  position: "absolute", bottom: 0, right: 0,
+                   background: "#00B4A6", borderRadius: "50%",
+                  width: 24, height: 24, display: "flex",
+                   alignItems: "center", justifyContent: "center"
+                  }}>
+                            <span style={{ color: "white", fontSize: 14 }}>+</span>
+                  </div>
+                  <input
+                  title="Minimum confidence"
+                    ref={fileInputRef}
+                  type="file"
+                     accept="image/*"
+                        style={{ display: "none" }}
+                           onChange={handlePhotoUpload}
+                         />
+                       </div>
+                    {uploadingPhoto && <p style={{ fontSize: 11, color: "#00B4A6", textAlign: "center" }}>Uploading...</p>}
           <div className="profile-stats">
             <div className="stat-item">
               <div className="stat-number">{posts.length}</div>
