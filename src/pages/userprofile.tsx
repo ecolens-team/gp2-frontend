@@ -47,9 +47,10 @@ export default function UserProfile() {
     async function fetchUserProfile() {
       try {
        setLoading(true);
-  const res = await fetch(`${API_BASE}/users/${username}/`, {
-          headers: { Authorization: `Bearer ${getToken()}` }
-        });
+ const res = await fetch(`${API_BASE}/users/${username}/`, {
+  credentials: "include",
+});
+       
         if (!res.ok) throw new Error("Failed to fetch profile");
       const data = await res.json();
         setUser(data);
@@ -67,13 +68,13 @@ export default function UserProfile() {
 
   async function handleFollow() {
     try {
-      const res = await fetch(`${API_BASE}/users/${username}/follow/`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${getToken()}`,
-          "Content-Type": "application/json",
-        },
-      });
+const res = await fetch(`${API_BASE}/users/${username}/follow/`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  credentials: "include",
+});
       if (!res.ok) throw new Error("Failed");
       const data = await res.json();
       setFollowing(data.following);
@@ -92,15 +93,14 @@ export default function UserProfile() {
     }
   }
   const [speciesFilter, setSpeciesFilter] = useState("");
-  const [minConfidence, setMinConfidence] = useState(0);
   const [sortByConfidence, setSortByConfidence] = useState(false);
 
 const { data: posts = [] } = useQuery<IObservation[]>({ 
-    queryKey: ["userObservations", username, speciesFilter, minConfidence, sortByConfidence],
+    queryKey: ["userObservations", username, speciesFilter,  sortByConfidence],
     queryFn: () =>
       getObservationsByUser(username!, {
         species: speciesFilter || undefined,
-        min_confidence: minConfidence || undefined,
+      
         ordering: sortByConfidence ? "-confidence_level" : undefined,
       }),
     enabled: !!username,
@@ -170,7 +170,7 @@ const { data: posts = [] } = useQuery<IObservation[]>({
         </div>
 
         <div className="profile-divider" />
-        <div className="filters-section">
+<div className="filters-section">
   <input
     type="text"
     placeholder="Filter by species..."
@@ -178,18 +178,6 @@ const { data: posts = [] } = useQuery<IObservation[]>({
     onChange={(e) => setSpeciesFilter(e.target.value)}
     className="filter-input"
   />
-  <div className="filter-confidence">
-    <label>Min confidence: {minConfidence}%</label>
-    <input
-      type="range"
-      min={0}
-      max={100}
-      value={minConfidence}
-      onChange={(e) => setMinConfidence(Number(e.target.value))}
-      className="filter-range"
-      title="Minimum confidence"
-    />
-  </div>
   <button
     className={`filter-sort-btn ${sortByConfidence ? "active" : ""}`}
     onClick={() => setSortByConfidence(!sortByConfidence)}
@@ -214,7 +202,7 @@ const { data: posts = [] } = useQuery<IObservation[]>({
             <div
               key={post.id}
               className="post-card"
-             onClick={() => navigate(`/observation/${post.id}`)}
+             onClick={() => navigate(`/observations/${post.id}`)}
               style={{ background: !post.image ? colors[i % colors.length] : 'transparent' }}
             
             >

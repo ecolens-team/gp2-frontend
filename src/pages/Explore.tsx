@@ -68,19 +68,21 @@ function Card({ item }: {item: IObservation}) {
     onClick={openDetails}>
       
       <div className="flex items-center p-2">
-        <div 
-          className="flex items-center cursor-pointer group" 
-          onClick={handleUserClick} 
-        ></div>
-        <div className="w-11 h-11 border-2 border-teal-600 mr-3 rounded-full flex justify-center items-center font-bold text-teal-600">
-          {item.user[0].toUpperCase()}
-        </div>
-        <div>
-         <p className="font-bold group-hover:text-teal-600 group-hover:underline transition-all"> 
-               {item.user} </p>
-          <p className="text-sm text-gray-500">{item.timestamp}</p>
-        </div>
-      </div>
+  <div 
+    className="flex items-center cursor-pointer group" 
+    onClick={handleUserClick}
+  >
+    <div className="w-11 h-11 border-2 border-teal-600 mr-3 rounded-full flex justify-center items-center font-bold text-teal-600">
+      {item.user[0].toUpperCase()}
+    </div>
+    <div>
+      <p className="font-bold group-hover:text-teal-600 group-hover:underline transition-all">
+        {item.user}
+      </p>
+      <p className="text-sm text-gray-500">{item.timestamp}</p>
+    </div>
+  </div>
+</div>
 
       <img src={item.image? item.image : ''} className="w-full h-80 object-cover" alt={item.speciesName} />
 

@@ -85,7 +85,7 @@ function formatLocation(latitude: number | null | undefined, longitude: number |
     return `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
 }
 
-function mapObservation(observation: IObservationApi): IObservation {
+export function mapObservation(observation: IObservationApi): IObservation {
     return {
         id: observation.id,
         user: getUsername(observation.user),
