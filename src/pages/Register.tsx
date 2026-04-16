@@ -35,14 +35,16 @@ function Register() {
 
     institute: z.string().min(2, 'Please enter your university or organization').optional(),
 
-    credentials: z
-    .custom<FileList>()
-    .refine((files) => files?.length > 0, "File is required")
-    .refine((files) => files?.[0]?.size <= 10 * 1024 * 1024, "Max size 10MB")
-    .refine(
-      (files) => ["image/jpeg", "image/png", "application/pdf"].includes(files?.[0]?.type),
-      "Only .jpg, .png, and .pdf files are accepted"
-    ),
+    credentials: isResearcher
+    ? z
+        .custom<FileList>()
+        .refine((files) => files?.length > 0, "File is required")
+        .refine((files) => files?.[0]?.size <= 10 * 1024 * 1024, "Max size 10MB")
+        .refine(
+          (files) => ["image/jpeg", "image/png", "application/pdf"].includes(files?.[0]?.type),
+          "Only .jpg, .png, and .pdf files are accepted"
+        )
+    : z.custom<FileList>().optional(),
 
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -65,7 +67,7 @@ function Register() {
       password1: formData.password,
       password2: formData.confirmPassword,
       institute: formData.institute,
-      credentials: formData.credentials[0],
+      credentials: formData.credentials?.[0],
       role: isResearcher? 'RESEARCHER' : 'USER',
     }
     
