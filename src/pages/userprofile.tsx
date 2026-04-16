@@ -8,9 +8,6 @@ import type { IObservation } from "../interfaces/observations";
 
 const API_BASE = "http://localhost:8000/api";
 
-function getToken() {
-  return localStorage.getItem("access");
-}
 
 interface User {
   name: string;
@@ -21,13 +18,6 @@ interface User {
   observations_count: number;
   is_following: boolean;
   profile_picture: string | null;
-}
-
-interface Post {
-  id: number;
-  species: string | { name: string };
-  confidence: number;
-  location: string;
 }
 
 const colors = [

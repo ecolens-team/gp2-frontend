@@ -3,7 +3,6 @@ import {
   Star, AlertTriangle, Info, MapPin, 
   CheckCircle, Target, Map 
 } from "lucide-react";
-import type { ISpecies } from "../interfaces/species";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { getSpeciesById } from "../services/observationsService";

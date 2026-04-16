@@ -6,6 +6,7 @@ import { Marker, Map, FullscreenControl, NavigationControl } from "react-map-gl/
 import { AlertTriangle, CheckCircle, Loader2, MapPin, ShieldCheck } from "lucide-react";
 import Select from 'react-select';
 import toast from "react-hot-toast";
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 export default function ObservationDetail() {
   const [newComment, setNewComment] = useState("");
