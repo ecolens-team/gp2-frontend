@@ -197,11 +197,34 @@ export const createObservationComment = async (
     }
 };
 
+function resizeImageForPrediction(file: File, size = 224): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.onload = () => {
+            URL.revokeObjectURL(url);
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d')!;
+            ctx.drawImage(img, 0, 0, size, size);
+            canvas.toBlob(
+                (blob) => blob ? resolve(blob) : reject(new Error('Canvas toBlob failed')),
+                'image/jpeg',
+                0.9
+            );
+        };
+        img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Image load failed')); };
+        img.src = url;
+    });
+}
+
 export const predictSpecies = async(image: File) => {
     try {
+        const resized = await resizeImageForPrediction(image);
         const formData = new FormData();
-        formData.append("image", image);
-        const response = await api.post('/species/predict/', formData);
+        formData.append("image", resized, "image.jpg");
+        const response = await api.post('/species/predict/', formData, { timeout: 120000 });
         return response.data;
     } catch (error) {
         throw error;

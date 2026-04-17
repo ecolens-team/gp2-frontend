@@ -211,7 +211,7 @@ export default function AddObservation() {
         }
         catch (err: any) {
           setIsPredicting(false);
-          toast.error(err)
+          toast.error(err?.response?.data?.error || err?.message || 'AI prediction failed')
         }
     }
 
