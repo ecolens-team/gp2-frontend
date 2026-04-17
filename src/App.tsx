@@ -19,7 +19,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ObservationDetail from './pages/Observationdetail.tsx';
 import SpeciesProfile from './pages/Species.tsx';
 import UserProfile from './pages/userprofile.tsx';
-import ChatWidget from './components/ChatWidget.tsx';
+//import ChatWidget from './components/ChatWidget.tsx';
 const router = createBrowserRouter([
   { 
     path: '/', 

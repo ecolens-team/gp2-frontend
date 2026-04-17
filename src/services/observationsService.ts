@@ -3,7 +3,6 @@ import type {
     IObservationApi,
     IObservationComment,
     IObservationCommentApi,
-    IObservationImageApi,
     ISpeciesApi
 } from '../interfaces/observations';
 import type { ISpecies } from '../interfaces/species';
