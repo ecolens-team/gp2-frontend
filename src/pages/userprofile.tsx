@@ -6,8 +6,8 @@ import "./UserProfile.css";
 import { getObservationsByUser } from "../services/observationsService";
 import type { IObservation } from "../interfaces/observations";
 import { usePageLayout } from "../contexts/UIContext";
-
-const API_BASE = "http://localhost:8000/api";
+import { Loader2 } from "lucide-react";
+import { api } from "../lib/axiosConfig";
 
 
 interface User {
@@ -40,12 +40,7 @@ export default function UserProfile() {
     async function fetchUserProfile() {
       try {
         setLoading(true);
-        const res = await fetch(`${API_BASE}/users/${username}/`, {
-          credentials: "include",
-        });
-
-        if (!res.ok) throw new Error("Failed to fetch profile");
-        const data = await res.json();
+        const { data } = await api.get(`/users/${username}/`);
         setUser(data);
         setFollowing(data.is_following);
       } catch (err: any) {
@@ -61,15 +56,7 @@ export default function UserProfile() {
 
   async function handleFollow() {
     try {
-      const res = await fetch(`${API_BASE}/users/${username}/follow/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      });
-      if (!res.ok) throw new Error("Failed");
-      const data = await res.json();
+      const { data } = await api.post(`/users/${username}/follow/`);
       setFollowing(data.following);
       setUser((prev) =>
         prev
@@ -99,8 +86,16 @@ export default function UserProfile() {
     enabled: !!username,
   });
 
-  if (loading) return <div className="profile-app">Loading...</div>;
-  if (error) return <div className="profile-app">Error: {error}</div>;
+  if (loading) return (
+    <div className="profile-app flex items-center justify-center min-h-screen">
+      <Loader2 size={32} className="animate-spin text-teal-500" />
+    </div>
+  );
+  if (error) return (
+    <div className="profile-app flex items-center justify-center min-h-screen text-gray-400 font-medium">
+      Could not load profile
+    </div>
+  );
   if (!user) return null;
 
   const initials = user.name

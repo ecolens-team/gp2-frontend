@@ -32,7 +32,26 @@ export default function SpeciesProfile() {
   });
 
   if (!species) return (
-    <div className="flex items-center justify-center h-96 text-gray-400">Loading...</div>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 pb-24 animate-pulse">
+      <div className="h-100 md:h-125 w-full rounded-2xl bg-gray-200 mb-10" />
+      <div className="flex justify-center mb-10">
+        <div className="flex gap-2 bg-gray-100 p-1.5 rounded-full">
+          {[80, 60, 80].map((w, i) => <div key={i} className="h-8 rounded-full bg-gray-200" style={{ width: w }} />)}
+        </div>
+      </div>
+      {/* Content skeleton */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="lg:col-span-7 space-y-4">
+          <div className="h-6 w-48 bg-gray-200 rounded-full" />
+          <div className="h-4 w-full bg-gray-100 rounded-full" />
+          <div className="h-4 w-5/6 bg-gray-100 rounded-full" />
+          <div className="h-4 w-4/6 bg-gray-100 rounded-full" />
+        </div>
+        <div className="lg:col-span-5 space-y-4">
+          <div className="h-48 w-full bg-gray-200 rounded-2xl" />
+        </div>
+      </div>
+    </div>
   );
 
   const obsWithImages = observations.filter(o => o.image);

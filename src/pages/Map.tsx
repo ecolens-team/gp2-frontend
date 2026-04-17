@@ -2,7 +2,7 @@ import{ Map as MapboxMap, Marker }from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useQuery } from '@tanstack/react-query';
 import { getObservations } from '../services/observationsService';
-import { MapPin } from 'lucide-react';
+import { MapPin, Loader2 } from 'lucide-react';
 
 export default function Map() {
   const { data, isLoading } = useQuery({
@@ -10,7 +10,11 @@ export default function Map() {
     queryFn:  getObservations,
   });
 
-  if(isLoading) return null;
+  if (isLoading) return (
+    <div className="flex items-center justify-center h-full bg-gray-50">
+      <Loader2 size={32} className="animate-spin text-teal-400" />
+    </div>
+  );
   
   
   return (

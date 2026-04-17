@@ -89,8 +89,29 @@ export default function ObservationDetail() {
 
   const navigate = useNavigate();
 
-  if (isLoading) return <div>Loading details...</div>;
-  if (!observation) return <div>Observation not found</div>;
+  if (isLoading) return (
+    <div className="min-h-screen bg-slate-50 flex justify-center">
+      <div className="w-full max-w-4xl animate-pulse">
+        <div className="w-full h-80 bg-gray-200" />
+        <div className="bg-white rounded-2xl m-4 p-4 space-y-3">
+          <div className="h-5 w-48 bg-gray-200 rounded-full" />
+          <div className="h-64 bg-gray-100 rounded-2xl" />
+          <div className="h-4 w-full bg-gray-100 rounded-full" />
+          <div className="h-4 w-4/5 bg-gray-100 rounded-full" />
+        </div>
+        <div className="bg-white rounded-2xl mx-4 p-4 space-y-3">
+          <div className="h-4 w-32 bg-gray-200 rounded-full" />
+          <div className="h-4 w-full bg-gray-100 rounded-full" />
+          <div className="h-4 w-full bg-gray-100 rounded-full" />
+        </div>
+      </div>
+    </div>
+  );
+  if (!observation) return (
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center text-gray-400 font-medium">
+      Observation not found
+    </div>
+  );
 
   const confidenceLabel =
   observation.confidenceLevel == null
@@ -250,7 +271,17 @@ export default function ObservationDetail() {
           </div>
 
           {commentsLoading ? (
-            <div className="text-sm text-slate-500 mb-3">Loading comments...</div>
+            <div className="space-y-3 mb-3 animate-pulse">
+              {[1, 2].map(i => (
+                <div key={i} className="flex gap-2">
+                  <div className="w-8 h-8 rounded-full bg-gray-200 shrink-0" />
+                  <div className="flex-1 space-y-1.5">
+                    <div className="h-3 w-24 bg-gray-200 rounded-full" />
+                    <div className="h-3 w-full bg-gray-100 rounded-full" />
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : comments.length === 0 ? (
             <div className="text-sm text-slate-500 mb-3">No comments yet. Be the first to comment.</div>
           ) : (

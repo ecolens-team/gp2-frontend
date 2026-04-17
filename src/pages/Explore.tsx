@@ -127,13 +127,49 @@ function Card({ item }: { item: IObservation }) {
   );
 }
 
+function CardSkeleton() {
+  return (
+    <div className="bg-white border-b border-gray-100 animate-pulse">
+      <div className="flex items-center justify-between px-3 py-2.5">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-full bg-gray-200" />
+          <div className="h-3 w-24 bg-gray-200 rounded-full" />
+        </div>
+        <div className="h-3 w-16 bg-gray-100 rounded-full" />
+      </div>
+      <div className="w-full aspect-4/3 bg-gray-200" />
+      <div className="flex items-center px-3 pt-2.5 pb-1 gap-4">
+        <div className="h-5 w-12 bg-gray-200 rounded-full" />
+        <div className="h-5 w-12 bg-gray-200 rounded-full" />
+      </div>
+      <div className="px-3 pb-3 space-y-2">
+        <div className="h-3 w-36 bg-gray-200 rounded-full" />
+        <div className="h-3 w-full bg-gray-100 rounded-full" />
+        <div className="h-3 w-4/5 bg-gray-100 rounded-full" />
+      </div>
+    </div>
+  );
+}
+
 export default function Explore() {
   const { data, isLoading } = useQuery({
     queryKey: ["observations"],
     queryFn: getObservations,
   });
 
-  if (isLoading) return null;
+  if (isLoading) return (
+    <div className="min-h-screen bg-gray-50 flex justify-center md:py-6 md:px-4">
+      <div className="lg:hidden w-full bg-white border-x border-gray-100">
+        {Array.from({ length: 4 }).map((_, i) => <CardSkeleton key={i} />)}
+      </div>
+      <div className="hidden lg:flex w-full max-w-5xl rounded-2xl overflow-hidden border border-gray-200 shadow-sm h-[calc(100vh-90px)]">
+        <div className="w-[420px] shrink-0 overflow-y-auto border-r border-gray-100 bg-white">
+          {Array.from({ length: 4 }).map((_, i) => <CardSkeleton key={i} />)}
+        </div>
+        <div className="flex-1 bg-gray-100 animate-pulse" />
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 flex justify-center md:py-6 md:px-4">

@@ -7,6 +7,7 @@ import { api } from "../lib/axiosConfig";
 import type { IObservation } from "../interfaces/observations";
 import "./UserProfile.css";
 import { usePageLayout } from "../contexts/UIContext";
+import { Loader2 } from "lucide-react";
 const colors = [
   "#2d5016", "#1a3a0d", "#4a2575", "#1D9E75",
   "#3b2060", "#0F6E56", "#2d1b4e", "#085041", "#5c2e8a",
@@ -71,7 +72,11 @@ export default function Profile() {
   }
 }
 
-  if (loading) return <div className="profile-app">Loading...</div>;
+  if (loading) return (
+    <div className="profile-app flex items-center justify-center min-h-screen">
+      <Loader2 size={32} className="animate-spin text-teal-500" />
+    </div>
+  );
   if (!authUser) return null;
 
   const initials = name
