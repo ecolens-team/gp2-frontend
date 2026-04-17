@@ -46,6 +46,7 @@ export interface IObservation {
   speciesId: number;
   location: string;
   image: string | null;
+  images: string[];
   description: string;
   confidenceLevel: number | null;
   verified: boolean;

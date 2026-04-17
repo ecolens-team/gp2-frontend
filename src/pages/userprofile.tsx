@@ -5,6 +5,7 @@ import "./UserProfile.css";
 
 import { getObservationsByUser } from "../services/observationsService";
 import type { IObservation } from "../interfaces/observations";
+import { usePageLayout } from "../contexts/UIContext";
 
 const API_BASE = "http://localhost:8000/api";
 
@@ -27,55 +28,57 @@ const colors = [
 
 export default function UserProfile() {
   const { username } = useParams<{ username: string }>();
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [following, setFollowing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  usePageLayout({ mobileTitleBar: { title: username || 'user profile', fallbackPath: '/' }, hideBottomNav: true });
+
   useEffect(() => {
     async function fetchUserProfile() {
       try {
-       setLoading(true);
- const res = await fetch(`${API_BASE}/users/${username}/`, {
-  credentials: "include",
-});
-       
+        setLoading(true);
+        const res = await fetch(`${API_BASE}/users/${username}/`, {
+          credentials: "include",
+        });
+
         if (!res.ok) throw new Error("Failed to fetch profile");
-      const data = await res.json();
+        const data = await res.json();
         setUser(data);
         setFollowing(data.is_following);
       } catch (err: any) {
         setError(err.message);
-      }finally {
-    setLoading(false);
-  }
+      } finally {
+        setLoading(false);
+      }
     }
-     if (username) {
+    if (username) {
       fetchUserProfile();
     }
   }, [username]);
 
   async function handleFollow() {
     try {
-const res = await fetch(`${API_BASE}/users/${username}/follow/`, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  credentials: "include",
-});
+      const res = await fetch(`${API_BASE}/users/${username}/follow/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
       if (!res.ok) throw new Error("Failed");
       const data = await res.json();
       setFollowing(data.following);
       setUser((prev) =>
         prev
           ? {
-              ...prev,
-              followers_count: data.following
-                ? prev.followers_count + 1
-                : prev.followers_count - 1,
-            }
+            ...prev,
+            followers_count: data.following
+              ? prev.followers_count + 1
+              : prev.followers_count - 1,
+          }
           : prev
       );
     } catch (err) {
@@ -85,12 +88,12 @@ const res = await fetch(`${API_BASE}/users/${username}/follow/`, {
   const [speciesFilter, setSpeciesFilter] = useState("");
   const [sortByConfidence, setSortByConfidence] = useState(false);
 
-const { data: posts = [] } = useQuery<IObservation[]>({ 
-    queryKey: ["userObservations", username, speciesFilter,  sortByConfidence],
+  const { data: posts = [] } = useQuery<IObservation[]>({
+    queryKey: ["userObservations", username, speciesFilter, sortByConfidence],
     queryFn: () =>
       getObservationsByUser(username!, {
         species: speciesFilter || undefined,
-      
+
         ordering: sortByConfidence ? "-confidence_level" : undefined,
       }),
     enabled: !!username,
@@ -109,11 +112,6 @@ const { data: posts = [] } = useQuery<IObservation[]>({
   return (
     <div className="profile-app">
       <div className="profile-phone">
-
-        <div className="profile-header">
-       <button className="profile-back-btn" onClick={() => navigate(-1)}>&#8592;</button>        
-          <span className="profile-header-title">{user.username}</span>
-        </div>
 
         <div className="profile-info">
           <div className="profile-avatar">
@@ -160,53 +158,53 @@ const { data: posts = [] } = useQuery<IObservation[]>({
         </div>
 
         <div className="profile-divider" />
-<div className="filters-section">
-  <input
-    type="text"
-    placeholder="Filter by species..."
-    value={speciesFilter}
-    onChange={(e) => setSpeciesFilter(e.target.value)}
-    className="filter-input"
-  />
-  <button
-    className={`filter-sort-btn ${sortByConfidence ? "active" : ""}`}
-    onClick={() => setSortByConfidence(!sortByConfidence)}
-  >
-    {sortByConfidence ? "↓ Confidence" : "Sort by Confidence"}
-  </button>
-</div>
+        <div className="filters-section">
+          <input
+            type="text"
+            placeholder="Filter by species..."
+            value={speciesFilter}
+            onChange={(e) => setSpeciesFilter(e.target.value)}
+            className="filter-input"
+          />
+          <button
+            className={`filter-sort-btn ${sortByConfidence ? "active" : ""}`}
+            onClick={() => setSortByConfidence(!sortByConfidence)}
+          >
+            {sortByConfidence ? "↓ Confidence" : "Sort by Confidence"}
+          </button>
+        </div>
 
         <div className="grid-label">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <rect x="1" y="1" width="6" height="6" rx="1" fill="#1D9E75"/>
-            <rect x="9" y="1" width="6" height="6" rx="1" fill="#1D9E75"/>
-            <rect x="1" y="9" width="6" height="6" rx="1" fill="#1D9E75"/>
-            <rect x="9" y="9" width="6" height="6" rx="1" fill="#1D9E75"/>
+            <rect x="1" y="1" width="6" height="6" rx="1" fill="#1D9E75" />
+            <rect x="9" y="1" width="6" height="6" rx="1" fill="#1D9E75" />
+            <rect x="1" y="9" width="6" height="6" rx="1" fill="#1D9E75" />
+            <rect x="9" y="9" width="6" height="6" rx="1" fill="#1D9E75" />
           </svg>
           <span>Observations</span>
         </div>
 
         <div className="posts-grid">
-            {(posts as IObservation[]).map((post, i) => (
+          {(posts as IObservation[]).map((post, i) => (
 
             <div
               key={post.id}
               className="post-card"
-             onClick={() => navigate(`/observations/${post.id}`)}
+              onClick={() => navigate(`/observations/${post.id}`)}
               style={{ background: !post.image ? colors[i % colors.length] : 'transparent' }}
-            
+
             >
-             {post.image && (
-                <img src={post.image} alt={post.speciesName} className="post-img-full" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+              {post.image && (
+                <img src={post.image} alt={post.speciesName} className="post-img-full" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               )}
-           <div className="post-badge">
-             {post.confidenceLevel != null
-                   ? `${(post.confidenceLevel * 100).toFixed(0)}%`
+              <div className="post-badge">
+                {post.confidenceLevel != null
+                  ? `${(post.confidenceLevel * 100).toFixed(0)}%`
                   : "N/A"}
-                  </div>
+              </div>
               <div className="post-info">
                 <div className="post-species">
-                {post.speciesName}
+                  {post.speciesName}
                 </div>
                 <div className="post-location">📍 {post.location}</div>
               </div>

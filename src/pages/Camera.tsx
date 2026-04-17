@@ -244,7 +244,7 @@ export default function AddObservation() {
     }
 
     return (
-        <div className="fixed inset-0 md:static md:inset-auto z-100 bg-gray-50 overflow-y-auto flex flex-col pb-24 max-w-4xl mx-auto">
+        <div className="fixed inset-0 md:static md:inset-auto z-100  overflow-y-auto flex flex-col pb-24 max-w-4xl mx-auto">
           <div className="md:hidden">
             <MobileTopBar text={'New Observation'} onClickFn={() => { setStep('CAMERA') }}/>
           </div>

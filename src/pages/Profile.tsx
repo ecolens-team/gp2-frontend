@@ -6,6 +6,7 @@ import { getObservationsByUser } from "../services/observationsService";
 import { api } from "../lib/axiosConfig";
 import type { IObservation } from "../interfaces/observations";
 import "./UserProfile.css";
+import { usePageLayout } from "../contexts/UIContext";
 const colors = [
   "#2d5016", "#1a3a0d", "#4a2575", "#1D9E75",
   "#3b2060", "#0F6E56", "#2d1b4e", "#085041", "#5c2e8a",
@@ -24,6 +25,8 @@ export default function Profile() {
   const [editingPhone, setEditingPhone] = useState(false);
   const [speciesFilter, setSpeciesFilter] = useState("");
   const [sortByConfidence, setSortByConfidence] = useState(false);
+
+  usePageLayout({ mobileTitleBar: { title: authUser?.username || 'user profile', fallbackPath: '/' }, hideBottomNav: true });
 
   useEffect(() => {
     if (authUser) {
@@ -80,10 +83,6 @@ export default function Profile() {
   return (
     <div className="profile-app">
       <div className="profile-phone">
-
-        <div className="profile-header">
-          <span className="profile-header-title">{authUser.username}</span>
-        </div>
 
         <div className="profile-info">
          <div className="profile-avatar" style={{ cursor: "pointer", position: "relative" }}

@@ -53,29 +53,11 @@ function getSpeciesName(species: ISpeciesApi | null | undefined): string {
     }
 
     return (
-        species.common_name_en ||
-        species.common_name_ar ||
         species.scientific_name ||
         'Unknown species'
     );
 }
 
-function getImageUrl(images: IObservationImageApi[] | undefined): string | null {
-    const firstImage = images?.[0]?.image;
-
-    if (!firstImage) {
-        return null;
-    }
-
-    if (firstImage.startsWith('http://') || firstImage.startsWith('https://')) {
-        return firstImage;
-    }
-
-    const baseURL = api.defaults.baseURL ?? '';
-    const backendOrigin = baseURL.replace(/\/api\/?$/, '');
-
-    return `${backendOrigin}${firstImage}`;
-}
 
 function formatLocation(latitude: number | null | undefined, longitude: number | null | undefined): string {
     if (latitude == null || longitude == null) {
@@ -86,17 +68,19 @@ function formatLocation(latitude: number | null | undefined, longitude: number |
 }
 
 export function mapObservation(observation: IObservationApi): IObservation {
+    const images = observation.images?.map(img => img.image).filter((url): url is string => !!url) ?? [];
     return {
         id: observation.id,
         user: getUsername(observation.user),
-          userProfilePicture: typeof observation.user === 'object' 
-      ? observation.user?.profile_picture ?? null 
-      : null,
+        userProfilePicture: typeof observation.user === 'object'
+            ? observation.user?.profile_picture ?? null
+            : null,
         timestamp: observation.timestamp ?? '',
         speciesName: getSpeciesName(observation.species),
         speciesId: observation.species?.id!,
         location: formatLocation(observation.latitude, observation.longitude),
-        image: getImageUrl(observation.images),
+        image: images[0] ?? null,
+        images,
         description: observation.description ?? '',
         confidenceLevel: observation.confidence_level ?? null,
         verified: observation.verified ?? false,
@@ -269,6 +253,20 @@ export const verifyObservation = async (observationId: number, speciesId: number
         species_id: speciesId
     });
     return response.data;
+};
+
+export interface ISpeciesUpdatePayload {
+    description?: string;
+    description_is_verified?: boolean;
+    is_endangered?: boolean;
+    is_invasive?: boolean;
+    is_endemic?: boolean;
+    common_name_en?: string;
+    common_name_ar?: string;
+}
+
+export const updateSpecies = async (id: number, payload: ISpeciesUpdatePayload): Promise<void> => {
+    await api.patch(`/species/${id}/update/`, payload);
 };
 
 export const getSpeciesList = async (): Promise<ISpecies[]> => {

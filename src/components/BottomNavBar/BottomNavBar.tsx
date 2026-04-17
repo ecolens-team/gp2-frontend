@@ -2,7 +2,7 @@ import { Home, Map as MapIcon, Camera, User, Trophy } from "lucide-react";
 import { NavLink } from "react-router-dom";
 export default function BottomNavBar() {
     return(
-        <nav className="fixed bottom-0 w-full bg-teal-50 border-t-2 border-teal-500/20 flex justify-around py-3 pb-safe md:hidden text-lg shadow-[0_-4px_10px_rgba(0,0,0,0.0.5)] z-50">
+        <nav className="fixed bottom-0 w-full bg-teal-50 border-t-2 border-teal-500/20 flex justify-around py-3 pb-safe md:hidden text-lg shadow-[0_-4px_10px_rgba(0,0,0,0.0.2)] z-50">
             <NavLink to="/" className={({isActive}) => isActive ? "text-teal-600 font-bold flex flex-col items-center" : "text-gray-500 flex flex-col items-center"}>
                 <Home />
                 <span className="text-sm font-bold">Explore</span>

@@ -1,14 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import ObservationImageCarousel from '../components/ObservationImageCarousel';
 import { createObservationComment, getObservationById, getObservationComments, getSpeciesList, verifyObservation } from '../services/observationsService'; 
 import { Marker, Map, FullscreenControl, NavigationControl } from "react-map-gl/mapbox";
 import { AlertTriangle, CheckCircle, Loader2, MapPin, ShieldCheck } from "lucide-react";
 import Select from 'react-select';
 import toast from "react-hot-toast";
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { useAuth } from "../contexts/AuthContext/AuthContext";
+import { usePageLayout } from "../contexts/UIContext";
 
 export default function ObservationDetail() {
+  usePageLayout({ mobileTitleBar: { title: 'Observation', fallbackPath: '/' }, hideBottomNav: true });
+
   const [newComment, setNewComment] = useState("");
   const [suggestedSpeciesId, setSuggestedSpeciesId] = useState(null);
   const [suggestedSpeciesMode, setSuggestSpeciesMode] = useState(false);
@@ -70,6 +75,9 @@ export default function ObservationDetail() {
     }
   });
 
+  const { authUser } = useAuth();
+  const isResearcher = authUser?.role === 'RESEARCHER'
+
   useEffect(() => {
     if (location.state && typeof location.state === 'object' && 'focusComment' in location.state) {
       requestAnimationFrame(() => {
@@ -94,14 +102,15 @@ export default function ObservationDetail() {
     <div className="min-h-screen bg-slate-50 flex justify-center">
       <div className="w-full max-w-4xl  min-h-screen overflow-y-auto">
 
-        <div className="w-full h-80 bg-linear-to-br from-green-800 via-green-700 to-green-900 flex items-center justify-center">
-          <img src={observation.image || ''} className="object-cover h-80 w-full"/>
-        </div>
+        <ObservationImageCarousel images={observation.images} alt={observation.speciesName} />
 
         <div className="bg-white rounded-2xl border border-teal-100 shadow-sm p-4 m-4">
           <div className="flex justify-between items-center mb-3 gap-2">
-            <div onClick={() => navigate('/species/'+observation.speciesId)}
-            className="text-xl font-bold text-slate-800 leading-tight flex-1">{observation.speciesName}</div>
+            <button onClick={() => navigate('/species/'+observation.speciesId)}
+            className="text-xl font-bold text-teal-700 leading-tight flex-1 text-left hover:text-teal-500 hover:underline underline-offset-2 transition-colors flex items-center gap-1.5 group">
+              {observation.speciesName}
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-50 group-hover:opacity-100 shrink-0"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </button>
             <div className="bg-teal-50 text-teal-600 font-bold text-sm px-3 py-1 rounded-full border border-teal-300 whitespace-nowrap">{confidenceLabel}</div>
           </div>
 
@@ -138,9 +147,8 @@ export default function ObservationDetail() {
           </div>
         </div>
 
-
-        <div className="mx-4 mb-6 bg-white rounded-2xl border border-teal-200 shadow-sm overflow-hidden">
-          {/* Panel Header */}
+        {
+          isResearcher &&  <div className="mx-4 mb-6 bg-white rounded-2xl border border-teal-200 shadow-sm overflow-hidden">
           <div className="bg-teal-50/50 px-5 py-3 border-b border-teal-100 flex justify-between items-center">
             <div className="flex items-center gap-2 text-teal-800 font-bold text-sm tracking-wide">
                <ShieldCheck size={18} /> RESEARCHER TOOLS
@@ -231,6 +239,7 @@ export default function ObservationDetail() {
              )}
           </div>
         </div>
+      }
 
 
 

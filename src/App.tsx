@@ -14,6 +14,7 @@ import Register from './pages/Register.tsx';
 import ProtectedRoutes from './routes/ProtectedRoutes.tsx';
 import ErrorPage from './pages/ErrorPage';
 import AuthProvider from './contexts/AuthContext/AuthProvider';
+import { UIProvider } from './contexts/UIContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ObservationDetail from './pages/Observationdetail.tsx';
 import SpeciesProfile from './pages/Species.tsx';
@@ -54,8 +55,9 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-       
-        <RouterProvider router={router}/>
+        <UIProvider>
+          <RouterProvider router={router}/>
+        </UIProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
