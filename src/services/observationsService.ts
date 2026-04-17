@@ -89,6 +89,9 @@ export function mapObservation(observation: IObservationApi): IObservation {
     return {
         id: observation.id,
         user: getUsername(observation.user),
+          userProfilePicture: typeof observation.user === 'object' 
+      ? observation.user?.profile_picture ?? null 
+      : null,
         timestamp: observation.timestamp ?? '',
         speciesName: getSpeciesName(observation.species),
         speciesId: observation.species?.id!,

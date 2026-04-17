@@ -16,8 +16,7 @@ export interface ISpeciesApi {
 
 export interface IObservationApi {
   id: number;
-  user?: string | { id?: number; username?: string };
-  species: ISpeciesApi | null;
+user?: string | { id?: number; username?: string; profile_picture?: string | null };  species: ISpeciesApi | null;
   timestamp?: string;
   longitude?: number | null;
   latitude?: number | null;
@@ -32,8 +31,7 @@ export interface IObservationApi {
 
 export interface IObservationCommentApi {
   id: number;
-  user?: string | { id?: number; username?: string };
-  content?: string;
+  user?: string | { id?: number; username?: string; profile_picture?: string | null };   content?: string;
   text?: string;
   created_at?: string;
   timestamp?: string;
@@ -42,6 +40,7 @@ export interface IObservationCommentApi {
 export interface IObservation {
   id: number;
   user: string;
+  userProfilePicture: string | null;
   timestamp: string;
   speciesName: string;
   speciesId: number;

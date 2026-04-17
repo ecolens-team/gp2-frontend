@@ -65,7 +65,8 @@ function Card({ item }: { item: IObservation }) {
 
   return (
     <div className="bg-white rounded-xl mb-3 shadow-sm overflow-hidden max-w-2xl active:scale-99 transition-transform"
-      onClick={openDetails}>
+      onClick={openDetails} >
+
 
       <div className="flex items-center p-2">
         <div

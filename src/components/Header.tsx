@@ -5,8 +5,8 @@ import { Search, LogOut, Plus, SlidersHorizontal, X } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { IObservation } from "../interfaces/observations";
-
-export default function Header() {
+import ChatWidget from "./ChatWidget";
+export default function Header() { 
     const { authUser } = useAuth();
     const navigate = useNavigate();
     const [search, setSearch] = useState("");
@@ -100,7 +100,9 @@ export default function Header() {
                         >
                             <SlidersHorizontal size={16} />
                         </button>
+                      
                     </div>
+
 
                     {showFilters && (
                         <div className="absolute top-12 left-0 right-0 bg-white border border-gray-200 rounded-2xl shadow-lg p-4 z-50">
@@ -169,7 +171,9 @@ export default function Header() {
                         </div>
                     )}
                 </div>
-
+<div className="flex items-center px-2 shrink-0">
+    <ChatWidget />
+</div>
                 <div className={`items-center gap-2 md:gap-4 shrink-0 ${isSearchFocused ? 'hidden md:flex' : 'flex'}`}>
                     {authUser ? (
                         <>
