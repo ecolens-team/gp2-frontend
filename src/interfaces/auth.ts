@@ -1,9 +1,11 @@
 export interface IAuthUser {
+    id: number;
     username: string;
+    email: string;
     first_name: string;
     last_name: string;
     bio: string;
-    email: string;
+    
     phone_number: string;
     role: 'USER' | 'RESEARCHER' | 'ADMIN';
     profile_picture: string;
@@ -16,7 +18,7 @@ export interface IAuthUser {
 
 
 export interface LoginData { 
-    email: string;
+    username: string;
     password: string;
 }
 

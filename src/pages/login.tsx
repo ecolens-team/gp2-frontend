@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
 const loginSchema = z.object({
-  email: z.email(),
+  username: z.string().min(1, "Email or Username is required"),
   password: z.string().min(1, "Password is required"),
 });
 
@@ -24,8 +24,22 @@ export default function Login() {
   });
 
   const onSubmit = async (data: LoginForm) => {
-    await login(data);
-    navigate("/", { replace: true });
+    try {
+      const payload = {
+        username: data.username.trim(),
+        email: data.username.trim(),
+        login: data.username.trim(),
+        password: data.password
+      };
+
+      await login(payload as any); 
+      navigate("/", { replace: true });
+    } catch (err: any) {
+      console.error("Login Error:", err);
+      if (err.response?.data) {
+        console.log("Server Message:", err.response.data);
+      }
+    }
   };
 
   return (
@@ -35,18 +49,18 @@ export default function Login() {
         
         <form onSubmit={handleSubmit(onSubmit)} className="mt-5 space-y-4">
           <div>
-            <label htmlFor="email" className="mb-1 block text-sm font-medium text-gray-700">
-              Email
+            <label htmlFor="username" className="mb-1 block text-sm font-medium text-gray-700">
+              Email or Username
             </label>
             <input
-              {...register("email")}
-              type="email"
-              placeholder="you@example.com"
+              {...register("username")}
+              type="text"
+              placeholder="Enter email or username"
               className={`w-full rounded-lg border px-3 py-2 text-sm outline-none transition focus:ring-2 ${
-                errors.email ? "border-red-500 focus:ring-red-200" : "border-gray-300 focus:border-teal-500 focus:ring-teal-200"
+                errors.username ? "border-red-500 focus:ring-red-200" : "border-gray-300 focus:border-teal-500 focus:ring-teal-200"
               }`}
             />
-            {errors.email && <p className="mt-1 text-xs text-red-400">{errors.email.message}</p>}
+            {errors.username && <p className="mt-1 text-xs text-red-400">{errors.username.message}</p>}
           </div>
 
           <div>
@@ -70,11 +84,9 @@ export default function Login() {
           >
             Login
           </button>
-          <div className="font-sm text-gray-500">
+          
+          <div className="text-sm text-center text-gray-500 pt-4">
             Don't have an account? <Link to={'/register'} className="font-bold text-teal-600">Register</Link>
-          </div>
-          <div className="font-sm text-gray-500">
-             <Link to={'/register'} className=" text-teal-600">Forgot Password?</Link>
           </div>
         </form>
       </div>

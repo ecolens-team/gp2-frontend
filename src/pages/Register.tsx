@@ -61,20 +61,20 @@ function Register() {
     const regData: RegistrationData = {
       username: formData.username,
       email: formData.email,
-      first_name: formData.firstName,
+      first_name: formData.firstName, 
       last_name: formData.lastName,
-      phone_number: formData.phoneNumber.toString(),
+      phone_number: formData.phoneNumber,
       password1: formData.password,
       password2: formData.confirmPassword,
       institute: formData.institute,
       credentials: formData.credentials?.[0],
-      role: isResearcher? 'RESEARCHER' : 'USER',
+      role: isResearcher ? 'RESEARCHER' : 'USER',
     }
     
     const res = await registerUser(regData);
     if(res) {
       const user = await loginUser({
-        email: formData.email,
+        username: formData.email,
         password: formData.password
       });
       if(user) {
