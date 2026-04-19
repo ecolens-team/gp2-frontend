@@ -9,7 +9,8 @@ export default function AuthProvider({children}: {children: ReactNode}) {
     const [loading, setLoading] = useState<boolean>(true);
 
     async function login(loginData: LoginData) {
-        const user = await loginUser(loginData);
+        const user = await loginUser(loginData);        
+        user.id = user.pk;
         setAuthUser(user);
     }
 
@@ -21,6 +22,7 @@ export default function AuthProvider({children}: {children: ReactNode}) {
     useEffect(() => {
         getUser()
         .then((user) => {
+            user.id = user.pk;
             setAuthUser(user);
         })
         .catch(() => setAuthUser(null))
