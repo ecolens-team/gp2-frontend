@@ -16,12 +16,12 @@ import { useAuth } from '../contexts/AuthContext/AuthContext';
     return [id1, id2].sort().join('_');
           };
 
-       const getCsrfToken = () => {
-    return document.cookie
-        .split('; ')
-        .find(row => row.startsWith('csrftoken='))
-        ?.split('=')[1];
-           };
+    //    const getCsrfToken = () => {
+    // return document.cookie
+    //     .split('; ')
+    //     .find(row => row.startsWith('csrftoken='))
+    //     ?.split('=')[1];
+    //        };
     const { authUser } = useAuth();
          const myId =String(authUser?.id);
          const otherId = "1";

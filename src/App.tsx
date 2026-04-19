@@ -6,6 +6,7 @@ const Camera = lazy(() => import('./pages/Camera'));
 const Quests = lazy(() => import('./pages/Quests'));
 const Map = lazy(() => import('./pages/Map'));
 const Profile = lazy(() => import('./pages/Profile'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'))
 
 
 import Layout from './layouts/Layout';
@@ -39,6 +40,7 @@ const router = createBrowserRouter([
           { path: 'user/:id', element: <UserProfile /> },
           { path: 'species/:id', element: <SpeciesProfile /> },
           { path: 'users/:username', element: <UserProfile /> },
+          { path: 'admin', element: <AdminDashboard/> },
           { path: "*", element: <div>404 - Page Not Found</div> }
         ]
       }
