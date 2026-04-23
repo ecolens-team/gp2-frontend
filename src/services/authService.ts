@@ -50,3 +50,15 @@ export const logoutUser= async() => {
         throw error;
     }
 }
+
+export type Specialization = { level: string; name: string };
+
+export const saveSpecializations = async (specializations: Specialization[]) => {
+    const response = await api.put('/me/specializations/', specializations);
+    return response.data;
+};
+
+export const getSpecializations = async (): Promise<(Specialization & { id: number })[]> => {
+    const response = await api.get('/me/specializations/');
+    return response.data;
+};
