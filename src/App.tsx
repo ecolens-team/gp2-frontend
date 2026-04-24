@@ -4,6 +4,7 @@ import { lazy } from 'react';
 const Explore = lazy(() => import('./pages/Explore'));
 const Camera = lazy(() => import('./pages/Camera'));
 const Quests = lazy(() => import('./pages/Quests'));
+const QuestDetail = lazy(() => import('./pages/QuestDetail'));
 const Map = lazy(() => import('./pages/Map'));
 const Profile = lazy(() => import('./pages/Profile'));
 const ChatPage = lazy(() => import('./pages/ChatPage'));
@@ -36,6 +37,7 @@ const router = createBrowserRouter([
           { path: 'chat', element: <ChatPage /> },  // FIX: route واحد بس
           { path: 'camera', element: <Camera /> },
           { path: 'quests', element: <Quests /> },
+          { path: 'quests/:id', element: <QuestDetail /> },
           { path: 'profile', element: <Profile /> },
           { path: 'explore', element: <Explore /> },
           { path: 'observations/:id', element: <ObservationDetail /> },
