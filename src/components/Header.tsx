@@ -1,11 +1,11 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext/AuthContext";
 import { logoutUser } from "../services/authService";
-import { Search, LogOut, Plus, SlidersHorizontal, X } from "lucide-react";
+import { Search, LogOut, Plus, SlidersHorizontal, X ,MessageCircle} from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { IObservation } from "../interfaces/observations";
-import ChatWidget from "./ChatWidget";
+import ChatWidget from "../components/ChatWidget";
 export default function Header() { 
     const { authUser } = useAuth();
     const navigate = useNavigate();
@@ -14,7 +14,6 @@ export default function Header() {
     const [minConfidence, setMinConfidence] = useState(0);
     const [locationFilter, setLocationFilter] = useState("");
     const [showResults, setShowResults] = useState(false);
-    
     const [isSearchFocused, setIsSearchFocused] = useState(false);
     
     const ref = useRef<HTMLDivElement>(null);
@@ -172,7 +171,13 @@ export default function Header() {
                     )}
                 </div>
 <div className="flex items-center px-2 shrink-0">
-    <ChatWidget />
+    <button 
+    onClick={() => navigate('/chat')} 
+    className="text-gray-500 hover:text-teal-600 p-2 transition-colors flex items-center justify-center"
+    title="الرسائل"
+>
+    <MessageCircle size={24} />
+</button>
 </div>
                 <div className={`items-center gap-2 md:gap-4 shrink-0 ${isSearchFocused ? 'hidden md:flex' : 'flex'}`}>
                     {authUser ? (

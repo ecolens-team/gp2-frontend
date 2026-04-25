@@ -11,17 +11,17 @@ import { useAuth } from '../contexts/AuthContext/AuthContext';
     const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'open' | 'closed'>('closed');
     const socketRef = useRef<WebSocket | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
-
+    const token = localStorage.getItem("access");
     const generateRoomName = (id1: string, id2: string) => {
     return [id1, id2].sort().join('_');
           };
 
-       const getCsrfToken = () => {
-    return document.cookie
-        .split('; ')
-        .find(row => row.startsWith('csrftoken='))
-        ?.split('=')[1];
-           };
+    //    const getCsrfToken = () => {
+    // return document.cookie
+    //     .split('; ')
+    //     .find(row => row.startsWith('csrftoken='))
+    //     ?.split('=')[1];
+    //        };
     const { authUser } = useAuth();
          const myId =String(authUser?.id);
          const otherId = "1";
@@ -36,10 +36,9 @@ import { useAuth } from '../contexts/AuthContext/AuthContext';
             const BASE_WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8000';
                   const wsUrl = `${BASE_WS_URL}/ws/chat/${roomName}/`;
 
-            const socket = new WebSocket(wsUrl);
-            socketRef.current = socket;
-            setConnectionStatus('connecting');
-
+            const socket = new WebSocket(
+        `${BASE_WS_URL}/ws/chat/${roomName}/?token=${token}`
+                 );
             socket.onopen = () => {
                 setConnectionStatus('open');
             };

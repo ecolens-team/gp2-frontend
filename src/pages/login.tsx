@@ -27,8 +27,6 @@ export default function Login() {
     try {
       const payload = {
         username: data.username.trim(),
-        email: data.username.trim(),
-        login: data.username.trim(),
         password: data.password
       };
 

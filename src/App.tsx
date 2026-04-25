@@ -6,7 +6,7 @@ const Camera = lazy(() => import('./pages/Camera'));
 const Quests = lazy(() => import('./pages/Quests'));
 const Map = lazy(() => import('./pages/Map'));
 const Profile = lazy(() => import('./pages/Profile'));
-
+const ChatPage = lazy(() => import('./pages/ChatPage'));
 
 import Layout from './layouts/Layout';
 import Login from './pages/login';
@@ -19,11 +19,11 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ObservationDetail from './pages/Observationdetail.tsx';
 import SpeciesProfile from './pages/Species.tsx';
 import UserProfile from './pages/userprofile.tsx';
-//import ChatWidget from './components/ChatWidget.tsx';
+
 const router = createBrowserRouter([
-  { 
-    path: '/', 
-    element:  <Layout />,
+  {
+    path: '/',
+    element: <Layout />,
     errorElement: <ErrorPage />,
     children: [
       {
@@ -31,23 +31,23 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <Explore /> },
           { path: 'map', element: <Map /> },
+          { path: 'chat', element: <ChatPage /> },  // FIX: route واحد بس
           { path: 'camera', element: <Camera /> },
           { path: 'quests', element: <Quests /> },
           { path: 'profile', element: <Profile /> },
           { path: 'explore', element: <Explore /> },
-          { path: 'observations/:id', element: <ObservationDetail />},
+          { path: 'observations/:id', element: <ObservationDetail /> },
           { path: 'user/:id', element: <UserProfile /> },
           { path: 'species/:id', element: <SpeciesProfile /> },
           { path: 'users/:username', element: <UserProfile /> },
-          { path: "*", element: <div>404 - Page Not Found</div> }
+          { path: '*', element: <div>404 - Page Not Found</div> },
         ]
       }
     ]
   },
-  { path: '/login', element: <Login />},
-  { path: '/register', element: <Register/>}
+  { path: '/login', element: <Login /> },
+  { path: '/register', element: <Register /> }
 ]);
-
 
 const queryClient = new QueryClient();
 
@@ -56,7 +56,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <UIProvider>
-          <RouterProvider router={router}/>
+          <RouterProvider router={router} />
         </UIProvider>
       </AuthProvider>
     </QueryClientProvider>
