@@ -6,7 +6,12 @@ const Camera = lazy(() => import('./pages/Camera'));
 const Quests = lazy(() => import('./pages/Quests'));
 const Map = lazy(() => import('./pages/Map'));
 const Profile = lazy(() => import('./pages/Profile'));
+<<<<<<< HEAD
 const ChatPage = lazy(() => import('./pages/ChatPage'));
+=======
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'))
+
+>>>>>>> 9acec625bdcc702190b4278f5025a4f588730cba
 
 import Layout from './layouts/Layout';
 import Login from './pages/login';
@@ -40,7 +45,12 @@ const router = createBrowserRouter([
           { path: 'user/:id', element: <UserProfile /> },
           { path: 'species/:id', element: <SpeciesProfile /> },
           { path: 'users/:username', element: <UserProfile /> },
+<<<<<<< HEAD
           { path: '*', element: <div>404 - Page Not Found</div> },
+=======
+          { path: 'admin', element: <AdminDashboard/> },
+          { path: "*", element: <div>404 - Page Not Found</div> }
+>>>>>>> 9acec625bdcc702190b4278f5025a4f588730cba
         ]
       }
     ]
