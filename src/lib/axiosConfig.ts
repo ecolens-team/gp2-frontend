@@ -1,11 +1,8 @@
 import axios from "axios";
 
 export const api = axios.create({
-<<<<<<< HEAD
 baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000/api",
-=======
-  baseURL: import.meta.env.VITE_API_URL,
->>>>>>> 9acec625bdcc702190b4278f5025a4f588730cba
+
   withCredentials: true,
   xsrfCookieName: "csrftoken",
   xsrfHeaderName: "X-CSRFToken",
