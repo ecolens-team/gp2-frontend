@@ -34,7 +34,7 @@ import { useAuth } from '../contexts/AuthContext/AuthContext';
             const roomName = generateRoomName(myId, otherId);
 
             const BASE_WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8000';
-                  const wsUrl = `${BASE_WS_URL}/ws/chat/${roomName}/`;
+                 // const wsUrl = `${BASE_WS_URL}/ws/chat/${roomName}/`;
 
             const socket = new WebSocket(
         `${BASE_WS_URL}/ws/chat/${roomName}/?token=${token}`

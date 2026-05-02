@@ -5,7 +5,7 @@ import { Search, LogOut, Plus, SlidersHorizontal, X ,MessageCircle} from "lucide
 import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { IObservation } from "../interfaces/observations";
-import ChatWidget from "../components/ChatWidget";
+//import ChatWidget from "../components/ChatWidget";
 export default function Header() { 
     const { authUser } = useAuth();
     const navigate = useNavigate();

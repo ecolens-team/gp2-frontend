@@ -205,8 +205,8 @@ export default function InsightsTab() {
                         tickFormatter={(v: string) => v.length > 16 ? v.slice(0, 14) + "…" : v}
                       />
                       <Tooltip
-                        formatter={(value: number) => [value, "Observations"]}
-                        labelFormatter={(label: string) => label}
+                        formatter={(value: any) => [value, "Observations"]}
+                        labelFormatter={(label: any) => label}
                       />
                       <Bar dataKey="count" fill="#0d9488" radius={[0, 4, 4, 0]} />
                     </BarChart>

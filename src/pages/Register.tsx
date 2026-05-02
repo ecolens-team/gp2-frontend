@@ -10,7 +10,7 @@ import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod";
 import SpecializationPicker from "../components/SpecializationPicker";
 
-// legacy local stub — replaced by shared SpecializationPicker above
+
 function Register() {
 
   const [isResearcher, setIsResearcher] = useState(false);

@@ -1,4 +1,3 @@
-import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getQuests } from '../services/questService';
 import { Leaf, Target, Camera, Map as MapIcon, ChevronRight, Trophy, Users } from 'lucide-react';

@@ -28,8 +28,8 @@ const getAvatarColor = (id: string) => {
   return colors[parseInt(id) % colors.length];
 };
 
-const formatTime = (date: Date) =>
-  date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+// const formatTime = (date: Date) =>
+//   date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
 
 const formatDate = (date: Date) => {
   const today = new Date();
@@ -56,7 +56,7 @@ const ChatPage: React.FC = () => {
 
   useEffect(() => {
   api.post<{ access: string }>('/auth/token/refresh/')
-    .then((res) => {
+    .then(() => {
      
       api.get<{ token: string }>('/ws-token/')
         .then((res) => {
@@ -90,7 +90,7 @@ const ChatPage: React.FC = () => {
     setConnectionStatus('connecting');
 
     const roomName = [myId, selectedUser.id].sort().join('_');
-     const BASE_WS_URL = 'ws://localhost:8000';    
+    const BASE_WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8000';
     const socket = new WebSocket(`${BASE_WS_URL}/ws/chat/${roomName}/?token=${wsToken}`);
     socketRef.current = socket;
 
@@ -208,6 +208,11 @@ const ChatPage: React.FC = () => {
               })}
             </div>
           ))}
+          {isTyping && (
+            <div style={{ padding: '4px 12px', fontSize: '12px', color: '#64748b', fontStyle: 'italic' }}>
+              {selectedUser.username} is typing...
+            </div>
+          )}
           <div ref={messagesEndRef} />
         </div>
 
