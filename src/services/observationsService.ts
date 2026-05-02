@@ -19,7 +19,9 @@ export interface IObservationPayload {
     description: string,
     longitude: number ,
     latitude: number,
-    images: File[]
+    images: File[],
+    weather?: string,
+    governorate?: string,
 }
 
 export interface ILikeObservationResponse {
@@ -58,7 +60,7 @@ function getSpeciesName(species: ISpeciesApi | null | undefined): string {
 }
 
 
-function formatLocation(latitude: number | null | undefined, longitude: number | null | undefined): string {
+export function formatLocation(latitude: number | null | undefined, longitude: number | null | undefined): string {
     if (latitude == null || longitude == null) {
         return 'Unknown location';
     }
@@ -230,7 +232,9 @@ export const createObservation = async(payload: IObservationPayload) => {
         formData.append("species_prediction", payload.species || "Unknown");
         formData.append("confidence_level", String(payload.confidence_level));
         formData.append("timestamp", payload.timestamp);
-        
+        if (payload.weather) formData.append("weather", payload.weather);
+        if (payload.governorate) formData.append("governorate", payload.governorate);
+
         const response = await api.post('/observations/', formData);
         return response.data;
     } catch (error) {

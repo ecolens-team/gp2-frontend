@@ -19,7 +19,7 @@ export default function Layout() {
       )}
 
       <Toaster position="top-center"/>
-      <main className="grow overflow-y-auto pb-10 md:pb-0">
+      <main className="grow overflow-y-auto pb-10 md:pb-0 min-h-0">
         <Outlet />
       </main>
 

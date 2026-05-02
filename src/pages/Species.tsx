@@ -228,7 +228,7 @@ export default function SpeciesProfile() {
         </div>
       )}
 
-      {activeTab === "MAP" && <SpeciesMapTab observations={obsWithCoords} />}
+      {activeTab === "MAP" && <SpeciesMapTab markers={obsWithCoords} />}
 
       {activeTab === "GALLERY" && <SpeciesGalleryTab observations={obsWithImages} />}
 

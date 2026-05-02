@@ -8,8 +8,8 @@ const QuestDetail = lazy(() => import('./pages/QuestDetail'));
 const Map = lazy(() => import('./pages/Map'));
 const Profile = lazy(() => import('./pages/Profile'));
 const ChatPage = lazy(() => import('./pages/ChatPage'));
-const AdminDashboard = lazy(() => import('./pages/AdminDashboard'))
-
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const ResearcherDashboard = lazy(() => import('./pages/ResearcherDashboard'));
 
 import Layout from './layouts/Layout';
 import Login from './pages/login';
@@ -44,7 +44,7 @@ const router = createBrowserRouter([
           { path: 'user/:id', element: <UserProfile /> },
           { path: 'species/:id', element: <SpeciesProfile /> },
           { path: 'users/:username', element: <UserProfile /> },
-       
+          { path: 'researcher', element: <ResearcherDashboard/> },    
           { path: 'admin', element: <AdminDashboard/> },
           { path: '*', element: <div>404 - Page Not Found</div> },
         ]

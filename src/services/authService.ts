@@ -51,7 +51,7 @@ export const logoutUser= async() => {
     }
 }
 
-export type Specialization = { level: string; name: string };
+export type Specialization = { level: string; name: string; id: number };
 
 export const saveSpecializations = async (specializations: Specialization[]) => {
     const response = await api.put('/me/specializations/', specializations);

@@ -133,8 +133,8 @@ export default function AddObservation() {
     const [step, setStep] = useState<"CAMERA" | "DETAILS">(window.innerWidth > 768 ? "DETAILS" : "CAMERA");
     const [latitude, setLatitude] = useState<number | "">("");
     const [longitude, setLongitude] = useState<number | "">("");
-    const [habitat, setHabitat] = useState("");
     const [weather, setWeather] = useState("");
+    const [governorate, setGovernorate] = useState("");
     const [dateTime, setDateTime] = useState(getLocalISOString());
     
     const [imageFiles, setImageFiles] = useState<File[]>([]);
@@ -185,7 +185,9 @@ export default function AddObservation() {
         latitude: latitude,
         species: aiPrediction?.species,
         confidence_level: aiPrediction.confidence,
-        timestamp: dateTime
+        timestamp: dateTime,
+        weather: weather || undefined,
+        governorate: governorate || undefined,
       }
 
       
@@ -345,20 +347,40 @@ export default function AddObservation() {
             </div>
              <div className="px-4 flex flex-col gap-3 mb-8">
                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider pl-2 mt-4">Optional Data</p>
-                <input 
-                    type="text" 
-                    placeholder="Weather Conditions..." 
+                <select
                     value={weather}
                     onChange={(e) => setWeather(e.target.value)}
-                    className="w-full bg-white rounded-full border-2 border-teal-600/20 shadow-sm px-4 py-3 focus:outline-none"
-                />
-                <input 
-                    type="text" 
-                    placeholder="Habitat Type..." 
-                    value={habitat}
-                    onChange={(e) => setHabitat(e.target.value)}
-                    className="w-full bg-white rounded-full border-2 border-teal-600/20 shadow-sm px-4 py-3 focus:outline-none"
-                />
+                    className="w-full bg-white rounded-full border-2 border-teal-600/20 shadow-sm px-4 py-3 focus:outline-none text-gray-700 appearance-none"
+                >
+                    <option value="">Weather Conditions...</option>
+                    <option value="Sunny">Clear / Sunny</option>
+                    <option value="Partially Cloudy">Partially Cloudy</option>
+                    <option value="Cloudy">Cloudy / Overcast</option>
+                    <option value="Foggy">Fog / Mist</option>
+                    <option value="Rainy">Rain</option>
+                    <option value="Snowy">Snow</option>
+                    <option value="Stormy">Thunderstorm</option>
+                    <option value="Hazy">Haze / Smoke / Dust</option>
+                </select>
+                <select
+                    value={governorate}
+                    onChange={(e) => setGovernorate(e.target.value)}
+                    className="w-full bg-white rounded-full border-2 border-teal-600/20 shadow-sm px-4 py-3 focus:outline-none text-gray-700 appearance-none"
+                >
+                    <option value="">Governorate...</option>
+                    <option value="Ajloun">Ajloun</option>
+                    <option value="Amman">Amman</option>
+                    <option value="Aqaba">Aqaba</option>
+                    <option value="Balqa">Balqa</option>
+                    <option value="Irbid">Irbid</option>
+                    <option value="Jerash">Jerash</option>
+                    <option value="Karak">Karak</option>
+                    <option value="Maan">Maan</option>
+                    <option value="Madaba">Madaba</option>
+                    <option value="Mafraq">Mafraq</option>
+                    <option value="Tafilah">Tafilah</option>
+                    <option value="Zarqa">Zarqa</option>
+                </select>
             </div>
 
             <div className="fixed bottom-0 w-full p-4 bg-white border-t border-gray-100 z-50 flex items-center">
