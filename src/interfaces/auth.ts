@@ -9,6 +9,7 @@ export interface IAuthUser {
     phone_number: string;
     role: 'USER' | 'RESEARCHER' | 'ADMIN';
     profile_picture: string;
+    profile_thumbnail: string;
     researcher_profile?: {
         application_status: string;
         credentials: string;

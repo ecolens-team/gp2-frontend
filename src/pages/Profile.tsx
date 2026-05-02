@@ -239,10 +239,10 @@ export default function Profile() {
               key={post.id}
               className="post-card"
               onClick={() => navigate(`/observations/${post.id}`)}
-              style={{ background: !post.image ? colors[i % colors.length] : 'transparent' }}
+              style={{ background: !post.image?.image ? colors[i % colors.length] : 'transparent' }}
             >
-              {post.image && (
-                <img src={post.image} alt={post.speciesName} className="post-img-full"
+              {post.image?.image && (
+                <img src={post.image.thumbnail ?? post.image.image} alt={post.speciesName} className="post-img-full"
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               )}
               <div className="post-badge">

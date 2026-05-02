@@ -1,6 +1,7 @@
 export interface IObservationImageApi {
   id?: number;
   image?: string;
+  thumbnail?: string;
   image_quality?: number | null;
   date?: string;
 }
@@ -16,7 +17,7 @@ export interface ISpeciesApi {
 
 export interface IObservationApi {
   id: number;
-user?: string | { id?: number; username?: string; profile_picture?: string | null };  species: ISpeciesApi | null;
+  user?: string | { id?: number; username?: string; profile_picture?: string | null; profile_thumbnail: string; };  species: ISpeciesApi | null;
   timestamp?: string;
   longitude?: number | null;
   latitude?: number | null;
@@ -31,7 +32,7 @@ user?: string | { id?: number; username?: string; profile_picture?: string | nul
 
 export interface IObservationCommentApi {
   id: number;
-  user?: string | { id?: number; username?: string; profile_picture?: string | null };   content?: string;
+  user?: string | { id?: number; username?: string; profile_picture?: string | null ; profile_thumbnail: string;};   content?: string;
   text?: string;
   created_at?: string;
   timestamp?: string;
@@ -45,8 +46,8 @@ export interface IObservation {
   speciesName: string;
   speciesId: number;
   location: string;
-  image: string | null;
-  images: string[];
+  image: IObservationImageApi | null;
+  images:IObservationImageApi[] | null;
   description: string;
   confidenceLevel: number | null;
   verified: boolean;

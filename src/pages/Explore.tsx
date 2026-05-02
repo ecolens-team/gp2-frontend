@@ -1,6 +1,6 @@
-import { type MouseEvent, useEffect, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getObservations, likeObservation } from "../services/observationsService";
+import { type MouseEvent, useEffect, useRef, useState } from "react";
+import { useMutation, useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import { getObservationsPage, likeObservation } from "../services/observationsService";
 import type { IObservation } from "../interfaces/observations";
 import Map from "./Map";
 import { MessageCircle, Share2, Heart, MapPin, CheckCircle } from "lucide-react";
@@ -80,7 +80,7 @@ function Card({ item }: { item: IObservation }) {
 
       <div className="relative">
         <img
-          src={item.image ?? ""}
+          src={item.image?.thumbnail ?? item.image?.image ?? ""}
           alt={item.speciesName}
           className="w-full aspect-4/3 object-cover"
         />
@@ -151,11 +151,57 @@ function CardSkeleton() {
   );
 }
 
+function FeedList({ items, isFetchingNextPage, hasNextPage, onLoadMore }: {
+  items: IObservation[];
+  isFetchingNextPage: boolean;
+  hasNextPage: boolean;
+  onLoadMore: () => void;
+}) {
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el || !hasNextPage) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !isFetchingNextPage) onLoadMore();
+      },
+      { threshold: 0 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, onLoadMore]);
+
+  if (items.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 text-gray-400 gap-3">
+        <span className="text-4xl">🌿</span>
+        <p className="font-medium">No observations yet.</p>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {items.map((item) => <Card key={item.id} item={item} />)}
+      <div ref={sentinelRef} className="h-px" />
+      {isFetchingNextPage && <CardSkeleton />}
+      {!hasNextPage && items.length > 0 && (
+        <p className="text-center text-xs text-gray-400 py-6">You've seen everything 🌿</p>
+      )}
+    </>
+  );
+}
+
 export default function Explore() {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } = useInfiniteQuery({
     queryKey: ["observations"],
-    queryFn: getObservations,
+    queryFn: getObservationsPage,
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => lastPage.nextPage,
   });
+
+  const allItems = data?.pages.flatMap((p) => p.observations) ?? [];
 
   if (isLoading) return (
     <div className="min-h-screen bg-gray-50 flex justify-center md:py-6 md:px-4">
@@ -174,26 +220,22 @@ export default function Explore() {
   return (
     <div className="min-h-screen bg-gray-50 flex justify-center md:py-6 md:px-4">
       <div className="lg:hidden w-full bg-white border-x border-gray-100">
-        {data && data.length > 0 ? (
-          data.map((item) => <Card key={item.id} item={item} />)
-        ) : (
-          <div className="flex flex-col items-center justify-center h-64 text-gray-400 gap-3">
-            <span className="text-4xl">🌿</span>
-            <p className="font-medium">No observations yet.</p>
-          </div>
-        )}
+        <FeedList
+          items={allItems}
+          isFetchingNextPage={isFetchingNextPage}
+          hasNextPage={!!hasNextPage}
+          onLoadMore={fetchNextPage}
+        />
       </div>
 
       <div className="hidden lg:flex w-full max-w-7xl rounded-2xl overflow-hidden border border-gray-200 shadow-sm h-[calc(100vh-120px)]">
         <div className="w-1/2 shrink-0 overflow-y-auto border-r border-gray-100 bg-white">
-          {data && data.length > 0 ? (
-            data.map((item) => <Card key={item.id} item={item} />)
-          ) : (
-            <div className="flex flex-col items-center justify-center h-64 text-gray-400 gap-3">
-              <span className="text-4xl">🌿</span>
-              <p className="font-medium">No observations yet.</p>
-            </div>
-          )}
+          <FeedList
+            items={allItems}
+            isFetchingNextPage={isFetchingNextPage}
+            hasNextPage={!!hasNextPage}
+            onLoadMore={fetchNextPage}
+          />
         </div>
         <div className="flex-1 w-1/2">
           <Map />

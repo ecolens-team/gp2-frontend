@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import type { IObservationImageApi } from "../interfaces/observations";
 
 interface Props {
-  images: string[];
+  images: IObservationImageApi[] | null;
   alt?: string;
 }
 
@@ -10,9 +11,14 @@ export default function ObservationImageCarousel({ images, alt = "" }: Props) {
   const [current, setCurrent] = useState(0);
   const [lightbox, setLightbox] = useState(false);
 
-  const count = images.length;
+  const items = images ?? [];
+  const count = items.length;
   const prev = () => setCurrent(i => (i - 1 + count) % count);
   const next = () => setCurrent(i => (i + 1) % count);
+
+  // Thumbnail for the card view, full-res for the lightbox
+  const thumbSrc = (i: number) => items[i]?.thumbnail ?? items[i]?.image ?? "";
+  const fullSrc  = (i: number) => items[i]?.image ?? "";
 
   useEffect(() => {
     if (!lightbox) return;
@@ -32,7 +38,7 @@ export default function ObservationImageCarousel({ images, alt = "" }: Props) {
       <div className="relative w-full h-80 bg-black select-none">
         <img
           key={current}
-          src={images[current]}
+          src={thumbSrc(current)}
           alt={alt}
           onClick={() => setLightbox(true)}
           className="w-full h-full object-cover cursor-zoom-in"
@@ -54,7 +60,7 @@ export default function ObservationImageCarousel({ images, alt = "" }: Props) {
             </button>
 
             <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-              {images.map((_, i) => (
+              {items.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => setCurrent(i)}
@@ -102,7 +108,7 @@ export default function ObservationImageCarousel({ images, alt = "" }: Props) {
           )}
 
           <img
-            src={images[current]}
+            src={fullSrc(current)}
             alt={alt}
             onClick={(e) => e.stopPropagation()}
             className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
@@ -110,7 +116,7 @@ export default function ObservationImageCarousel({ images, alt = "" }: Props) {
 
           {count > 1 && (
             <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-2">
-              {images.map((_, i) => (
+              {items.map((_, i) => (
                 <button
                   key={i}
                   onClick={(e) => { e.stopPropagation(); setCurrent(i); }}

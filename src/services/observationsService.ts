@@ -9,7 +9,16 @@ import type { ISpecies } from '../interfaces/species';
 import { api } from '../lib/axiosConfig';
 
 export interface IObservationListApiResponse {
-    results?: IObservationApi[];
+    count: number;
+    next: string | null;
+    previous: string | null;
+    results: IObservationApi[];
+}
+
+export interface IObservationPage {
+    observations: IObservation[];
+    nextPage: number | null;
+    count: number;
 }
 
 export interface IObservationPayload {
@@ -69,19 +78,18 @@ export function formatLocation(latitude: number | null | undefined, longitude: n
 }
 
 export function mapObservation(observation: IObservationApi): IObservation {
-    const images = observation.images?.map(img => img.image).filter((url): url is string => !!url) ?? [];
     return {
         id: observation.id,
         user: getUsername(observation.user),
         userProfilePicture: typeof observation.user === 'object'
-            ? observation.user?.profile_picture ?? null
+            ? observation.user?.profile_thumbnail ?? observation.user?.profile_picture?? null
             : null,
         timestamp: observation.timestamp ?? '',
         speciesName: getSpeciesName(observation.species),
         speciesId: observation.species?.id!,
         location: formatLocation(observation.latitude, observation.longitude),
-        image: images[0] ?? null,
-        images,
+        image: (observation.images && observation.images[0]) ?? null,
+        images: observation.images || null,
         description: observation.description ?? '',
         confidenceLevel: observation.confidence_level ?? null,
         verified: observation.verified ?? false,
@@ -143,6 +151,20 @@ export const getObservations = async (): Promise<IObservation[]> => {
     } catch (error) {
         throw error;
     }
+};
+
+export const getObservationsPage = async ({ pageParam }: { pageParam: number }): Promise<IObservationPage> => {
+    const response = await api.get<IObservationListApiResponse>(`/observations/?page=${pageParam}`);
+    return {
+        observations: response.data.results.map(mapObservation),
+        nextPage: response.data.next ? pageParam + 1 : null,
+        count: response.data.count,
+    };
+};
+
+export const getObservationLocations = async (): Promise<IObservation[]> => {
+    const response = await api.get<IObservationListApiResponse>('/observations/?page_size=200');
+    return response.data.results.map(mapObservation);
 };
 
 export const getObservationById = async (id: number): Promise<IObservation> => {

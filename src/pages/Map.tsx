@@ -1,13 +1,13 @@
 import{ Map as MapboxMap, Marker }from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useQuery } from '@tanstack/react-query';
-import { getObservations } from '../services/observationsService';
+import { getObservationLocations } from '../services/observationsService';
 import { MapPin, Loader2 } from 'lucide-react';
 
 export default function Map() {
   const { data, isLoading } = useQuery({
-    queryKey: ['observations'],
-    queryFn:  getObservations,
+    queryKey: ['observations-map'],
+    queryFn: getObservationLocations,
   });
 
   if (isLoading) return (

@@ -1,12 +1,12 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext/AuthContext";
 import { logoutUser } from "../services/authService";
-import { Search, LogOut, Plus, SlidersHorizontal, X ,MessageCircle} from "lucide-react";
+import { Search, LogOut, Plus, SlidersHorizontal, X, MessageCircle } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { IObservation } from "../interfaces/observations";
 //import ChatWidget from "../components/ChatWidget";
-export default function Header() { 
+export default function Header() {
     const { authUser } = useAuth();
     const navigate = useNavigate();
     const [search, setSearch] = useState("");
@@ -15,7 +15,7 @@ export default function Header() {
     const [locationFilter, setLocationFilter] = useState("");
     const [showResults, setShowResults] = useState(false);
     const [isSearchFocused, setIsSearchFocused] = useState(false);
-    
+
     const ref = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -23,7 +23,7 @@ export default function Header() {
             if (ref.current && !ref.current.contains(e.target as Node)) {
                 setShowResults(false);
                 setShowFilters(false);
-                setIsSearchFocused(false); 
+                setIsSearchFocused(false);
             }
         }
         document.addEventListener("mousedown", handleClick);
@@ -80,7 +80,7 @@ export default function Header() {
                             }}
                             onFocus={() => {
                                 setShowResults(true);
-                                setIsSearchFocused(true); 
+                                setIsSearchFocused(true);
                             }}
                         />
                         {search && (
@@ -99,7 +99,7 @@ export default function Header() {
                         >
                             <SlidersHorizontal size={16} />
                         </button>
-                      
+
                     </div>
 
 
@@ -161,8 +161,8 @@ export default function Header() {
                                                 </span>
                                             )}
                                         </div>
-                                        {obs.image && (
-                                            <img src={obs.image} className="w-12 h-12 rounded-lg object-cover flex-shrink-0" alt={obs.speciesName || "Observation"} />
+                                        {obs.image?.image && (
+                                            <img src={obs.image.thumbnail ?? obs.image.image} className="w-12 h-12 rounded-lg object-cover flex-shrink-0" alt={obs.speciesName || "Observation"} />
                                         )}
                                     </div>
                                 ))
@@ -170,15 +170,15 @@ export default function Header() {
                         </div>
                     )}
                 </div>
-<div className="flex items-center px-2 shrink-0">
-    <button 
-    onClick={() => navigate('/chat')} 
-    className="text-gray-500 hover:text-teal-600 p-2 transition-colors flex items-center justify-center"
-    title="الرسائل"
->
-    <MessageCircle size={24} />
-</button>
-</div>
+                <div className="flex items-center px-2 shrink-0">
+                    <button
+                        onClick={() => navigate('/chat')}
+                        className="text-gray-500 hover:text-teal-600 p-2 transition-colors flex items-center justify-center"
+                        title="الرسائل"
+                    >
+                        <MessageCircle size={24} />
+                    </button>
+                </div>
                 <div className={`items-center gap-2 md:gap-4 shrink-0 ${isSearchFocused ? 'hidden md:flex' : 'flex'}`}>
                     {authUser ? (
                         <>
@@ -198,7 +198,7 @@ export default function Header() {
                                 >
                                     {authUser.profile_picture ? (
                                         <img
-                                            src={authUser.profile_picture}
+                                            src={authUser.profile_thumbnail ?? authUser.profile_picture}
                                             className='w-9 h-9 rounded-full'
                                             alt={authUser.first_name ? `${authUser.first_name}'s profile` : "Profile"}
                                         />
