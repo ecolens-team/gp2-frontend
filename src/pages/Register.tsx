@@ -101,7 +101,7 @@ function Register() {
   };
 
   return (
-    <div className="min-h-dvh bg-white sm:bg-teal-50/60 flex flex-col sm:items-center sm:justify-center sm:py-10">
+    <div className="min-h-dvh bg-white sm:bg-teal-50/60 flex flex-col items-center justify-center sm:py-10">
       <div className="w-full max-w-md flex-1 sm:flex-none sm:bg-white sm:border sm:border-teal-100 p-6 sm:p-8 sm:rounded-2xl sm:shadow-sm space-y-6">
 
         <header className="mt-4 sm:mt-0">

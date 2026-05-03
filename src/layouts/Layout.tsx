@@ -6,18 +6,19 @@ import { useUIContext } from '../contexts/UIContext';
 
 export default function Layout() {
   const { mobileTitleBar, hideBottomNav } = useUIContext();
+  const { headerVisible } = useUIContext();
 
   return (
     <div className="flex flex-col h-screen">
       {/* On mobile,hide the global header when a page declares a title bar */}
       <div className={mobileTitleBar ? "hidden md:block" : ""}>
-        <Header />
+        {headerVisible && <Header />}
       </div>
       {mobileTitleBar && (
         <MobileNavBar title={mobileTitleBar.title} fallbackPath={mobileTitleBar.fallbackPath} />
       )}
 
-      <main className="grow overflow-y-auto pb-10 md:pb-0 min-h-0">
+      <main className={`grow overflow-y-auto ${hideBottomNav? 'pb-0': 'pb-10'} md:pb-0 min-h-0`}>
         <Outlet />
       </main>
 

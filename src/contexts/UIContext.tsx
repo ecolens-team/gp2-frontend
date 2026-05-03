@@ -10,8 +10,12 @@ interface MobileTitleBar {
 interface UIContextValue {
   mobileTitleBar: MobileTitleBar | null;
   hideBottomNav: boolean;
+  headerVisible: boolean;
   setMobileTitleBar: (v: MobileTitleBar | null) => void;
   setHideBottomNav: (v: boolean) => void;
+  setHeaderVisible: (v: boolean) => void;
+  inboxTabsVisible: boolean;
+  setInboxTabsVisible: (v: boolean) => void;
 }
 
 const UIContext = createContext<UIContextValue | null>(null);
@@ -19,9 +23,20 @@ const UIContext = createContext<UIContextValue | null>(null);
 export function UIProvider({ children }: { children: ReactNode }) {
   const [mobileTitleBar, setMobileTitleBar] = useState<MobileTitleBar | null>(null);
   const [hideBottomNav, setHideBottomNav] = useState(false);
+  const [headerVisible, setHeaderVisible] = useState(true);
+  const [inboxTabsVisible, setInboxTabsVisible] = useState(true);
 
   return (
-    <UIContext.Provider value={{ mobileTitleBar, hideBottomNav, setMobileTitleBar, setHideBottomNav }}>
+    <UIContext.Provider value={{ 
+      mobileTitleBar, 
+      hideBottomNav, 
+      setMobileTitleBar,
+      setHideBottomNav, 
+      headerVisible, 
+      setHeaderVisible,
+      inboxTabsVisible,
+      setInboxTabsVisible
+    }}>
       {children}
     </UIContext.Provider>
   );

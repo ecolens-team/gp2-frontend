@@ -42,7 +42,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-dvh bg-white sm:bg-teal-50/60 flex flex-col sm:items-center sm:justify-center">
+    <div className="min-h-dvh bg-white sm:bg-teal-50/60 flex flex-col items-center justify-center">
 
       <div className="w-full max-w-sm flex-1 sm:flex-none flex flex-col justify-between sm:justify-start sm:rounded-2xl sm:border sm:border-teal-100 sm:bg-white p-6 sm:shadow-sm sm:my-8">
         

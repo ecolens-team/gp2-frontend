@@ -170,7 +170,7 @@ export default function Header() {
                         </div>
                     )}
                 </div>
-                <div className="flex items-center px-2 shrink-0">
+                {/* <div className="flex items-center px-2 shrink-0">
                     <button
                         onClick={() => navigate('/chat')}
                         className="text-gray-500 hover:text-teal-600 p-2 transition-colors flex items-center justify-center"
@@ -178,7 +178,7 @@ export default function Header() {
                     >
                         <MessageCircle size={24} />
                     </button>
-                </div>
+                </div> */}
                 <div className={`items-center gap-2 md:gap-4 shrink-0 ${isSearchFocused ? 'hidden md:flex' : 'flex'}`}>
                     {authUser ? (
                         <>

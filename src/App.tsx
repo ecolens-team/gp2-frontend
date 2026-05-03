@@ -23,6 +23,7 @@ import { Toaster } from 'react-hot-toast';
 import ObservationDetail from './pages/Observationdetail.tsx';
 import SpeciesProfile from './pages/Species.tsx';
 import UserProfile from './pages/userprofile.tsx';
+import Inbox from './pages/Inbox.tsx';
 
 const router = createBrowserRouter([
   {
@@ -35,7 +36,8 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <Explore /> },
           { path: 'map', element: <Map /> },
-          { path: 'chat', element: <ChatPage /> },  // FIX: route واحد بس
+          { path: 'chat', element: <ChatPage /> },
+          { path: 'inbox', element: <Inbox/> },
           { path: 'camera', element: <Camera /> },
           { path: 'quests', element: <Quests /> },
           { path: 'quests/:id', element: <QuestDetail /> },
