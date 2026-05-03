@@ -49,7 +49,7 @@ const ChatPage: React.FC = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [active, setActive] = useState<'conversations' | 'chat'>('conversations');
   const socketRef = useRef<WebSocket | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { setHideBottomNav, setInboxTabsVisible } = useUIContext();
@@ -74,7 +74,8 @@ const ChatPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const el = messagesContainerRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
   }, [messages]);
 
   useEffect(() => {
@@ -188,7 +189,7 @@ const ChatPage: React.FC = () => {
       </div>
 
       {/* Main Chat */}
-      <div className={`flex flex-col flex-1 overflow-hidden md:block ${active=='chat'? 'block' : 'hidden'}`}>
+      <div className={`flex flex-col flex-1 overflow-hidden min-h-0 md:flex ${active=='chat'? 'flex' : 'hidden'}`}>
         {/* Header */}
         <div className="flex items-center gap-3 px-6 py-4 bg-white border-b border-slate-200">
           <button className='text-teal-800' onClick={() => {
@@ -209,34 +210,35 @@ const ChatPage: React.FC = () => {
         </div>
 
         {/* Message Area */}
-        <div className="flex-1 flex flex-col gap-1.5 p-6 overflow-y-auto">
-          {groupedMessages.map((group, gi) => (
-            <div key={gi}>
-              <div className="my-5 text-[11px] font-bold text-center uppercase tracking-wider text-slate-400">
-                {group.date}
-              </div>
-              {group.messages.map((msg, mi) => {
-                const isMe = msg.sender === myId;
-                return (
-                  <div key={mi} className={`flex items-end gap-2.5 mb-1 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
-                    <div className={`max-w-[70%] px-4 py-3 text-sm shadow-sm ${
-                      isMe 
-                        ? 'rounded-[20px_20px_4px_20px] bg-linear-to-r from-[#14b8a6] to-[#0d9488] text-white' 
-                        : 'rounded-[20px_20px_20px_4px] bg-white text-slate-800'
-                    }`}>
-                      {msg.message}
+        <div ref={messagesContainerRef} className="flex-1 overflow-y-auto min-h-0">
+          <div className="flex flex-col min-h-full gap-1.5 p-6">
+            {groupedMessages.map((group, gi) => (
+              <div key={gi}>
+                <div className="my-5 text-[11px] font-bold text-center uppercase tracking-wider text-slate-400">
+                  {group.date}
+                </div>
+                {group.messages.map((msg, mi) => {
+                  const isMe = msg.sender === myId;
+                  return (
+                    <div key={mi} className={`flex items-end gap-2.5 mb-1 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
+                      <div className={`max-w-[70%] px-4 py-3 text-sm shadow-sm ${
+                        isMe
+                          ? 'rounded-[20px_20px_4px_20px] bg-linear-to-r from-[#14b8a6] to-[#0d9488] text-white'
+                          : 'rounded-[20px_20px_20px_4px] bg-white text-slate-800'
+                      }`}>
+                        {msg.message}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          ))}
-          {isTyping && (
-            <div className="px-3 py-1 text-xs italic text-slate-500">
-              {selectedUser.username} is typing...
-            </div>
-          )}
-          <div ref={messagesEndRef} />
+                  );
+                })}
+              </div>
+            ))}
+            {isTyping && (
+              <div className="px-3 py-1 text-xs italic text-slate-500">
+                {selectedUser.username} is typing...
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Input Area */}

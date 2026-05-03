@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ChatPage from "./ChatPage";
 import { useUIContext } from "../contexts/UIContext";
 
@@ -13,10 +13,18 @@ function Notifications() {
 
 export default function Inbox() {
   const [active, setActive] = useState<"chats" | "notifications">("chats");
-  const { inboxTabsVisible } = useUIContext();
+  const { inboxTabsVisible, setHideBottomNav, setInboxTabsVisible } = useUIContext();
+
+  useEffect(() => {
+    return () => {
+      setHideBottomNav(false);
+      setInboxTabsVisible(true);
+    };
+  }, []);
+
   return (
     <div className="h-full flex flex-col min-h-0">
-      {inboxTabsVisible && <div className="flex bg-white border-b border-gray-100 shrink-0">
+      <div className={`bg-white border-b border-gray-100 shrink-0 ${inboxTabsVisible ? 'flex' : 'hidden md:flex'}`}>
         {(["chats", "notifications"] as const).map(tab => (
           <button
             key={tab}
@@ -30,7 +38,7 @@ export default function Inbox() {
             {tab === "chats" ? "Chats" : "Notifications"}
           </button>
         ))}
-      </div>}
+      </div>
 
       <div className="flex-1 min-h-0">
         {active === "chats" ? <ChatPage /> : <Notifications />}
