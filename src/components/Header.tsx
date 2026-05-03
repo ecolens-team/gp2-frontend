@@ -61,6 +61,7 @@ export default function Header() {
                         <NavLink to="/" className={({ isActive }) => isActive ? "text-teal-600" : "text-gray-500 hover:text-teal-500 transition-colors"}>Explore</NavLink>
                         <NavLink to="/map" className={({ isActive }) => isActive ? "text-teal-600" : "text-gray-500 hover:text-teal-500 transition-colors"}>Map</NavLink>
                         <NavLink to="/quests" className={({ isActive }) => isActive ? "text-teal-600" : "text-gray-500 hover:text-teal-500 transition-colors"}>Quests</NavLink>
+                        <NavLink to="/inbox" className={({ isActive }) => isActive ? "text-teal-600" : "text-gray-500 hover:text-teal-500 transition-colors"}>Inbox</NavLink>
                     </nav>
                 </div>
 
