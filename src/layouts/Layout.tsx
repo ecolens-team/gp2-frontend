@@ -2,7 +2,6 @@ import { Outlet } from 'react-router-dom';
 import BottomNavBar from '../components/BottomNavBar/BottomNavBar';
 import Header from '../components/Header';
 import MobileNavBar from '../components/MobileNavBar';
-import { Toaster } from 'react-hot-toast';
 import { useUIContext } from '../contexts/UIContext';
 
 export default function Layout() {
@@ -18,7 +17,6 @@ export default function Layout() {
         <MobileNavBar title={mobileTitleBar.title} fallbackPath={mobileTitleBar.fallbackPath} />
       )}
 
-      <Toaster position="top-center"/>
       <main className="grow overflow-y-auto pb-10 md:pb-0 min-h-0">
         <Outlet />
       </main>

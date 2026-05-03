@@ -19,6 +19,7 @@ import ErrorPage from './pages/ErrorPage';
 import AuthProvider from './contexts/AuthContext/AuthProvider';
 import { UIProvider } from './contexts/UIContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from 'react-hot-toast';
 import ObservationDetail from './pages/Observationdetail.tsx';
 import SpeciesProfile from './pages/Species.tsx';
 import UserProfile from './pages/userprofile.tsx';
@@ -62,6 +63,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <UIProvider>
+          <Toaster position="top-center" />
           <RouterProvider router={router} />
         </UIProvider>
       </AuthProvider>
