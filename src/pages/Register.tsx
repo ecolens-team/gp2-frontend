@@ -10,7 +10,7 @@ import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod";
 import SpecializationPicker from "../components/SpecializationPicker";
 
-const inputClass = "w-full rounded-xl border border-gray-200 px-4 py-3 text-base sm:text-sm outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-50";
+const inputClass = "w-full rounded-xl border-2 border-gray-200 px-4 py-3 text-base sm:text-sm outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-50";
 const errorClass = "text-red-500 text-xs font-medium mt-1.5 ml-1 block";
 
 function Register() {

@@ -60,7 +60,7 @@ export default function Login() {
                 {...register("username")}
                 type="text"
                 placeholder="Enter email or username"
-                className={`w-full rounded-xl border px-4 py-3 text-base sm:text-sm outline-none transition focus:ring-4 ${
+                className={`w-full rounded-xl border-2 px-4 py-3 text-base sm:text-sm outline-none transition focus:ring-4 ${
                   errors.username ? "border-red-500 focus:ring-red-100" : "border-gray-200 focus:border-teal-500 focus:ring-teal-50"
                 }`}
               />
@@ -75,7 +75,7 @@ export default function Login() {
                 {...register("password")}
                 type="password"
                 placeholder="Enter your password"
-                className={`w-full rounded-xl border px-4 py-3 text-base sm:text-sm outline-none transition focus:ring-4 ${
+                className={`w-full rounded-xl border-2 px-4 py-3 text-base sm:text-sm outline-none transition focus:ring-4 ${
                   errors.password ? "border-red-500 focus:ring-red-100" : "border-gray-200 focus:border-teal-500 focus:ring-teal-50"
                 }`}
               />
