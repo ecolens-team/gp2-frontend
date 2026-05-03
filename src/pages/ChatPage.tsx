@@ -52,7 +52,7 @@ const ChatPage: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const { setHideBottomNav, setHeaderVisible, setInboxTabsVisible } = useUIContext();
+  const { setHideBottomNav, setInboxTabsVisible } = useUIContext();
 
   const myId = String(authUser?.id || '');
 

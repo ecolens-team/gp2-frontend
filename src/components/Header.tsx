@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext/AuthContext";
 import { logoutUser } from "../services/authService";
-import { Search, LogOut, Plus, SlidersHorizontal, X, MessageCircle } from "lucide-react";
+import { Search, LogOut, Plus, SlidersHorizontal, X } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { IObservation } from "../interfaces/observations";
