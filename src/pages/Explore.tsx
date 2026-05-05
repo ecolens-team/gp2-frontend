@@ -204,7 +204,7 @@ export default function Explore() {
   const allItems = data?.pages.flatMap((p) => p.observations) ?? [];
 
   if (isLoading) return (
-    <div className="min-h-screen bg-gray-50 flex justify-center md:py-6 md:px-4">
+    <div className=" bg-gray-50 flex justify-center md:py-6 md:px-4">
       <div className="lg:hidden w-full bg-white border-x border-gray-100">
         {Array.from({ length: 4 }).map((_, i) => <CardSkeleton key={i} />)}
       </div>
@@ -218,7 +218,7 @@ export default function Explore() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 flex justify-center md:py-6 md:px-4">
+    <div className=" bg-gray-50 flex justify-center md:py-6 md:px-4">
       <div className="lg:hidden w-full bg-white border-x border-gray-100">
         <FeedList
           items={allItems}
