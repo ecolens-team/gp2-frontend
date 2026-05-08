@@ -40,7 +40,7 @@ function ResearcherProfile({ authUser }: { authUser: IAuthUser }) {
   const statusCfg = STATUS_CONFIG[appStatus];
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex items-start gap-6">
+    <div className="bg-white rounded-2xl border border-gray-200 shadow-none p-6 flex items-start gap-6">
       <div className="w-16 h-16 rounded-2xl bg-teal-50 flex items-center justify-center shrink-0">
         <FlaskConical className="text-teal-600" size={32} />
       </div>
@@ -157,7 +157,7 @@ export default function OverviewTab({
       </div>
 
       <div className="col-span-1">
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 h-full min-h-[450px] flex flex-col">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-none p-5 h-full min-h-[450px] flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <MapPin className="text-amber-500" size={18} />
@@ -228,20 +228,20 @@ function ActionCard({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`text-left bg-white rounded-2xl border shadow-sm p-5 transition-all border-l-4
-        ${disabled ? "opacity-40 cursor-not-allowed border-l-gray-200" : `hover:shadow-md cursor-pointer ${accent ? colors.border : "border-l-gray-200 hover:border-l-teal-300"}`}
-        ${accent ? "border-amber-100" : "border-gray-100"}`}
+      className={`text-left bg-white rounded-2xl border shadow-none p-6 transition-all border-l-4
+        ${disabled ? "opacity-40 cursor-not-allowed border-l-gray-200" : `hover:shadow-xs cursor-pointer ${accent ? colors.border : "border-l-gray-200 hover:border-l-teal-300"}`}
+        ${accent ? "border-amber-100" : "border-gray-200"}`}
     >
-      <div className="flex items-start justify-between mb-3">
-        <p className={`text-4xl font-black leading-none ${hasCount && accent ? colors.text : "text-gray-900"}`}>
+      <div className="flex items-start justify-between mb-4">
+        <p className={`text-5xl font-black leading-none ${hasCount && accent ? colors.text : "text-gray-900"}`}>
           {count !== undefined ? count.toLocaleString() : "—"}
         </p>
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${accent ? colors.icon : "bg-gray-100 text-gray-500"}`}>
+        <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${accent ? colors.icon : "bg-gray-100 text-gray-500"}`}>
           {icon}
         </div>
       </div>
-      <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">{label}</p>
-      <p className="text-xs text-gray-400 mt-0.5">{description}</p>
+      <p className="text-sm font-bold text-gray-600 uppercase tracking-wider">{label}</p>
+      <p className="text-xs text-gray-400 mt-1">{description}</p>
       {accent && hasCount && (
         <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full mt-2 ${colors.badge}`}>
           Needs attention

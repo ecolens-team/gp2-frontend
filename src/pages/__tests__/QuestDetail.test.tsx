@@ -67,9 +67,14 @@ describe('QuestDetail Page', () => {
       rewardPts: 500,
       progressPercent: 30,
       category: 'PLANT',
-      isJoined: false,
-      submissions: [
-        { id: 's1', imageUrl: 'img1.jpg', username: 'user1', timestamp: '2023-01-01' },
+      isJoined: true,
+      recent_submissions: [
+        {
+          id: 's1',
+          images: [{ thumbnail: 'img1.jpg' }],
+          user: { username: 'user1' },
+          timestamp: '2023-01-01',
+        },
       ],
       totalParticipants: 10,
     };

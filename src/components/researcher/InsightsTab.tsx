@@ -87,7 +87,7 @@ export default function InsightsTab() {
             key={tab}
             onClick={() => setActiveSection(tab)}
             className={`px-5 py-2 rounded-lg text-sm font-bold transition-all capitalize ${
-              activeSection === tab ? "bg-white text-teal-700 shadow-sm" : "text-gray-500 hover:text-gray-700"
+              activeSection === tab ? "bg-white text-teal-700 " : "text-gray-500 hover:text-gray-700"
             }`}
           >
             {tab === "stats" ? "Analytics" : `Alerts${alerts.length ? ` (${alerts.length})` : ""}`}
@@ -164,7 +164,7 @@ export default function InsightsTab() {
 
           {/* Species coverage */}
           {!insightsLoading && insights && (
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <div className="bg-white rounded-2xl border border-gray-200  p-6">
               <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-5">Species Coverage</h3>
               <div className="grid grid-cols-3 gap-4 text-center">
                 {[
@@ -192,7 +192,7 @@ export default function InsightsTab() {
             <div className="grid grid-cols-2 gap-6">
               {/* Taxa breakdown */}
               {insights.taxa_breakdown.length > 0 && (
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <div className="bg-white rounded-2xl border border-gray-200  p-6">
                   <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-5">Observations by Taxon</h3>
                   <ResponsiveContainer width="100%" height={Math.max(180, insights.taxa_breakdown.length * 40)}>
                     <BarChart layout="vertical" data={insights.taxa_breakdown} barSize={20}>
@@ -216,7 +216,7 @@ export default function InsightsTab() {
 
               {/* Top species */}
               {insights.top_species.length > 0 && (
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <div className="bg-white rounded-2xl border border-gray-200  p-6">
                   <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Top Species</h3>
                   <div className="space-y-0.5">
                     {insights.top_species.map((sp, i) => (
@@ -243,7 +243,7 @@ export default function InsightsTab() {
 
           {/* Observation location map */}
           {!insightsLoading && insights && insights.observation_locations.length > 0 && (
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <div className="bg-white rounded-2xl border border-gray-200  p-6">
               <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-5">Observation Locations</h3>
               <SpeciesMapTab
                 markers={insights.observation_locations}
@@ -256,7 +256,7 @@ export default function InsightsTab() {
           {!insightsLoading && insights && (
             <div className="grid grid-cols-2 gap-6">
               {insights.top_governorates.length > 0 && (
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <div className="bg-white rounded-2xl border border-gray-200  p-6">
                   <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-5">Top Governorates</h3>
                   <ResponsiveContainer width="100%" height={200}>
                     <BarChart data={insights.top_governorates} barSize={32}>
@@ -270,7 +270,7 @@ export default function InsightsTab() {
               )}
 
               {insights.weather_stats.length > 0 && (
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <div className="bg-white rounded-2xl border border-gray-200  p-6">
                   <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-5">Weather Conditions</h3>
                   <ResponsiveContainer width="100%" height={200}>
                     <BarChart data={insights.weather_stats} barSize={32}>
@@ -289,7 +289,7 @@ export default function InsightsTab() {
           {!insightsLoading && insights && (
             <div className="grid grid-cols-2 gap-6">
               {monthlyData.length > 0 && (
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <div className="bg-white rounded-2xl border border-gray-200  p-6">
                   <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-5">Observation Trend (12 months)</h3>
                   <ResponsiveContainer width="100%" height={200}>
                     <LineChart data={monthlyData}>
@@ -302,7 +302,7 @@ export default function InsightsTab() {
                   </ResponsiveContainer>
                 </div>
               )}
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <div className="bg-white rounded-2xl border border-gray-200  p-6">
                 <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-5">AI Confidence Distribution</h3>
                 <ResponsiveContainer width="100%" height={200}>
                   <BarChart data={insights.confidence_distribution} barSize={40}>
@@ -335,7 +335,7 @@ export default function InsightsTab() {
             <button
               key={alert.id}
               onClick={() => navigate(`/observations/${alert.id}`)}
-              className="w-full text-left bg-white rounded-xl border border-red-100 shadow-sm p-4 flex items-center gap-4 hover:border-red-300 transition-all group"
+              className="w-full text-left bg-white rounded-xl border border-red-100  p-4 flex items-center gap-4 hover:border-red-300 transition-all group"
             >
               <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 shrink-0">
                 {alert.thumbnail
@@ -375,7 +375,7 @@ function MetricCard({
   icon?: React.ReactNode;
 }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+    <div className="bg-white rounded-2xl border border-gray-200  p-5">
       <div className="flex items-center justify-between mb-2">
         <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">{label}</p>
         {icon}

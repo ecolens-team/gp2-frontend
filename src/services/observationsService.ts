@@ -97,7 +97,8 @@ export function mapObservation(observation: IObservationApi): IObservation {
         longitude: observation.longitude ?? null,
         comments: observation.comments_count,
         likes: observation.likes_count,
-        hasLiked: observation.has_liked
+        hasLiked: observation.has_liked,
+        assignedQuest: (observation as any).assigned_quest ?? null,
     };
 }
 
@@ -154,7 +155,7 @@ export const getObservations = async (): Promise<IObservation[]> => {
 };
 
 export const getObservationsPage = async ({ pageParam }: { pageParam: number }): Promise<IObservationPage> => {
-    const response = await api.get<IObservationListApiResponse>(`/observations/?page=${pageParam}`);
+    const response = await api.get<IObservationListApiResponse>(`/observations/?page=${pageParam}&page_size=5`);
     return {
         observations: response.data.results.map(mapObservation),
         nextPage: response.data.next ? pageParam + 1 : null,

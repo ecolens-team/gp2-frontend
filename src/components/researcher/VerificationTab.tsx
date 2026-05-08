@@ -62,7 +62,7 @@ function QueueList() {
         <button
           key={item.id}
           onClick={() => navigate(`/observations/${item.id}`)}
-          className="w-full text-left bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-4 hover:border-teal-300 hover:shadow-md transition-all group"
+          className="w-full text-left bg-white rounded-xl border border-gray-200  p-4 flex items-center gap-4 hover:border-teal-300 hover:shadow-md transition-all group"
         >
           <div className="w-14 h-14 rounded-lg bg-gray-100 overflow-hidden shrink-0">
             {item.thumbnail
@@ -128,7 +128,7 @@ function ReportsList() {
   return (
     <div className="space-y-3">
       {data.results.map((report: ReportItem) => (
-        <div key={report.id} className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-start gap-4">
+        <div key={report.id} className="bg-white rounded-xl border border-gray-200  p-4 flex items-start gap-4">
           <div className="w-14 h-14 rounded-lg bg-gray-100 overflow-hidden shrink-0">
             {report.thumbnail
               ? <img src={report.thumbnail} alt="" className="w-full h-full object-cover" />
@@ -179,7 +179,7 @@ function ListSkeleton() {
   return (
     <div className="space-y-3 animate-pulse">
       {[...Array(5)].map((_, i) => (
-        <div key={i} className="bg-white rounded-xl border border-gray-100 p-4 flex items-center gap-4">
+        <div key={i} className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-4">
           <div className="w-14 h-14 rounded-lg bg-gray-200 shrink-0" />
           <div className="flex-1 space-y-2">
             <div className="h-4 w-40 bg-gray-200 rounded-full" />
@@ -195,14 +195,14 @@ export default function VerificationTab() {
   const [active, setActive] = useState<"queue" | "reports">("queue");
 
   return (
-    <div className="space-y-6 max-w-3xl">
+    <div className="space-y-6 max-w-5xl">
       <div className="flex bg-gray-100 p-1 rounded-xl w-fit">
         {(["queue", "reports"] as const).map(tab => (
           <button
             key={tab}
             onClick={() => setActive(tab)}
             className={`px-5 py-2 rounded-lg text-sm font-bold transition-all capitalize ${
-              active === tab ? "bg-white text-teal-700 shadow-sm" : "text-gray-500 hover:text-gray-700"
+              active === tab ? "bg-white text-teal-700 " : "text-gray-500 hover:text-gray-700"
             }`}
           >
             {tab === "queue" ? "Verification Queue" : "Reports Inbox"}

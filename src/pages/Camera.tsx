@@ -1,22 +1,42 @@
 import { useEffect, useRef, useState, type ChangeEvent, type RefObject } from "react";
 import { WebCamera, type WebCameraHandler } from "@shivantra/react-web-camera";
-import { ArrowLeft, SwitchCamera, Image as ImageIcon, CheckCircle2, Loader2, MapPin, Plus, Upload} from "lucide-react";
+import { ArrowLeft, SwitchCamera, Image as ImageIcon, CheckCircle2, Loader2, MapPin, Plus, Upload, Cloud, MapPinned, Trophy } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Map, { Marker, GeolocateControl, NavigationControl, type MapRef, FullscreenControl,type GeolocateControlInstance} from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { createObservation, predictSpecies, type IObservationPayload } from "../services/observationsService";
+import { getQuests, submitObservationToQuest } from "../services/questService";
+import { useQuery } from "@tanstack/react-query";
+import { PickerModal, PickerTrigger, type PickerOption } from "../components/ui/PickerModal";
 import toast from "react-hot-toast";
+import { usePageLayout } from "../contexts/UIContext";
 
-function MobileTopBar({ text, onClickFn }: {text: string, onClickFn: () => void}) {
-  return (
-    <div className="bg-white px-4 py-3 flex items-center border-b border-teal-100 sticky top-0 z-10">
-        <button onClick={() => onClickFn()} className="p-2 text-teal-600 rounded-full hover:bg-teal-50">
-            <ArrowLeft size={24} />
-        </button>
-        <h1 className="grow text-center font-bold text-gray-800 pr-10">{ text }</h1>
-    </div>
-  )
-}
+const WEATHER_OPTIONS: PickerOption[] = [
+  { value: 'Sunny', label: 'Clear / Sunny' },
+  { value: 'Partially Cloudy', label: 'Partially Cloudy' },
+  { value: 'Cloudy', label: 'Cloudy / Overcast' },
+  { value: 'Foggy', label: 'Fog / Mist' },
+  { value: 'Rainy', label: 'Rain' },
+  { value: 'Snowy', label: 'Snow' },
+  { value: 'Stormy', label: 'Thunderstorm' },
+  { value: 'Hazy', label: 'Haze / Smoke / Dust' },
+];
+
+const GOVERNORATE_OPTIONS: PickerOption[] = [
+  { value: 'Ajloun', label: 'Ajloun' },
+  { value: 'Amman', label: 'Amman' },
+  { value: 'Aqaba', label: 'Aqaba' },
+  { value: 'Balqa', label: 'Balqa' },
+  { value: 'Irbid', label: 'Irbid' },
+  { value: 'Jerash', label: 'Jerash' },
+  { value: 'Karak', label: 'Karak' },
+  { value: 'Maan', label: "Ma'an" },
+  { value: 'Madaba', label: 'Madaba' },
+  { value: 'Mafraq', label: 'Mafraq' },
+  { value: 'Tafilah', label: 'Tafilah' },
+  { value: 'Zarqa', label: 'Zarqa' },
+];
+
 
 interface CameraControlsProps {
   cameraHandler: RefObject<WebCameraHandler | null>;
@@ -75,7 +95,7 @@ function LocationPicker({ lat, lng, onLocationChange }: LocationPickerProps) {
   }, []);
 
   return (
-    <div className="h-64 w-full rounded-3xl overflow-hidden border-2 border-teal-600/20 shadow-sm relative">
+    <div className="h-64 w-full rounded-3xl overflow-hidden border-2 border-teal-600/20  relative">
       <Map
           {...viewState}
           onMove={evt => setViewState(evt.viewState)}
@@ -110,7 +130,7 @@ function LocationPicker({ lat, lng, onLocationChange }: LocationPickerProps) {
         )}
     </Map>
       <div className="absolute bottom-2 left-0 right-0 text-center pointer-events-none">
-        <span className="bg-white/80 backdrop-blur text-xs px-3 py-1 rounded-full text-teal-800 font-medium shadow-sm">
+        <span className="bg-white/80 backdrop-blur text-xs px-3 py-1 rounded-full text-teal-800 font-medium ">
           Tap map or drag pin to adjust
         </span>
       </div>
@@ -144,6 +164,19 @@ export default function AddObservation() {
     
     const [isPredicting, setIsPredicting] = useState(false);
     const [aiPrediction, setAiPrediction] = useState<{ species: string, confidence: number } | null>(null);
+    const [selectedQuestId, setSelectedQuestId] = useState<string>("");
+    const [openPicker, setOpenPicker] = useState<'weather' | 'governorate' | 'quest' | null>(null);
+
+    usePageLayout({
+      mobileTitleBar: { title: 'New Observation', fallbackPath: '/' },
+      hideBottomNav: true
+    });
+
+    const { data: joinedQuests = [] } = useQuery({
+      queryKey: ['quests'],
+      queryFn: getQuests,
+      select: (data) => data.filter(q => q.isJoined),
+    });
 
     async function handleCapture() {
         const file = await cameraHandler.current?.capture();
@@ -193,9 +226,15 @@ export default function AddObservation() {
       
       try {
         const obs = await createObservation(newObservationPayload);
-        if(obs) {
-          navigate('/');
+        if (obs && selectedQuestId) {
+          try {
+            await submitObservationToQuest(selectedQuestId, obs.id);
+            toast.success('Observation submitted to quest!');
+          } catch (err: any) {
+            toast.error(err?.response?.data?.error ?? 'Observation created but quest assignment failed');
+          }
         }
+        if (obs) navigate('/');
       }
       catch (err: any) {
           toast.error('Error creating observation')
@@ -246,12 +285,9 @@ export default function AddObservation() {
     }
 
     return (
-        <div className="fixed inset-0 md:static md:inset-auto z-100  overflow-y-auto flex flex-col pb-24 max-w-4xl mx-auto">
-          <div className="md:hidden">
-            <MobileTopBar text={'New Observation'} onClickFn={() => { setStep('CAMERA') }}/>
-          </div>
+        <div className=" overflow-y-auto flex flex-col pb-24 max-w-4xl mx-auto bg-white">
 
-            <label className="m-4 h-72 rounded-3xl shadow-sm border-2 border-teal-600/30 flex justify-center items-center flex-col gap-3 text-teal-700/70 font-bold bg-gray-200">
+            <label className="m-4 h-72 rounded-3xl  border-2 border-teal-600/30 flex justify-center items-center flex-col gap-3 text-teal-700/70 font-bold bg-gray-200">
               {previewUrls.length > 0 ? <img 
                     src={previewUrls[selectedImage]!} 
                     alt="Preview" 
@@ -289,7 +325,7 @@ export default function AddObservation() {
 
 
             <div className="px-4 mb-4">
-                <div className="bg-white rounded-3xl border-2 border-teal-600/20 shadow-sm p-4">
+                <div className="bg-white rounded-3xl border-2 border-teal-600/20  p-4">
                     <p className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Species Identification</p>
                     
                     {isPredicting ? (
@@ -336,7 +372,7 @@ export default function AddObservation() {
             </div>
 
             <div className="px-4 flex flex-col gap-4">
-                <div className="bg-white rounded-3xl border-2 border-teal-600/20 shadow-sm overflow-hidden">
+                <div className="bg-white rounded-3xl border-2 border-teal-600/20  overflow-hidden">
                     <textarea 
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
@@ -345,46 +381,67 @@ export default function AddObservation() {
                     />
                 </div>
             </div>
-             <div className="px-4 flex flex-col gap-3 mb-8">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider pl-2 mt-4">Optional Data</p>
-                <select
-                    value={weather}
-                    onChange={(e) => setWeather(e.target.value)}
-                    className="w-full bg-white rounded-full border-2 border-teal-600/20 shadow-sm px-4 py-3 focus:outline-none text-gray-700 appearance-none"
-                >
-                    <option value="">Weather Conditions...</option>
-                    <option value="Sunny">Clear / Sunny</option>
-                    <option value="Partially Cloudy">Partially Cloudy</option>
-                    <option value="Cloudy">Cloudy / Overcast</option>
-                    <option value="Foggy">Fog / Mist</option>
-                    <option value="Rainy">Rain</option>
-                    <option value="Snowy">Snow</option>
-                    <option value="Stormy">Thunderstorm</option>
-                    <option value="Hazy">Haze / Smoke / Dust</option>
-                </select>
-                <select
-                    value={governorate}
-                    onChange={(e) => setGovernorate(e.target.value)}
-                    className="w-full bg-white rounded-full border-2 border-teal-600/20 shadow-sm px-4 py-3 focus:outline-none text-gray-700 appearance-none"
-                >
-                    <option value="">Governorate...</option>
-                    <option value="Ajloun">Ajloun</option>
-                    <option value="Amman">Amman</option>
-                    <option value="Aqaba">Aqaba</option>
-                    <option value="Balqa">Balqa</option>
-                    <option value="Irbid">Irbid</option>
-                    <option value="Jerash">Jerash</option>
-                    <option value="Karak">Karak</option>
-                    <option value="Maan">Maan</option>
-                    <option value="Madaba">Madaba</option>
-                    <option value="Mafraq">Mafraq</option>
-                    <option value="Tafilah">Tafilah</option>
-                    <option value="Zarqa">Zarqa</option>
-                </select>
+            <div className="px-4 flex flex-col gap-3 mb-8">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider pl-2 mt-4">Optional Data</p>
+              <PickerTrigger
+                label="Weather Conditions"
+                value={WEATHER_OPTIONS.find(o => o.value === weather)?.label ?? weather}
+                onClick={() => setOpenPicker('weather')}
+                icon={<Cloud size={16} />}
+              />
+              <PickerTrigger
+                label="Governorate"
+                value={governorate}
+                onClick={() => setOpenPicker('governorate')}
+                icon={<MapPinned size={16} />}
+              />
+              {joinedQuests.length > 0 && (
+                <PickerTrigger
+                  label="Add to Quest or Event"
+                  value={joinedQuests.find(q => String(q.id) === selectedQuestId)?.title ?? ''}
+                  onClick={() => setOpenPicker('quest')}
+                  icon={<Trophy size={16} />}
+                />
+              )}
             </div>
 
+            {openPicker === 'weather' && (
+              <PickerModal
+                title="Weather Conditions"
+                options={WEATHER_OPTIONS}
+                value={weather}
+                onChange={setWeather}
+                onClose={() => setOpenPicker(null)}
+                clearLabel="Clear selection"
+              />
+            )}
+            {openPicker === 'governorate' && (
+              <PickerModal
+                title="Governorate"
+                options={GOVERNORATE_OPTIONS}
+                value={governorate}
+                onChange={setGovernorate}
+                onClose={() => setOpenPicker(null)}
+                clearLabel="Clear selection"
+              />
+            )}
+            {openPicker === 'quest' && (
+              <PickerModal
+                title="Add to Quest or Event"
+                options={joinedQuests.map(q => ({
+                  value: String(q.id),
+                  label: q.title,
+                  sublabel: `+${q.rewardPts} XP · ${q.progressPercent}% complete`,
+                }))}
+                value={selectedQuestId}
+                onChange={setSelectedQuestId}
+                onClose={() => setOpenPicker(null)}
+                clearLabel="Don't assign to a quest"
+              />
+            )}
+
             <div className="fixed bottom-0 w-full p-4 bg-white border-t border-gray-100 z-50 flex items-center">
-                <button 
+                <button
                     disabled={isPredicting}
                     className="w-full max-w-xl bg-teal-500 hover:bg-teal-600 disabled:bg-teal-300 text-white font-bold py-4 rounded-full shadow-lg transition-colors text-lg flex justify-center items-center gap-2 "
                     onClick={submitObservation}

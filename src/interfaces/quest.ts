@@ -1,3 +1,4 @@
+
 export interface QuestReward {
   type: 'POINTS' | 'BADGE';
   value: string | number;
@@ -12,17 +13,23 @@ export interface QuestOrganizer {
 }
 
 export interface QuestLeaderboardEntry {
-  userId: string;
-  username: string;
-  avatar?: string;
-  score: number;
-  rank: number;
+  user: {
+    username: string,
+    profile_picture: string,
+    id: number
+  }
+  observation_count: number;
+  id: number
 }
 
 export interface QuestSubmission {
   id: string;
-  imageUrl: string;
-  username: string;
+  images: {
+    thumbnail: string
+  }[]
+  user: {
+    username: string
+  };
   timestamp: string;
 }
 
@@ -42,6 +49,6 @@ export interface Quest {
   organizers?: QuestOrganizer[];
   leaderboard?: QuestLeaderboardEntry[];
   totalParticipants?: number;
-  submissions?: QuestSubmission[];
+  recent_submissions?: QuestSubmission[];
   userTotalPoints?: number;
 }

@@ -4,8 +4,12 @@ import { useAuth } from "../contexts/AuthContext/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { api } from "../lib/axiosConfig";
 import { Users, FlaskConical, Eye, Leaf, AlertCircle, Trophy } from "lucide-react";
-import Table from "../components/admin/Table";
+import ResearchersTable from "../components/admin/Table";
 import UsersTable from "../components/admin/UsersTable";
+import QuestsTable from "../components/admin/QuestsTable";
+import {
+  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
+} from "recharts";
 
 interface AdminStats {
   researchers: { approved: number; pending: number };
@@ -26,7 +30,7 @@ function StatPill({ label, value, accent }: { label: string; value: number; acce
 
 function SimpleCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: number }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex items-center gap-4">
+    <div className="bg-white rounded-2xl border border-gray-200 shadow-none p-6 flex items-center gap-4">
       <div className="w-12 h-12 rounded-xl bg-teal-50 flex items-center justify-center text-teal-600 shrink-0">
         {icon}
       </div>
@@ -42,6 +46,11 @@ const Cards = ({ onNavigate }: { onNavigate: (tab: string) => void }) => {
   const { data: stats, isLoading } = useQuery<AdminStats>({
     queryKey: ["admin-stats"],
     queryFn: () => api.get("/admin/stats/").then(r => r.data),
+  });
+
+  const { data: obsOverTime = [] } = useQuery<{ month: string; count: number }[]>({
+    queryKey: ["admin-obs-over-time"],
+    queryFn: () => api.get("/admin/stats/observations-over-time/").then(r => r.data),
   });
 
   if (isLoading) return (
@@ -62,7 +71,7 @@ const Cards = ({ onNavigate }: { onNavigate: (tab: string) => void }) => {
     <div className="space-y-6 max-w-6xl mx-auto">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
 
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col gap-4 max-w-xl">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-none p-6 flex flex-col gap-4">
           <div className="flex gap-4 flex-1">
             <div className="flex-1 flex flex-col justify-center gap-1 items-center">
               <div className="flex items-center gap-2">
@@ -92,7 +101,7 @@ const Cards = ({ onNavigate }: { onNavigate: (tab: string) => void }) => {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col gap-4 max-w-xl">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-none p-6 flex flex-col gap-4">
           <div className="flex gap-4 flex-1">
             <div className="flex-1 flex flex-col justify-center gap-1 items-center">
               <div className="flex items-center gap-2">
@@ -129,7 +138,7 @@ const Cards = ({ onNavigate }: { onNavigate: (tab: string) => void }) => {
         <SimpleCard icon={<Users size={22} />} label="Total users" value={stats.users.total} />
         <SimpleCard icon={<Eye size={22} />} label="Observations" value={stats.observations.total} />
         <SimpleCard icon={<Leaf size={22} />} label="Total species" value={stats.species.total} />
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col justify-between">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-none p-6 flex flex-col justify-between">
           <div className="flex items-center gap-2 mb-3">
             <Leaf className="text-teal-600" size={22} />
             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Species coverage</p>
@@ -152,29 +161,35 @@ const Cards = ({ onNavigate }: { onNavigate: (tab: string) => void }) => {
           </div>
         </div>
       </div>
+
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-none p-6">
+        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">Observations over time (last 12 months)</p>
+        {obsOverTime.length === 0 ? (
+          <div className="h-48 flex items-center justify-center text-gray-300 text-sm font-medium">No data yet</div>
+        ) : (
+          <ResponsiveContainer width="100%" height={200}>
+            <AreaChart data={obsOverTime} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+              <defs>
+                <linearGradient id="obsGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#0d9488" stopOpacity={0.15} />
+                  <stop offset="95%" stopColor="#0d9488" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#9ca3af" }} tickLine={false} axisLine={false} />
+              <YAxis tick={{ fontSize: 11, fill: "#9ca3af" }} tickLine={false} axisLine={false} allowDecimals={false} />
+              <Tooltip
+                contentStyle={{ borderRadius: 10, border: "1px solid #e5e7eb", fontSize: 12 }}
+                labelStyle={{ fontWeight: 700, color: "#111827" }}
+              />
+              <Area type="monotone" dataKey="count" name="Observations" stroke="#0d9488" strokeWidth={2} fill="url(#obsGrad)" dot={false} activeDot={{ r: 4 }} />
+            </AreaChart>
+          </ResponsiveContainer>
+        )}
+      </div>
     </div>
   );
 };
-
-const Researchers = () => {
-    return (
-        <div>
-            <Table />
-        </div>
-    );
-}
-
-const QuestManagement = () => {
-    return (
-        <div>
-            cardss
-        </div>
-    );
-}
-
-const UserManagement = () => {
-    return <UsersTable />;
-}
 
 const Sidebar = ({ setActive, active }: { setActive: (id: string) => void , active: string}) => {
     const tabs = useMemo(() => [
@@ -200,9 +215,9 @@ const AdminDashboard: React.FC = () => {
     const [activeTab, setActiveTab] = useState('home');
 
     const TabMap: Record<string, React.ReactNode> = {
-        researchers: <Researchers />,
-        users: <UserManagement />,
-        quests: <QuestManagement />,
+        researchers: <ResearchersTable />,
+        users: <UsersTable />,
+        quests:  <QuestsTable />,
         home: <Cards onNavigate={setActiveTab} />
     };
 

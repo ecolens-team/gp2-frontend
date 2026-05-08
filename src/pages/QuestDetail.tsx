@@ -2,17 +2,9 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getQuestById, joinQuest } from '../services/questService';
-import { 
-  Trophy, 
-  Users, 
-  Target, 
-  Info, 
-  ChevronLeft, 
-  CheckCircle, 
-  Award,
-  Clock,
-  ExternalLink,
-  Shield
+import {
+  Trophy, Users, Target, Info, ChevronLeft, CheckCircle,
+  Award, Clock, Shield,
 } from 'lucide-react';
 import { usePageLayout } from '../contexts/UIContext';
 import Spinner from '../components/ui/Spinner';
@@ -120,63 +112,93 @@ const QuestDetail: React.FC = () => {
             </div>
           </section>
 
-          {/* User Progress */}
-          <section className="bg-white rounded-3xl p-6 shadow-xs border border-gray-100">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-amber-50 text-amber-600 rounded-xl">
-                  <Target size={24} />
+          {/* User Progress — only shown when joined */}
+          {quest.isJoined && (
+            <section className="bg-white rounded-3xl p-6 shadow-xs border border-gray-100">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-amber-50 text-amber-600 rounded-xl">
+                    <Target size={24} />
+                  </div>
+                  <h2 className="text-xl font-black text-gray-800">Your Progress</h2>
                 </div>
-                <h2 className="text-xl font-black text-gray-800">Your Progress</h2>
+                <span className="text-2xl font-black text-teal-800">{quest.progressPercent}%</span>
               </div>
-              <span className="text-2xl font-black text-teal-600">{quest.progressPercent}%</span>
-            </div>
-            
-            <div className="w-full bg-gray-100 h-4 rounded-full overflow-hidden mb-4">
-              <div 
-                className="bg-teal-500 h-full rounded-full transition-all duration-1000" 
-                style={{ width: `${quest.progressPercent}%` }}
-              />
-            </div>
-            
-            <div className="flex justify-between items-center text-sm">
-              <div className="flex items-center gap-1.5 text-gray-500 font-medium">
-                <CheckCircle size={16} className={quest.progressPercent === 100 ? "text-teal-500" : "text-gray-300"} />
-                {quest.progressPercent === 100 ? "Completed!" : "In Progress"}
+
+              <div className="w-full bg-gray-100 h-4 rounded-full overflow-hidden mb-4">
+                <div
+                  className="bg-linear-to-r from-teal-600/80 to-sky-700/70 h-full rounded-full transition-all duration-1000"
+                  style={{ width: `${quest.progressPercent}%` }}
+                />
               </div>
-              <div className="font-bold text-gray-700">
-                {quest.rewardPts} Points Potential
+
+              <div className="flex justify-between items-center text-sm">
+                <div className="flex items-center gap-1.5 text-gray-500 font-medium">
+                  <CheckCircle size={16} className={quest.progressPercent === 100 ? "text-teal-500" : "text-gray-300"} />
+                  {quest.progressPercent === 100 ? "Completed!" : "In Progress"}
+                </div>
+                <div className="font-bold text-gray-700">{quest.rewardPts} Points Potential</div>
+              </div>
+            </section>
+          )}
+
+          <section className="bg-linear-to-r from-teal-700/70 to-sky-700/60 rounded-3xl p-6 text-white">
+            <h3 className="text-xl font-black mb-2">Ready to contribute?</h3>
+            <p className="text-teal-100/80 text-sm mb-6 leading-relaxed">
+              Every observation helps researchers understand biodiversity in Jordan.
+            </p>
+
+            <button
+              disabled={quest.isJoined || joinMutation.isPending}
+              onClick={() => joinMutation.mutate()}
+              className={`w-full py-4 rounded-2xl font-black text-lg transition-all active:scale-95 shadow-md ${
+                quest.isJoined
+                  ? "bg-white/80 text-teal-700 cursor-not-allowed"
+                  : "bg-white text-teal-900 hover:bg-teal-50"
+              }`}
+            >
+              {joinMutation.isPending ? "Joining..." : quest.isJoined ? "Participating" : "Join Quest"}
+            </button>
+
+            <div className="mt-6 pt-6 border-t border-white/10 flex items-center justify-between">
+              <div className="text-center">
+                <p className="text-[10px] text-teal-300 font-bold uppercase tracking-wider mb-1">Participants</p>
+                <p className="text-xl font-black">{quest.totalParticipants || 0}</p>
+              </div>
+              <div className="text-center">
+                <p className="text-[10px] text-teal-300 font-bold uppercase tracking-wider mb-1">Reward</p>
+                <p className="text-xl font-black">+{quest.rewardPts} XP</p>
               </div>
             </div>
           </section>
 
-          {/* Observations / Submissions */}
+          {/* Observations / recent_submissions */}
           <section className="bg-white rounded-3xl p-6 shadow-xs border border-gray-100">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
                   <Users size={24} />
                 </div>
-                <h2 className="text-xl font-black text-gray-800">Recent Submissions</h2>
+                <h2 className="text-xl font-black text-gray-800">Recent submissions</h2>
               </div>
-              {quest.submissions && quest.submissions.length > 0 && (
+              {/* {quest.recent_submissions && quest.recent_submissions.length > 0 && (
                 <button className="text-sm font-bold text-teal-600 flex items-center gap-1">
                   View all <ExternalLink size={14} />
                 </button>
-              )}
+              )} */}
             </div>
             
-            {quest.submissions && quest.submissions.length > 0 ? (
+            {quest.recent_submissions && quest.recent_submissions.length > 0 ? (
               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
-                {quest.submissions.slice(0, 5).map((submission) => (
-                  <div key={submission.id} className="group relative aspect-square bg-gray-100 rounded-2xl overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition-all">
+                {quest.recent_submissions.slice(0, 5).map((submission) => (
+                  <div onClick={() => {navigate(`/observations/${submission.id}`)}} key={submission.id} className="group relative aspect-square bg-gray-100 rounded-2xl overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition-all">
                     <img 
-                      src={submission.imageUrl} 
-                      alt={`Submission by ${submission.username}`} 
+                      src={submission.images[0].thumbnail} 
+                      alt={`Submission by ${submission.user.username}`} 
                       className="w-full h-full object-cover transition-transform group-hover:scale-110"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2">
-                      <span className="text-white text-[8px] font-bold truncate">@{submission.username}</span>
+                    <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2">
+                      <span className="text-white text-[8px] font-bold truncate">@{submission.user.username}</span>
                     </div>
                   </div>
                 ))}
@@ -186,7 +208,7 @@ const QuestDetail: React.FC = () => {
                 <div className="bg-gray-50 p-4 rounded-full mb-3">
                   <Target size={32} className="text-gray-300" />
                 </div>
-                <p className="text-gray-500 font-medium">No submissions yet</p>
+                <p className="text-gray-500 font-medium">No recent_submissions yet</p>
                 <p className="text-gray-400 text-sm mt-1">Be the first to contribute to this quest!</p>
               </div>
             )}
@@ -199,37 +221,6 @@ const QuestDetail: React.FC = () => {
 
         {/* Sidebar */}
         <div className="space-y-8">
-          
-          {/* Action Card */}
-          <div className="bg-teal-900 rounded-3xl p-6 text-white shadow-lg sticky top-24">
-            <h3 className="text-xl font-black mb-2">Ready to contribute?</h3>
-            <p className="text-teal-100/80 text-sm mb-6 leading-relaxed">
-              Every observation helps researchers understand biodiversity in Jordan.
-            </p>
-            
-            <button 
-              disabled={quest.isJoined || joinMutation.isPending}
-              onClick={() => joinMutation.mutate()}
-              className={`w-full py-4 rounded-2xl font-black text-lg transition-all active:scale-95 shadow-md ${
-                quest.isJoined 
-                ? "bg-teal-700 text-teal-300 cursor-not-allowed" 
-                : "bg-white text-teal-900 hover:bg-teal-50"
-              }`}
-            >
-              {joinMutation.isPending ? "Joining..." : quest.isJoined ? "Participating" : "Join Quest"}
-            </button>
-            
-            <div className="mt-6 pt-6 border-t border-white/10 flex items-center justify-between">
-              <div className="text-center">
-                <p className="text-[10px] text-teal-300 font-bold uppercase tracking-wider mb-1">Participants</p>
-                <p className="text-xl font-black">{quest.totalParticipants || 0}</p>
-              </div>
-              <div className="text-center">
-                <p className="text-[10px] text-teal-300 font-bold uppercase tracking-wider mb-1">Reward</p>
-                <p className="text-xl font-black">+{quest.rewardPts} XP</p>
-              </div>
-            </div>
-          </div>
 
           {/* Rewards Section */}
           <section className="bg-white rounded-3xl p-6 shadow-xs border border-gray-100">
@@ -267,16 +258,16 @@ const QuestDetail: React.FC = () => {
               <Trophy className="text-teal-600" size={20} /> Leaderboard
             </h3>
             <div className="space-y-4">
-              {quest.leaderboard?.map((entry) => (
-                <div key={entry.userId} className="flex items-center gap-3">
-                  <span className={`w-6 text-sm font-black ${entry.rank <= 3 ? "text-teal-600" : "text-gray-400"}`}>
-                    #{entry.rank}
+              {quest.leaderboard?.map((entry, i) => (
+                <div key={entry.user.id} className="flex items-center gap-3">
+                  <span className={`w-6 text-sm font-black ${i+1 <= 3 ? "text-teal-600" : "text-gray-400"}`}>
+                    #{i+1}
                   </span>
                   <div className="w-8 h-8 rounded-full bg-gray-200 overflow-hidden">
-                    {entry.avatar && <img src={entry.avatar} alt={entry.username} className="w-full h-full object-cover" />}
+                    {entry.user.profile_picture && <img src={entry.user.profile_picture} alt={entry.user.username} className="w-full h-full object-cover" />}
                   </div>
-                  <span className="flex-1 text-sm font-bold text-gray-700 truncate">{entry.username}</span>
-                  <span className="text-sm font-black text-gray-900">{entry.score}</span>
+                  <span className="flex-1 text-sm font-bold text-gray-700 truncate">{entry.user.username}</span>
+                  <span className="text-sm font-black text-gray-900">{entry.observation_count}</span>
                 </div>
               )) || (
                 <p className="text-center text-sm text-gray-400 py-4">Leaderboard will appear once participants start scoring.</p>

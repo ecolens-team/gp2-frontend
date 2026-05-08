@@ -2,9 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import ObservationImageCarousel from '../components/ObservationImageCarousel';
-import { createObservationComment, getObservationById, getObservationComments, getSpeciesList, verifyObservation } from '../services/observationsService'; 
+import { createObservationComment, getObservationById, getObservationComments, getSpeciesList, verifyObservation } from '../services/observationsService';
+import { getQuests, submitObservationToQuest } from '../services/questService';
+import { PickerModal, PickerTrigger } from '../components/ui/PickerModal';
 import { Marker, Map, FullscreenControl, NavigationControl } from "react-map-gl/mapbox";
-import { AlertTriangle, CheckCircle, Loader2, MapPin, ShieldCheck } from "lucide-react";
+import { AlertTriangle, CheckCircle, Loader2, MapPin, ShieldCheck, Trophy } from "lucide-react";
 import Select from 'react-select';
 import toast from "react-hot-toast";
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -76,7 +78,28 @@ export default function ObservationDetail() {
   });
 
   const { authUser } = useAuth();
-  const isResearcher = authUser?.role === 'RESEARCHER'
+  const isResearcher = authUser?.role === 'RESEARCHER';
+
+  const [selectedQuestId, setSelectedQuestId] = useState<string>("");
+  const [openQuestPicker, setOpenQuestPicker] = useState(false);
+
+  const { data: joinedQuests = [] } = useQuery({
+    queryKey: ['quests'],
+    queryFn: getQuests,
+    select: (data) => data.filter(q => q.isJoined),
+    enabled: !!authUser,
+  });
+
+  const assignToQuestMutation = useMutation({
+    mutationFn: () => submitObservationToQuest(selectedQuestId, observationId),
+    onSuccess: () => {
+      toast.success('Observation assigned to quest!');
+      setSelectedQuestId("");
+      queryClient.invalidateQueries({ queryKey: ['observation', id] });
+      queryClient.invalidateQueries({ queryKey: ['quests'] });
+    },
+    onError: (err: any) => toast.error(err?.response?.data?.error ?? 'Assignment failed'),
+  });
 
   useEffect(() => {
     if (location.state && typeof location.state === 'object' && 'focusComment' in location.state) {
@@ -112,6 +135,8 @@ export default function ObservationDetail() {
       Observation not found
     </div>
   );
+
+  const isOwner = authUser?.username === observation.user;
 
   const confidenceLabel =
   observation.confidenceLevel == null
@@ -263,6 +288,69 @@ export default function ObservationDetail() {
       }
 
 
+
+        {isOwner && (
+          <div className="mx-4 mb-6 bg-white rounded-2xl border border-teal-100 shadow-sm p-4">
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Quest Assignment</p>
+
+            {observation.assignedQuest && (
+              <div className="flex items-center gap-3 bg-teal-50 border border-teal-200 rounded-3xl px-4 py-3 mb-3">
+                <Trophy size={16} className="text-teal-600 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-teal-500 font-bold uppercase tracking-wider">Currently assigned to</p>
+                  <p className="text-sm font-black text-teal-800 truncate">{observation.assignedQuest.title}</p>
+                </div>
+              </div>
+            )}
+
+            {(() => {
+              const availableQuests = joinedQuests.filter(
+                q => String(q.id) !== String(observation.assignedQuest?.id)
+              );
+              if (availableQuests.length === 0) {
+                return observation.assignedQuest ? (
+                  <p className="text-xs text-gray-400 text-center py-1">No other joined quests to assign to.</p>
+                ) : (
+                  <p className="text-xs text-gray-400 text-center py-1">Join a quest to assign this observation.</p>
+                );
+              }
+              return (
+                <>
+                  <PickerTrigger
+                    label={observation.assignedQuest ? 'Reassign to a different quest' : 'Add to Quest or Event'}
+                    value={availableQuests.find(q => String(q.id) === selectedQuestId)?.title ?? ''}
+                    onClick={() => setOpenQuestPicker(true)}
+                    icon={<Trophy size={16} />}
+                  />
+                  {selectedQuestId && (
+                    <button
+                      disabled={assignToQuestMutation.isPending}
+                      onClick={() => assignToQuestMutation.mutate()}
+                      className="mt-3 w-full py-3 bg-teal-600 hover:bg-teal-700 disabled:bg-gray-200 disabled:text-gray-400 text-white text-sm font-bold rounded-2xl transition-colors flex items-center justify-center gap-2"
+                    >
+                      {assignToQuestMutation.isPending && <Loader2 size={14} className="animate-spin" />}
+                      Confirm Assignment
+                    </button>
+                  )}
+                  {openQuestPicker && (
+                    <PickerModal
+                      title="Add to Quest or Event"
+                      options={availableQuests.map(q => ({
+                        value: String(q.id),
+                        label: q.title,
+                        sublabel: `+${q.rewardPts} XP · ${q.progressPercent}% complete`,
+                      }))}
+                      value={selectedQuestId}
+                      onChange={setSelectedQuestId}
+                      onClose={() => setOpenQuestPicker(false)}
+                      clearLabel="Cancel"
+                    />
+                  )}
+                </>
+              );
+            })()}
+          </div>
+        )}
 
         <div className="bg-white rounded-2xl border border-teal-100 shadow-sm p-4 mx-4 mb-6">
           <div className="text-base font-bold text-slate-800 mb-3 flex items-center gap-2">

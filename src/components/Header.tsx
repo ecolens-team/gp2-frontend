@@ -56,12 +56,15 @@ export default function Header() {
                     EcoLens
                 </h1>
 
-                <div className="hidden md:flex items-center gap-6 flex-1 ml-8">
-                    <nav className="flex gap-6 text-base font-semibold">
+                <div className="hidden md:flex items-center gap-6 flex-1 ml-8 ">
+                    <nav className="flex gap-6 text-base font-bold">
                         <NavLink to="/" className={({ isActive }) => isActive ? "text-teal-600" : "text-gray-500 hover:text-teal-500 transition-colors"}>Explore</NavLink>
                         <NavLink to="/map" className={({ isActive }) => isActive ? "text-teal-600" : "text-gray-500 hover:text-teal-500 transition-colors"}>Map</NavLink>
                         <NavLink to="/quests" className={({ isActive }) => isActive ? "text-teal-600" : "text-gray-500 hover:text-teal-500 transition-colors"}>Quests</NavLink>
                         <NavLink to="/inbox" className={({ isActive }) => isActive ? "text-teal-600" : "text-gray-500 hover:text-teal-500 transition-colors"}>Inbox</NavLink>
+                        {authUser?.role=='RESEARCHER' && 
+                            <NavLink to="/researcher" className={({ isActive }) => isActive ? "text-teal-600" : "text-gray-500 hover:text-teal-500 transition-colors"}>Researcher</NavLink>
+                        }
                     </nav>
                 </div>
 

@@ -56,6 +56,7 @@ export interface IObservation {
   likes: number;
   comments: number;
   hasLiked: boolean;
+  assignedQuest: { id: number; title: string } | null;
 }
 
 export interface IObservationComment {

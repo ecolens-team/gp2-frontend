@@ -8,6 +8,7 @@ import * as questService from '../../services/questService';
 // Mock the quest service
 vi.mock('../../services/questService', () => ({
   getQuests: vi.fn(),
+  getGamificationProfile: vi.fn(),
 }));
 
 const queryClient = new QueryClient({

@@ -55,7 +55,7 @@ export default function ExportTab() {
 
   return (
     <div className="max-w-xl space-y-6">
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
+      <div className="bg-white rounded-2xl border border-gray-100  p-6 space-y-5">
         <h3 className="font-black text-gray-900">Export Observations as CSV</h3>
         <p className="text-sm text-gray-500">
           Download observation records filtered to your criteria. Exported columns: observation ID, species, type, confidence, coordinates, governorate, weather, date, verified status, observer.

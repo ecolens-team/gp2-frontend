@@ -208,8 +208,8 @@ export default function Explore() {
       <div className="lg:hidden w-full bg-white border-x border-gray-100">
         {Array.from({ length: 4 }).map((_, i) => <CardSkeleton key={i} />)}
       </div>
-      <div className="hidden lg:flex w-full max-w-5xl rounded-2xl overflow-hidden border border-gray-200 shadow-sm h-[calc(100vh-90px)]">
-        <div className="w-[420px] shrink-0 overflow-y-auto border-r border-gray-100 bg-white">
+      <div className="hidden lg:flex w-full max-w-7xl rounded-2xl overflow-hidden border border-gray-200 shadow-sm h-[calc(100vh-90px)]">
+        <div className="w-1/2 shrink-0 overflow-y-auto border-r border-gray-100 bg-white">
           {Array.from({ length: 4 }).map((_, i) => <CardSkeleton key={i} />)}
         </div>
         <div className="flex-1 bg-gray-100 animate-pulse" />
