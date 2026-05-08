@@ -1,9 +1,7 @@
 # Stage 1: build the React/Vite app
 FROM node:20-alpine AS builder
 
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+RUN npm install -g pnpm@10
 
 WORKDIR /app
 
