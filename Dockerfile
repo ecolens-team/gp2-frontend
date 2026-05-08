@@ -1,10 +1,14 @@
 # Stage 1: build the React/Vite app
 FROM node:20-alpine AS builder
 
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm ci
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 
 COPY . .
 
@@ -16,7 +20,7 @@ ENV VITE_API_URL=$VITE_API_URL
 ENV VITE_WS_URL=$VITE_WS_URL
 ENV VITE_MAPBOX_TOKEN=$VITE_MAPBOX_TOKEN
 
-RUN npm run build
+RUN pnpm run build
 
 FROM nginx:alpine
 

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import ChatPage from "./ChatPage";
 import { useUIContext } from "../contexts/UIContext";
 import { useNotifications, type INotification } from "../hooks/useNotifications";
