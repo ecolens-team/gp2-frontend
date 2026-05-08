@@ -18,6 +18,7 @@ import ProtectedRoutes from './routes/ProtectedRoutes.tsx';
 import ErrorPage from './pages/ErrorPage';
 import AuthProvider from './contexts/AuthContext/AuthProvider';
 import { UIProvider } from './contexts/UIContext';
+import { NotificationsProvider } from './contexts/NotificationsContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import ObservationDetail from './pages/Observationdetail.tsx';
@@ -64,10 +65,12 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <UIProvider>
-          <Toaster position="top-center" />
-          <RouterProvider router={router} />
-        </UIProvider>
+        <NotificationsProvider>
+          <UIProvider>
+            <Toaster position="top-center" />
+            <RouterProvider router={router} />
+          </UIProvider>
+        </NotificationsProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
