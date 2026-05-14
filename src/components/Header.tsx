@@ -5,8 +5,7 @@ import { Search, LogOut, Plus, SlidersHorizontal, X } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import type { IObservation } from '../interfaces/observations';
-import { api } from '../lib/axiosConfig';
-import { mapObservation } from '../services/observationsService';
+
 
 export default function Header() {
   const { authUser } = useAuth();
@@ -32,19 +31,25 @@ export default function Header() {
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
-  const { data: results = [] } = useQuery<IObservation[]>({
-    queryKey: ['search', search, minConfidence],
-    queryFn: async () => {
-      if (!search) return [];
-      const params = new URLSearchParams();
-      params.append('species', search);
-      if (minConfidence > 0)
-        params.append('min_confidence', String(minConfidence));
-      const res = await api.get(`/observations/?${params.toString()}`);
-      return (res.data.results || res.data).map(mapObservation);
-    },
-    enabled: search.length > 1,
-  });
+
+
+    const { data: results = [] } = useQuery<IObservation[]>({
+        queryKey: ["search", search, minConfidence, locationFilter],
+        queryFn: async () => {
+            if (!search) return [];
+            const params = new URLSearchParams();
+            params.append("species", search);
+            if (minConfidence > 0)
+                params.append("min_confidence", String(minConfidence));
+            if (locationFilter)
+                params.append("location", locationFilter);
+            const { api } = await import("../lib/axiosConfig");
+            const { mapObservation } = await import("../services/observationsService");
+            const res = await api.get(`/observations/?${params.toString()}`);
+            return (res.data.results || res.data).map(mapObservation);
+        },
+        enabled: search.length > 1,
+    });
 
   return (
     <div className='bg-white border-b border-teal-100 p-3 sticky top-0 z-50 shadow-sm'>
@@ -182,16 +187,29 @@ export default function Header() {
                 />
               </div>
               <div className='mt-3'>
-                <label className='text-sm text-gray-600 font-medium'>
+                <label htmlFor='location-filter' className='text-sm text-gray-600 font-medium'>
                   Location
                 </label>
-                <input
-                  type='text'
-                  placeholder='e.g. Ajloun...'
-                  value={locationFilter}
-                  onChange={(e) => setLocationFilter(e.target.value)}
-                  className='w-full mt-1 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-500'
-                />
+                <select
+               id='location-filter'
+               value={locationFilter}
+               onChange={(e) => setLocationFilter(e.target.value)}
+                className='w-full mt-1 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-500 bg-white'
+                  >
+                  <option value=''>All Governorates</option>
+                  <option value='Amman'>Amman</option>
+                  <option value='Zarqa'>Zarqa</option>
+                  <option value='Irbid'>Irbid</option>
+                  <option value='Balqa'>Balqa</option>
+                  <option value='Madaba'>Madaba</option>
+                  <option value='Jerash'>Jerash</option>
+                  <option value='Ajloun'>Ajloun</option>
+                  <option value='Mafraq'>Mafraq</option>
+                  <option value='Karak'>Karak</option>
+                  <option value='Tafilah'>Tafilah</option>
+                 <option value='Maan'>Ma'an</option>
+                 <option value='Aqaba'>Aqaba</option>
+                 </select>
               </div>
             </div>
           )}
