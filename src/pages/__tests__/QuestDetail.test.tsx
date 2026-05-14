@@ -38,11 +38,11 @@ const renderWithProviders = () => {
       <UIProvider>
         <MemoryRouter initialEntries={['/quests/1']}>
           <Routes>
-            <Route path="/quests/:id" element={<QuestDetail />} />
+            <Route path='/quests/:id' element={<QuestDetail />} />
           </Routes>
         </MemoryRouter>
       </UIProvider>
-    </QueryClientProvider>
+    </QueryClientProvider>,
   );
 };
 
@@ -104,7 +104,9 @@ describe('QuestDetail Page', () => {
 
     renderWithProviders();
 
-    const joinButton = await screen.findByRole('button', { name: /join quest/i });
+    const joinButton = await screen.findByRole('button', {
+      name: /join quest/i,
+    });
     fireEvent.click(joinButton);
 
     await waitFor(() => {
@@ -114,7 +116,9 @@ describe('QuestDetail Page', () => {
   });
 
   it('renders error state when quest not found', async () => {
-    (questService.getQuestById as any).mockRejectedValue(new Error('Not found'));
+    (questService.getQuestById as any).mockRejectedValue(
+      new Error('Not found'),
+    );
 
     renderWithProviders();
 

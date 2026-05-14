@@ -7,7 +7,6 @@ import userEvent from '@testing-library/user-event';
 import * as observationsService from '../../services/observationsService';
 import * as questService from '../../services/questService';
 
-
 vi.mock('../../services/observationsService', () => ({
   getObservationById: vi.fn(),
   getObservationComments: vi.fn(),
@@ -22,18 +21,24 @@ vi.mock('../../services/questService', () => ({
 }));
 
 let mockAuthUser: { username: string; role: string } | null = {
-  username: 'heba',
+  username: 'potato',
   role: 'USER',
 };
 
 vi.mock('../../contexts/AuthContext/AuthContext', async (importOriginal) => {
-  const real = await importOriginal<typeof import('../../contexts/AuthContext/AuthContext')>();
+  const real =
+    await importOriginal<
+      typeof import('../../contexts/AuthContext/AuthContext')
+    >();
   return {
     ...real,
-    useAuth: () => ({ authUser: mockAuthUser, login: vi.fn(), logout: vi.fn() }),
+    useAuth: () => ({
+      authUser: mockAuthUser,
+      login: vi.fn(),
+      logout: vi.fn(),
+    }),
   };
 });
-
 
 vi.mock('../../contexts/UIContext', () => ({
   usePageLayout: vi.fn(),
@@ -42,7 +47,7 @@ vi.mock('../../contexts/UIContext', () => ({
 vi.mock('react-map-gl/mapbox', () => ({
   Map: ({ children, initialViewState }: any) => (
     <div
-      data-testid="mapbox-map"
+      data-testid='mapbox-map'
       data-lat={initialViewState?.latitude}
       data-lng={initialViewState?.longitude}
     >
@@ -50,7 +55,7 @@ vi.mock('react-map-gl/mapbox', () => ({
     </div>
   ),
   Marker: ({ latitude, longitude, children }: any) => (
-    <div data-testid="mapbox-marker" data-lat={latitude} data-lng={longitude}>
+    <div data-testid='mapbox-marker' data-lat={latitude} data-lng={longitude}>
       {children}
     </div>
   ),
@@ -62,14 +67,16 @@ vi.mock('react-select', () => ({
   default: ({ options, onChange, placeholder }: any) => (
     <select
       aria-label={placeholder ?? 'select'}
-      onChange={e => {
+      onChange={(e) => {
         const opt = options?.find((o: any) => o.value === e.target.value);
         onChange(opt ?? null);
       }}
     >
-      <option value="">—</option>
+      <option value=''>—</option>
       {options?.map((o: any) => (
-        <option key={o.value} value={o.value}>{o.label}</option>
+        <option key={o.value} value={o.value}>
+          {o.label}
+        </option>
       ))}
     </select>
   ),
@@ -80,12 +87,12 @@ vi.mock('react-hot-toast', () => ({
 }));
 
 vi.mock('../../components/ObservationImageCarousel', () => ({
-  default: () => <div data-testid="image-carousel" />,
+  default: () => <div data-testid='image-carousel' />,
 }));
 
 vi.mock('../../components/ui/PickerModal', () => ({
   PickerModal: () => null,
-  PickerTrigger: ({ label }: any) => <button type="button">{label}</button>,
+  PickerTrigger: ({ label }: any) => <button type='button'>{label}</button>,
 }));
 
 const mockNavigate = vi.fn();
@@ -94,10 +101,9 @@ vi.mock('react-router-dom', async (importOriginal) => {
   return { ...real, useNavigate: () => mockNavigate };
 });
 
-
 const mockObservation = {
   id: 42,
-  user: 'heba',
+  user: 'potato',
   userProfilePicture: null,
   timestamp: '2024-01-01T10:00:00Z',
   speciesName: 'Quercus coccifera',
@@ -125,10 +131,10 @@ const renderObservationDetail = (id: number) =>
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={[`/observations/${id}`]}>
         <Routes>
-          <Route path="/observations/:id" element={<ObservationDetail />} />
+          <Route path='/observations/:id' element={<ObservationDetail />} />
         </Routes>
       </MemoryRouter>
-    </QueryClientProvider>
+    </QueryClientProvider>,
   );
 
 describe('ObservationDetail page', () => {
@@ -138,7 +144,9 @@ describe('ObservationDetail page', () => {
     mockNavigate.mockReset();
     mockAuthUser = { username: 'potato', role: 'USER' };
 
-    (observationsService.getObservationById as any).mockResolvedValue(mockObservation);
+    (observationsService.getObservationById as any).mockResolvedValue(
+      mockObservation,
+    );
     (observationsService.getObservationComments as any).mockResolvedValue([]);
     (questService.getQuests as any).mockResolvedValue([]);
   });
@@ -147,7 +155,9 @@ describe('ObservationDetail page', () => {
     renderObservationDetail(42);
     const user = userEvent.setup();
 
-    const speciesLink = await screen.findByRole('button', { name: /Quercus coccifera/i });
+    const speciesLink = await screen.findByRole('button', {
+      name: /Quercus coccifera/i,
+    });
     await user.click(speciesLink);
 
     expect(mockNavigate).toHaveBeenCalledWith('/species/7');
@@ -167,19 +177,17 @@ describe('ObservationDetail page', () => {
     expect(marker).toHaveAttribute('data-lng', '35.9');
   });
 
-  // ── 3a. Quest section visible on own observation ───────────────────────────
   it("shows the Quest Assignment section when viewing one's own observation", async () => {
-    // mockAuthUser.username ('heba') matches mockObservation.user ('heba') → isOwner = true
     renderObservationDetail(42);
 
     await screen.findByText('Quercus coccifera');
 
     expect(screen.getByText('Quest Assignment')).toBeInTheDocument();
-    // No joined quests → shows the "join a quest" hint instead of a picker
-    expect(screen.getByText('Join a quest to assign this observation.')).toBeInTheDocument();
+    expect(
+      screen.getByText('Join a quest to assign this observation.'),
+    ).toBeInTheDocument();
   });
 
-  // ── 3b. Quest section hidden on other users' observations ──────────────────
   it("hides the Quest Assignment section when viewing another user's observation", async () => {
     mockAuthUser = { username: 'alice', role: 'USER' }; // different from observation.user
 
@@ -191,18 +199,31 @@ describe('ObservationDetail page', () => {
 
   it('shows the quest picker trigger when user has joined quests', async () => {
     (questService.getQuests as any).mockResolvedValue([
-      { id: '1', title: ' Survey', isJoined: true, rewardPts: 100, progressPercent: 0, category: 'INSECT', description: '' },
+      {
+        id: '1',
+        title: ' Survey',
+        isJoined: true,
+        rewardPts: 100,
+        progressPercent: 0,
+        category: 'INSECT',
+        description: '',
+      },
     ]);
 
     renderObservationDetail(42);
     await screen.findByText('Quercus coccifera');
 
-    expect(screen.getByRole('button', { name: /add to quest/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /add to quest/i }),
+    ).toBeInTheDocument();
   });
 
   it('calls createObservationComment with the typed text when Post is clicked', async () => {
     (observationsService.createObservationComment as any).mockResolvedValue({
-      id: 1, user: 'heba', text: 'Nice find!', createdAt: '2024-01-01',
+      id: 1,
+      user: 'heba',
+      text: 'Nice find!',
+      createdAt: '2024-01-01',
     });
 
     (observationsService.getObservationComments as any).mockResolvedValue([]);
@@ -212,11 +233,17 @@ describe('ObservationDetail page', () => {
 
     await screen.findByText('Quercus coccifera');
 
-    await user.type(screen.getByPlaceholderText('Add a comment...'), 'Nice find!');
+    await user.type(
+      screen.getByPlaceholderText('Add a comment...'),
+      'Nice find!',
+    );
     await user.click(screen.getByRole('button', { name: 'Post' }));
 
-    expect(observationsService.createObservationComment).toHaveBeenCalledWith(42, {
-      content: 'Nice find!',
-    });
+    expect(observationsService.createObservationComment).toHaveBeenCalledWith(
+      42,
+      {
+        content: 'Nice find!',
+      },
+    );
   });
 });

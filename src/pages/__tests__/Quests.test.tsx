@@ -22,10 +22,8 @@ const queryClient = new QueryClient({
 const renderWithProviders = (ui: React.ReactElement) => {
   return render(
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter>
-        {ui}
-      </MemoryRouter>
-    </QueryClientProvider>
+      <MemoryRouter>{ui}</MemoryRouter>
+    </QueryClientProvider>,
   );
 };
 
@@ -81,7 +79,9 @@ describe('Quests Page', () => {
     renderWithProviders(<Quests />);
 
     expect(await screen.findByText('No Quests Active')).toBeInTheDocument();
-    expect(screen.getByText('Check back later for new biodiversity challenges!')).toBeInTheDocument();
+    expect(
+      screen.getByText('Check back later for new biodiversity challenges!'),
+    ).toBeInTheDocument();
   });
 
   it('renders error state when fetch fails', async () => {

@@ -35,10 +35,10 @@ const router = createBrowserRouter([
       {
         element: <ProtectedRoutes />,
         children: [
-           { index: true, element: <Explore /> },
+          { index: true, element: <Explore /> },
           { path: 'map', element: <Map /> },
           { path: 'chat', element: <ChatPage /> },
-          { path: 'inbox', element: <Inbox/> },
+          { path: 'inbox', element: <Inbox /> },
           { path: 'camera', element: <Camera /> },
           { path: 'quests', element: <Quests /> },
           { path: 'quests/:id', element: <QuestDetail /> },
@@ -48,15 +48,15 @@ const router = createBrowserRouter([
           { path: 'user/:id', element: <UserProfile /> },
           { path: 'species/:id', element: <SpeciesProfile /> },
           { path: 'users/:username', element: <UserProfile /> },
-          { path: 'researcher', element: <ResearcherDashboard/> },    
-          { path: 'admin', element: <AdminDashboard/> },
+          { path: 'researcher', element: <ResearcherDashboard /> },
+          { path: 'admin', element: <AdminDashboard /> },
           { path: '*', element: <div>404 - Page Not Found</div> },
-        ]
-      }
-    ]
+        ],
+      },
+    ],
   },
   { path: '/login', element: <Login /> },
-  { path: '/register', element: <Register /> }
+  { path: '/register', element: <Register /> },
 ]);
 
 const queryClient = new QueryClient();
@@ -67,7 +67,7 @@ export default function App() {
       <AuthProvider>
         <NotificationsProvider>
           <UIProvider>
-            <Toaster position="top-center" />
+            <Toaster position='top-center' />
             <RouterProvider router={router} />
           </UIProvider>
         </NotificationsProvider>

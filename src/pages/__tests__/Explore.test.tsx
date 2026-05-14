@@ -12,7 +12,7 @@ vi.mock('../../services/observationsService', () => ({
 }));
 
 vi.mock('../Map', () => ({
-  default: () => <div data-testid="explore-map" />,
+  default: () => <div data-testid='explore-map' />,
 }));
 
 const mockNavigate = vi.fn();
@@ -20,8 +20,6 @@ vi.mock('react-router-dom', async (importOriginal) => {
   const real = await importOriginal<typeof import('react-router-dom')>();
   return { ...real, useNavigate: () => mockNavigate };
 });
-
-
 
 const mockObservation = {
   id: 1,
@@ -31,7 +29,10 @@ const mockObservation = {
   speciesName: 'Quercus coccifera',
   speciesId: 42,
   location: 'Amman, Jordan',
-  image: { thumbnail: 'https://example.com/img.jpg', image: 'https://example.com/img.jpg' },
+  image: {
+    thumbnail: 'https://example.com/img.jpg',
+    image: 'https://example.com/img.jpg',
+  },
   images: [],
   description: 'A beautiful oak tree',
   confidenceLevel: 0.95,
@@ -52,12 +53,13 @@ const renderWithProviders = (ui: React.ReactElement) =>
   render(
     <QueryClientProvider client={queryClient}>
       <MemoryRouter>{ui}</MemoryRouter>
-    </QueryClientProvider>
+    </QueryClientProvider>,
   );
 
-
 describe('Explore page', () => {
-  let triggerIntersection: ((entries: { isIntersecting: boolean }[]) => void) | null = null;
+  let triggerIntersection:
+    | ((entries: { isIntersecting: boolean }[]) => void)
+    | null = null;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -137,7 +139,9 @@ describe('Explore page', () => {
     await screen.findAllByText('Quercus coccifera');
 
     await user.click(screen.getAllByRole('button', { name: '10' })[0]);
-    expect(await screen.findAllByRole('button', { name: '11' })).not.toHaveLength(0);
+    expect(
+      await screen.findAllByRole('button', { name: '11' }),
+    ).not.toHaveLength(0);
     expect(observationsService.likeObservation).toHaveBeenCalledWith(1);
   });
 });

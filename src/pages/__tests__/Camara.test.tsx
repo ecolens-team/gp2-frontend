@@ -8,7 +8,6 @@ import * as observationsService from '../../services/observationsService';
 import * as questService from '../../services/questService';
 import toast from 'react-hot-toast';
 
-
 vi.mock('../../services/observationsService', () => ({
   createObservation: vi.fn(),
   predictSpecies: vi.fn(),
@@ -27,7 +26,6 @@ vi.mock('react-hot-toast', () => ({
   default: { success: vi.fn(), error: vi.fn() },
 }));
 
-
 vi.mock('@shivantra/react-web-camera', async () => {
   const React = await import('react');
   return {
@@ -36,17 +34,16 @@ vi.mock('@shivantra/react-web-camera', async () => {
         capture: vi.fn(),
         switch: vi.fn(),
       }));
-      return <div data-testid="web-camera">Camera Preview</div>;
+      return <div data-testid='web-camera'>Camera Preview</div>;
     }),
   };
 });
 
-
 vi.mock('react-map-gl/mapbox', () => ({
   default: ({ children, onClick }: any) => (
-    <div data-testid="mapbox-map">
+    <div data-testid='mapbox-map'>
       <button
-        type="button"
+        type='button'
         onClick={() => onClick?.({ lngLat: { lat: 31.8, lng: 35.9 } })}
       >
         Set Location
@@ -55,9 +52,9 @@ vi.mock('react-map-gl/mapbox', () => ({
     </div>
   ),
   Map: ({ children, onClick }: any) => (
-    <div data-testid="mapbox-map">
+    <div data-testid='mapbox-map'>
       <button
-        type="button"
+        type='button'
         onClick={() => onClick?.({ lngLat: { lat: 31.8, lng: 35.9 } })}
       >
         Set Location
@@ -65,7 +62,9 @@ vi.mock('react-map-gl/mapbox', () => ({
       {children}
     </div>
   ),
-  Marker: ({ children }: any) => <div data-testid="mapbox-marker">{children}</div>,
+  Marker: ({ children }: any) => (
+    <div data-testid='mapbox-marker'>{children}</div>
+  ),
   GeolocateControl: () => null,
   NavigationControl: () => null,
   FullscreenControl: () => null,
@@ -73,13 +72,11 @@ vi.mock('react-map-gl/mapbox', () => ({
 
 vi.mock('../../components/ui/PickerModal', () => ({
   PickerModal: () => null,
-  PickerTrigger: ({ label }: any) => <button type="button">{label}</button>,
+  PickerTrigger: ({ label }: any) => <button type='button'>{label}</button>,
 }));
-
 
 global.URL.createObjectURL = vi.fn(() => 'blob:mock-preview-url');
 global.URL.revokeObjectURL = vi.fn();
-
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -89,9 +86,8 @@ const renderWithProviders = (ui: React.ReactElement) =>
   render(
     <QueryClientProvider client={queryClient}>
       <MemoryRouter>{ui}</MemoryRouter>
-    </QueryClientProvider>
+    </QueryClientProvider>,
   );
-
 
 const setWindowWidth = (width: number) => {
   Object.defineProperty(window, 'innerWidth', {
@@ -100,7 +96,6 @@ const setWindowWidth = (width: number) => {
     value: width,
   });
 };
-
 
 describe('Camera / AddObservation page', () => {
   beforeEach(() => {
@@ -134,7 +129,9 @@ describe('Camera / AddObservation page', () => {
     const user = userEvent.setup();
 
     const file = new File(['img-data'], 'plant.jpg', { type: 'image/jpeg' });
-    const fileInput = document.querySelector('input[type="file"]') as HTMLElement;
+    const fileInput = document.querySelector(
+      'input[type="file"]',
+    ) as HTMLElement;
     await user.upload(fileInput, file);
 
     expect(observationsService.predictSpecies).toHaveBeenCalledWith(file);
@@ -147,8 +144,12 @@ describe('Camera / AddObservation page', () => {
 
     renderWithProviders(<AddObservation />);
     const user = userEvent.setup();
-    await user.click(screen.getByRole('button', { name: /submit observation/i }));
-    expect(toast.error).toHaveBeenCalledWith('Please fill all mandatory fields');
+    await user.click(
+      screen.getByRole('button', { name: /submit observation/i }),
+    );
+    expect(toast.error).toHaveBeenCalledWith(
+      'Please fill all mandatory fields',
+    );
     expect(observationsService.createObservation).not.toHaveBeenCalled();
   });
 
@@ -159,20 +160,28 @@ describe('Camera / AddObservation page', () => {
       species: 'Papilio machaon',
       confidence: 0.87,
     });
-    (observationsService.createObservation as any).mockResolvedValue({ id: 99 });
+    (observationsService.createObservation as any).mockResolvedValue({
+      id: 99,
+    });
 
     renderWithProviders(<AddObservation />);
     const user = userEvent.setup();
 
     const file = new File(['img'], 'butterfly.jpg', { type: 'image/jpeg' });
-    await user.upload(document.querySelector('input[type="file"]') as HTMLElement, file);
+    await user.upload(
+      document.querySelector('input[type="file"]') as HTMLElement,
+      file,
+    );
     await screen.findByText('Papilio machaon');
     await user.click(screen.getByText('Set Location'));
-    await user.click(screen.getByRole('button', { name: /submit observation/i }));
+    await user.click(
+      screen.getByRole('button', { name: /submit observation/i }),
+    );
 
     expect(observationsService.createObservation).toHaveBeenCalledOnce();
 
-    const payload = (observationsService.createObservation as any).mock.calls[0][0];
+    const payload = (observationsService.createObservation as any).mock
+      .calls[0][0];
     expect(payload.species).toBe('Papilio machaon');
     expect(payload.confidence_level).toBe(0.87);
     expect(payload.latitude).toBe(31.8);

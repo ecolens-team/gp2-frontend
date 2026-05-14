@@ -1,4 +1,3 @@
-
 export interface QuestReward {
   type: 'POINTS' | 'BADGE';
   value: string | number;
@@ -14,21 +13,21 @@ export interface QuestOrganizer {
 
 export interface QuestLeaderboardEntry {
   user: {
-    username: string,
-    profile_picture: string,
-    id: number
-  }
+    username: string;
+    profile_picture: string;
+    id: number;
+  };
   observation_count: number;
-  id: number
+  id: number;
 }
 
 export interface QuestSubmission {
   id: string;
   images: {
-    thumbnail: string
-  }[]
+    thumbnail: string;
+  }[];
   user: {
-    username: string
+    username: string;
   };
   timestamp: string;
 }

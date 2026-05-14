@@ -20,16 +20,18 @@ vi.mock('../../lib/axiosConfig', () => ({
 vi.mock('react-select', () => ({
   default: ({ options, onChange, placeholder }: any) => (
     <select
-      data-testid="specialization-name-select"
+      data-testid='specialization-name-select'
       aria-label={placeholder ?? 'name-select'}
-      onChange={e => {
+      onChange={(e) => {
         const opt = options?.find((o: any) => o.value === e.target.value);
         onChange(opt ?? null);
       }}
     >
-      <option value="">—</option>
+      <option value=''>—</option>
       {options?.map((o: any) => (
-        <option key={o.value} value={o.value}>{o.label}</option>
+        <option key={o.value} value={o.value}>
+          {o.label}
+        </option>
       ))}
     </select>
   ),
@@ -39,7 +41,6 @@ vi.mock('react-hot-toast', () => ({
   default: { success: vi.fn(), error: vi.fn() },
 }));
 
-
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 });
@@ -48,20 +49,24 @@ const renderWithProviders = (ui: React.ReactElement) =>
   render(
     <QueryClientProvider client={queryClient}>
       <MemoryRouter>{ui}</MemoryRouter>
-    </QueryClientProvider>
+    </QueryClientProvider>,
   );
-
 
 const fillBaseFields = async (user: ReturnType<typeof userEvent.setup>) => {
   await user.type(screen.getByPlaceholderText('Username'), 'heba_test');
-  await user.type(screen.getByPlaceholderText('Email Address'), 'heba@test.com');
+  await user.type(
+    screen.getByPlaceholderText('Email Address'),
+    'heba@test.com',
+  );
   await user.type(screen.getByPlaceholderText('First Name'), 'Heba');
   await user.type(screen.getByPlaceholderText('Last Name'), 'Test');
   await user.type(screen.getByPlaceholderText('Phone Number'), '+962791234567');
   await user.type(screen.getByPlaceholderText('Password'), 'ValidPass1');
-  await user.type(screen.getByPlaceholderText('Confirm Password'), 'ValidPass1');
+  await user.type(
+    screen.getByPlaceholderText('Confirm Password'),
+    'ValidPass1',
+  );
 };
-
 
 describe('Register page', () => {
   beforeEach(() => {
@@ -76,8 +81,12 @@ describe('Register page', () => {
     await user.type(screen.getByPlaceholderText('Password'), 'Abc');
     await user.click(screen.getByRole('button', { name: /create account/i }));
 
-    expect(await screen.findByText('Username must be at least 3 characters')).toBeInTheDocument();
-    expect(await screen.findByText('Password must be at least 8 characters')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Username must be at least 3 characters'),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText('Password must be at least 8 characters'),
+    ).toBeInTheDocument();
   });
 
   it("shows 'Passwords don't match' when confirm password differs", async () => {
@@ -85,27 +94,42 @@ describe('Register page', () => {
     const user = userEvent.setup();
 
     await user.type(screen.getByPlaceholderText('Username'), 'heba_test');
-    await user.type(screen.getByPlaceholderText('Email Address'), 'heba@test.com');
+    await user.type(
+      screen.getByPlaceholderText('Email Address'),
+      'heba@test.com',
+    );
     await user.type(screen.getByPlaceholderText('First Name'), 'Heba');
     await user.type(screen.getByPlaceholderText('Last Name'), 'Test');
-    await user.type(screen.getByPlaceholderText('Phone Number'), '+962791234567');
+    await user.type(
+      screen.getByPlaceholderText('Phone Number'),
+      '+962791234567',
+    );
     await user.type(screen.getByPlaceholderText('Password'), 'ValidPass1');
-    await user.type(screen.getByPlaceholderText('Confirm Password'), 'OtherPass2');
+    await user.type(
+      screen.getByPlaceholderText('Confirm Password'),
+      'OtherPass2',
+    );
     await user.click(screen.getByRole('button', { name: /create account/i }));
 
-    expect(await screen.findByText("Passwords don't match")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Passwords don't match"),
+    ).toBeInTheDocument();
   });
 
   it('reveals researcher-only fields when Researcher role is selected and not otherwise', async () => {
     renderWithProviders(<Register />);
     const user = userEvent.setup();
 
-    expect(screen.queryByPlaceholderText('Institute Name (e.g. JUST)')).not.toBeInTheDocument();
+    expect(
+      screen.queryByPlaceholderText('Institute Name (e.g. JUST)'),
+    ).not.toBeInTheDocument();
 
     const researcherBtn = screen.getByText('Researcher').closest('button')!;
     await user.click(researcherBtn);
 
-    expect(screen.getByPlaceholderText('Institute Name (e.g. JUST)')).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText('Institute Name (e.g. JUST)'),
+    ).toBeInTheDocument();
     expect(screen.getByText('Upload Credentials')).toBeInTheDocument();
   });
 
@@ -128,8 +152,13 @@ describe('Register page', () => {
     await user.click(screen.getByText('Researcher').closest('button')!);
 
     await user.selectOptions(screen.getByDisplayValue('Family'), 'Class');
-    await user.selectOptions(screen.getByTestId('specialization-name-select'), 'Insecta');
-    await user.click(screen.getByRole('button', { name: /add specialization/i }));
+    await user.selectOptions(
+      screen.getByTestId('specialization-name-select'),
+      'Insecta',
+    );
+    await user.click(
+      screen.getByRole('button', { name: /add specialization/i }),
+    );
     expect(screen.getByText('Insecta')).toBeInTheDocument();
   });
 
@@ -143,10 +172,18 @@ describe('Register page', () => {
 
     await user.click(screen.getByText('Researcher').closest('button')!);
     await fillBaseFields(user);
-    await user.type(screen.getByPlaceholderText('Institute Name (e.g. JUST)'), 'JUST');
+    await user.type(
+      screen.getByPlaceholderText('Institute Name (e.g. JUST)'),
+      'JUST',
+    );
 
-    const file = new File(['dummy content'], 'credentials.jpg', { type: 'image/jpeg' });
-    await user.upload(document.querySelector('input[type="file"]') as HTMLElement, file);
+    const file = new File(['dummy content'], 'credentials.jpg', {
+      type: 'image/jpeg',
+    });
+    await user.upload(
+      document.querySelector('input[type="file"]') as HTMLElement,
+      file,
+    );
 
     await user.click(screen.getByRole('button', { name: /create account/i }));
 

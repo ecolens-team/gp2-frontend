@@ -1,4 +1,11 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from 'react';
 import type { ReactNode } from 'react';
 import { api } from '../lib/axiosConfig';
 import { useAuth } from './AuthContext/AuthContext';
@@ -12,7 +19,9 @@ interface NotificationsContextValue {
   markAllRead: () => Promise<void>;
 }
 
-const NotificationsContext = createContext<NotificationsContextValue | null>(null);
+const NotificationsContext = createContext<NotificationsContextValue | null>(
+  null,
+);
 
 export function NotificationsProvider({ children }: { children: ReactNode }) {
   const { authUser } = useAuth();
@@ -29,7 +38,7 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
     let ws: WebSocket | null = null;
     let cancelled = false;
 
-    api.get<INotification[]>('/notifications/').then(res => {
+    api.get<INotification[]>('/notifications/').then((res) => {
       if (!cancelled) setNotifications(res.data);
     });
 
@@ -42,7 +51,7 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
       ws.onclose = () => setWsReady(false);
       ws.onmessage = (e) => {
         const notif: INotification = JSON.parse(e.data);
-        setNotifications(prev => [notif, ...prev]);
+        setNotifications((prev) => [notif, ...prev]);
       };
     });
 
@@ -52,20 +61,24 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
     };
   }, [authUser?.id]);
 
-  const unreadCount = notifications.filter(n => !n.is_read).length;
+  const unreadCount = notifications.filter((n) => !n.is_read).length;
 
   const markRead = useCallback(async (id: number) => {
     await api.post(`/notifications/${id}/read/`);
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, is_read: true } : n)),
+    );
   }, []);
 
   const markAllRead = useCallback(async () => {
     await api.delete('/notifications/read-all/');
-    setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+    setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
   }, []);
 
   return (
-    <NotificationsContext.Provider value={{ notifications, unreadCount, wsReady, markRead, markAllRead }}>
+    <NotificationsContext.Provider
+      value={{ notifications, unreadCount, wsReady, markRead, markAllRead }}
+    >
       {children}
     </NotificationsContext.Provider>
   );
@@ -73,6 +86,9 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
 
 export function useNotificationsContext() {
   const ctx = useContext(NotificationsContext);
-  if (!ctx) throw new Error('useNotificationsContext must be used inside NotificationsProvider');
+  if (!ctx)
+    throw new Error(
+      'useNotificationsContext must be used inside NotificationsProvider',
+    );
   return ctx;
 }

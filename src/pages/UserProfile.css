@@ -1,13 +1,13 @@
 :root {
-  --primary: #00B4A6;
-  --primary-dark: #00968A;
-  --primary-light: #E6F7F6;
-  --bg: #F7FAFA;
+  --primary: #00b4a6;
+  --primary-dark: #00968a;
+  --primary-light: #e6f7f6;
+  --bg: #f7fafa;
   --white: #ffffff;
-  --text-primary: #1A2E2D;
-  --text-secondary: #4A6B6A;
-  --text-muted: #8AABAA;
-  --border: #D0ECEA;
+  --text-primary: #1a2e2d;
+  --text-secondary: #4a6b6a;
+  --text-muted: #8aabaa;
+  --border: #d0ecea;
 }
 
 .profile-app {
@@ -60,7 +60,9 @@
   align-items: center;
   justify-content: center;
   font-size: 18px;
-  transition: background 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
 }
 
 .profile-back-btn:hover {
@@ -234,7 +236,7 @@
   left: 0;
   right: 0;
   padding: 8px;
-  background: linear-gradient(transparent, rgba(0,0,0,0.5));
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.5));
 }
 
 .post-species {

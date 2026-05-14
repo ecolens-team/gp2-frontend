@@ -17,7 +17,15 @@ export interface ISpeciesApi {
 
 export interface IObservationApi {
   id: number;
-  user?: string | { id?: number; username?: string; profile_picture?: string | null; profile_thumbnail: string; };  species: ISpeciesApi | null;
+  user?:
+    | string
+    | {
+        id?: number;
+        username?: string;
+        profile_picture?: string | null;
+        profile_thumbnail: string;
+      };
+  species: ISpeciesApi | null;
   timestamp?: string;
   longitude?: number | null;
   latitude?: number | null;
@@ -32,7 +40,15 @@ export interface IObservationApi {
 
 export interface IObservationCommentApi {
   id: number;
-  user?: string | { id?: number; username?: string; profile_picture?: string | null ; profile_thumbnail: string;};   content?: string;
+  user?:
+    | string
+    | {
+        id?: number;
+        username?: string;
+        profile_picture?: string | null;
+        profile_thumbnail: string;
+      };
+  content?: string;
   text?: string;
   created_at?: string;
   timestamp?: string;
@@ -47,7 +63,7 @@ export interface IObservation {
   speciesId: number;
   location: string;
   image: IObservationImageApi | null;
-  images:IObservationImageApi[] | null;
+  images: IObservationImageApi[] | null;
   description: string;
   confidenceLevel: number | null;
   verified: boolean;

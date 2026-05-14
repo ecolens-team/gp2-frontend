@@ -1,3 +1,21 @@
-node_modules
-dist
-build
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+bun.lockb
+
+# Build outputs and caches
+dist/
+build/
+.next/
+.nuxt/
+out/
+.turbo/
+.cache/
+
+# Coverage directories
+coverage/

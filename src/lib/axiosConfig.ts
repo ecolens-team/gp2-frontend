@@ -1,11 +1,11 @@
-import axios from "axios";
+import axios from 'axios';
 
 export const api = axios.create({
-baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000/api",
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api',
 
   withCredentials: true,
-  xsrfCookieName: "csrftoken",
-  xsrfHeaderName: "X-CSRFToken",
+  xsrfCookieName: 'csrftoken',
+  xsrfHeaderName: 'X-CSRFToken',
   timeout: 60000,
 });
 
@@ -26,9 +26,9 @@ api.interceptors.response.use(
     const originalRequest = error.config;
 
     const isAuthEndpoint =
-      originalRequest?.url?.includes("/auth/login") ||
-      originalRequest?.url?.includes("/auth/token/refresh") ||
-      originalRequest?.url?.includes("/auth/logout");
+      originalRequest?.url?.includes('/auth/login') ||
+      originalRequest?.url?.includes('/auth/token/refresh') ||
+      originalRequest?.url?.includes('/auth/logout');
 
     if (
       error.response?.status === 401 &&
@@ -49,7 +49,7 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        await api.post("/auth/token/refresh/");
+        await api.post('/auth/token/refresh/');
         processQueue(null);
         return api(originalRequest);
       } catch (refreshError) {
@@ -61,5 +61,5 @@ api.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );

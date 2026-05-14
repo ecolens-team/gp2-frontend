@@ -17,7 +17,13 @@ const transformQuest = (q: any): Quest => ({
   leaderboard: q.leaderboard,
   totalParticipants: q.participant_count ?? 0,
   organizers: q.researcher_username
-    ? [{ id: String(q.researcher), name: q.researcher_username, role: 'Researcher' }]
+    ? [
+        {
+          id: String(q.researcher),
+          name: q.researcher_username,
+          role: 'Researcher',
+        },
+      ]
     : undefined,
 });
 
@@ -36,12 +42,17 @@ export const joinQuest = async (id: string): Promise<void> => {
   await api.post(`/quests/${id}/join/`);
 };
 
-export const submitObservationToQuest = async (questId: string, observationId: number): Promise<{
+export const submitObservationToQuest = async (
+  questId: string,
+  observationId: number,
+): Promise<{
   observation_count: number;
   target_count: number;
   completed: boolean;
 }> => {
-  const response = await api.post(`/quests/${questId}/submit/`, { observation_id: observationId });
+  const response = await api.post(`/quests/${questId}/submit/`, {
+    observation_id: observationId,
+  });
   return response.data;
 };
 
@@ -64,7 +75,8 @@ export interface GamificationProfile {
   badges: GamificationBadge[];
 }
 
-export const getGamificationProfile = async (): Promise<GamificationProfile> => {
-  const response = await api.get('/quests/profile/');
-  return response.data;
-};
+export const getGamificationProfile =
+  async (): Promise<GamificationProfile> => {
+    const response = await api.get('/quests/profile/');
+    return response.data;
+  };
