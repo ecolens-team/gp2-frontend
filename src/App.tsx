@@ -10,6 +10,10 @@ const Profile = lazy(() => import('./pages/Profile'));
 const ChatPage = lazy(() => import('./pages/ChatPage'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const ResearcherDashboard = lazy(() => import('./pages/ResearcherDashboard'));
+const ObservationDetail = lazy(() => import('./pages/Observationdetail.tsx'));
+const SpeciesProfile = lazy(() => import('./pages/Species.tsx'));
+const UserProfile = lazy(() => import('./pages/userprofile.tsx'));
+const Inbox = lazy(() => import('./pages/Inbox.tsx'));
 
 import Layout from './layouts/Layout';
 import Login from './pages/login';
@@ -21,10 +25,6 @@ import { UIProvider } from './contexts/UIContext';
 import { NotificationsProvider } from './contexts/NotificationsContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
-import ObservationDetail from './pages/Observationdetail.tsx';
-import SpeciesProfile from './pages/Species.tsx';
-import UserProfile from './pages/userprofile.tsx';
-import Inbox from './pages/Inbox.tsx';
 
 const router = createBrowserRouter([
   {
@@ -35,7 +35,7 @@ const router = createBrowserRouter([
       {
         element: <ProtectedRoutes />,
         children: [
-          { index: true, element: <Explore /> },
+           { index: true, element: <Explore /> },
           { path: 'map', element: <Map /> },
           { path: 'chat', element: <ChatPage /> },
           { path: 'inbox', element: <Inbox/> },

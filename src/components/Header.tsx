@@ -5,7 +5,9 @@ import { Search, LogOut, Plus, SlidersHorizontal, X } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { IObservation } from "../interfaces/observations";
-//import ChatWidget from "../components/ChatWidget";
+import { api } from "../lib/axiosConfig";
+import { mapObservation } from "../services/observationsService";
+
 export default function Header() {
     const { authUser } = useAuth();
     const navigate = useNavigate();
@@ -38,8 +40,6 @@ export default function Header() {
             params.append("species", search);
             if (minConfidence > 0)
                 params.append("min_confidence", String(minConfidence));
-            const { api } = await import("../lib/axiosConfig");
-            const { mapObservation } = await import("../services/observationsService");
             const res = await api.get(`/observations/?${params.toString()}`);
             return (res.data.results || res.data).map(mapObservation);
         },

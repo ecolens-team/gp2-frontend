@@ -247,8 +247,8 @@ const ChatPage: React.FC = () => {
                   const isMe = msg.sender == myId;
                   
                   return (
-                    <div key={mi} className={`flex items-end gap-2.5 mb-1 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
-                      <div className={`max-w-[70%] px-4 py-3 text-sm shadow-sm ${
+                    <div key={mi} className={`flex items-end gap-2.5 mb-3 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
+                      <div className={`max-w-[70%] px-4 py-3  text-sm shadow-sm ${
                         isMe
                           ? 'rounded-[20px_20px_4px_20px] bg-linear-to-r from-[#14b8a6] to-[#0d9488] text-white'
                           : 'rounded-[20px_20px_20px_4px] bg-white text-slate-800'

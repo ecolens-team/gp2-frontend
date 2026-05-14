@@ -68,7 +68,7 @@ const cols = [
         header: "Credentials"
     }),
     colHelper.accessor('institute', {
-        cell: info => <div>{info.getValue()}</div>,
+        cell: info => <div className='text-sm'>{info.getValue()}</div>,
         header: "Institute"
     }),
     colHelper.display({
@@ -110,7 +110,7 @@ export default function Table() {
   }
 
   return (
-    <div className="p-2 flex flex-col justify-between flex-1 rounded-2xl border border-gray-100 shadow-sm">
+    <div className="p-2 flex flex-col justify-between flex-1 rounded-2xl border border-gray-200 bg-white">
       <div className='flex gap-2 bg-gray-50 rounded-xl p-2 mb-2'>
         {(['PENDING', 'APPROVED', 'REJECTED'] as const).map(s => (
           <button

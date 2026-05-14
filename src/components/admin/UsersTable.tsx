@@ -131,7 +131,7 @@ export default function UsersTable() {
   if (isLoading && !data) return <Spinner />;
 
   return (
-    <div className="p-2 flex flex-col justify-between flex-1 rounded-2xl border border-gray-100 shadow-sm">
+    <div className="p-2 flex flex-col justify-between flex-1 rounded-2xl border border-gray-200 bg-white">
       <div className="flex items-center justify-between gap-3 bg-gray-50 rounded-xl p-2 mb-2">
         <div className="flex gap-2">
           {(['ALL', 'USER', 'RESEARCHER', 'ADMIN'] as const).map(r => (
@@ -154,7 +154,7 @@ export default function UsersTable() {
         />
       </div>
 
-      <table className="w-full">
+      <table className="w-full bg-white">
         <thead>
           {table.getHeaderGroups().map(hg => (
             <tr key={hg.id} className="border-b border-gray-200">

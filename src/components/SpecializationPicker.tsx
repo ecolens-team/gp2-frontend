@@ -112,6 +112,7 @@ export default function SpecializationPicker({
             type="button"
             onClick={addSpecialization}
             disabled={!selectedName}
+            aria-label="Add specialization"
             className="shrink-0 bg-teal-600 disabled:bg-gray-200 disabled:cursor-not-allowed text-white rounded-xl px-3 py-2.5 flex items-center text-sm font-bold transition-colors hover:bg-teal-700"
           >
             <Plus size={15} />

@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Plus, ChevronDown, ChevronUp, Users, Clock, CheckCircle,
   Loader2, X, Leaf, Target, Camera, Map as MapIcon, Search,
-  Bug,
 } from "lucide-react";
 import { api } from "../../lib/axiosConfig";
 import { Map as MapboxMap } from "react-map-gl/mapbox";
@@ -38,7 +37,7 @@ const STATUS_CONFIG = {
 
 const CATEGORY_OPTIONS = [
   { value: "PLANT",   label: "Plant",   icon: <Leaf size={14} /> },
-  { value: "INSECT",  label: "Insect",  icon: <Bug size={14} /> },
+  { value: "INSECT",  label: "Insect",  icon: <Target size={14} /> },
   { value: "GENERAL", label: "General", icon: <Camera size={14} /> },
 ] as const;
 
@@ -78,7 +77,7 @@ function SpeciesSearch({
 
   return (
     <div className="space-y-2">
-      <label className="text-xs font-bold text-gray-500 block">Target Species <span className="text-gray-400 font-normal">(optional)</span></label>
+      <label className="text-xs font-bold text-gray-500 block">Target Species <span className="text-gray-400 font-normal">(optional — leave empty for any species)</span></label>
       <div className="relative">
         <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
         <input
@@ -347,8 +346,8 @@ export default function QuestsTab() {
   ];
 
   return (
-    <div className=" max-w-5xl mx-auto">
-      <div className="space-y-6">
+    <div className=" max-w-6xl mx-auto">
+      <div className="space-y-6 max-w-3xl">
         <button
           onClick={() => setShowForm(v => !v)}
           className="flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-colors"

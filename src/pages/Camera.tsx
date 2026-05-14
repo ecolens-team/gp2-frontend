@@ -307,7 +307,7 @@ export default function AddObservation() {
               <div className="flex gap-4 m-4">
                 {
                   previewUrls.map((url, index) =>
-                  <button className={`${index == selectedImage ? 'border-3 border-teal-400/40' : 'border-2 border-teal-600/20'} w-24 h-24 rounded-3xl bg-gray-200 text-gray-400 flex justify-center items-center active:scale-95 transition-transform`}
+                  <button key={index} className={`${index == selectedImage ? 'border-3 border-teal-400/40' : 'border-2 border-teal-600/20'} w-24 h-24 rounded-3xl bg-gray-200 text-gray-400 flex justify-center items-center active:scale-95 transition-transform`}
                     onClick={() => { setSelectedImage(index) }}
                     >
                       <img src={url}
