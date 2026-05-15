@@ -1,5 +1,4 @@
-# Stage 1: build the React/Vite app
-FROM node:20-alpine AS builder
+FROM node:24-alpine AS builder
 
 RUN npm install -g pnpm@10
 
