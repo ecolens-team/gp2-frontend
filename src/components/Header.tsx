@@ -5,6 +5,7 @@ import { Search, LogOut, Plus, SlidersHorizontal, X } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import type { IObservation } from '../interfaces/observations';
+import { api } from '../lib/axiosConfig';
 
 export default function Header() {
   const { authUser } = useAuth();
@@ -47,6 +48,11 @@ export default function Header() {
     },
     enabled: search.length > 1,
   });
+
+  const handleDemoClick = async () => {
+    const res = await api.get('/cicd-demo/');
+    alert(res.data.message);
+  };
 
   return (
     <div className='bg-white border-b border-teal-100 p-3 sticky top-0 z-50 shadow-sm'>
@@ -113,6 +119,12 @@ export default function Header() {
               </NavLink>
             )}
           </nav>
+          <button
+            onClick={handleDemoClick}
+            className=' bg-purple-500 w-30 text-white font-bold px-3 py-2 rounded-3xl hover:bg-purple-700 transition-colors'
+          >
+            CI/CD Demo
+          </button>
         </div>
 
         <div
