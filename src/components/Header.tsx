@@ -38,7 +38,7 @@ export default function Header() {
       params.append('species', search);
       if (minConfidence > 0)
         params.append('min_confidence', String(minConfidence));
-      if (locationFilter) params.append('location', locationFilter);
+      if (locationFilter) params.append('governorate', locationFilter);
       const { api } = await import('../lib/axiosConfig');
       const { mapObservation } =
         await import('../services/observationsService');
