@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext/AuthContext';
 import { api } from '../lib/axiosConfig';
 import { ArrowLeft, Loader2 } from 'lucide-react';
@@ -67,8 +68,20 @@ const ChatPage: React.FC = () => {
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { setHideBottomNav, setInboxTabsVisible } = useUIContext();
+  const location = useLocation();
 
   const myId = String(authUser?.id || '');
+
+  useEffect(() => {
+    const incoming = (location.state as { selectedChat?: Chat } | null)?.selectedChat;
+    if (incoming) {
+      setSelectedChat(incoming);
+      setSelectedUser(incoming.user);
+      setActive('chat');
+      setHideBottomNav(true);
+      setInboxTabsVisible(false);
+    }
+  }, []);
 
   const { data: chats, isLoading } = useQuery({
     queryKey: [myId, 'chats'],
@@ -83,6 +96,10 @@ const ChatPage: React.FC = () => {
     },
     enabled: !!selectedChat,
   });
+
+  useEffect(() => {
+    setMessages([]);
+  }, [selectedChat?.id]);
 
   useEffect(() => {
     if (initialMessages && isSuccess) {
@@ -121,7 +138,6 @@ const ChatPage: React.FC = () => {
       socketRef.current = null;
     }
 
-    setMessages([]);
     setConnectionStatus('connecting');
 
     const roomName = [myId, selectedUser.id].sort().join('_');
@@ -147,7 +163,8 @@ const ChatPage: React.FC = () => {
         }
         return;
       }
-      if (!data.is_history && data.sender === myId) return;
+      if (data.is_history) return;
+      if (data.sender === myId) return;
 
       setIsTyping(false);
       setMessages((prev) => [

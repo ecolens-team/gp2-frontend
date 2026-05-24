@@ -4,12 +4,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 import './UserProfile.css';
 
 import { getObservationsByUser } from '../services/observationsService';
+import { startConversation } from '../services/chatService';
 import type { IObservation } from '../interfaces/observations';
 import { usePageLayout } from '../contexts/UIContext';
 import { Loader2 } from 'lucide-react';
 import { api } from '../lib/axiosConfig';
 
 interface User {
+  id: number;
   name: string;
   username: string;
   bio: string;
@@ -62,6 +64,12 @@ export default function UserProfile() {
       fetchUserProfile();
     }
   }, [username]);
+
+  async function handleMessage() {
+    if (!user) return;
+    const convo = await startConversation(user.id);
+    navigate('/chat', { state: { selectedChat: convo } });
+  }
 
   async function handleFollow() {
     try {
@@ -166,7 +174,7 @@ export default function UserProfile() {
           >
             {following ? 'Following' : 'Follow'}
           </button>
-          <button className='btn-message'>Message</button>
+          <button className='btn-message' onClick={handleMessage}>Message</button>
         </div>
 
         <div className='profile-divider' />
