@@ -101,6 +101,7 @@ export function mapObservation(observation: IObservationApi): IObservation {
     likes: observation.likes_count,
     hasLiked: observation.has_liked,
     assignedQuest: (observation as any).assigned_quest ?? null,
+    governorate: observation.governorate,
   };
 }
 

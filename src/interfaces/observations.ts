@@ -36,6 +36,7 @@ export interface IObservationApi {
   likes_count: number;
   comments_count: number;
   has_liked: boolean;
+  governorate: string;
 }
 
 export interface IObservationCommentApi {
@@ -73,6 +74,7 @@ export interface IObservation {
   comments: number;
   hasLiked: boolean;
   assignedQuest: { id: number; title: string } | null;
+  governorate: string;
 }
 
 export interface IObservationComment {
