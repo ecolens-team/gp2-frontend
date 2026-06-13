@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext/AuthContext';
 import { logoutUser } from '../services/authService';
 import { Search, LogOut, Plus, SlidersHorizontal, X } from 'lucide-react';
@@ -9,12 +9,34 @@ import type { IObservation } from '../interfaces/observations';
 export default function Header() {
   const { authUser } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  const [minConfidence, setMinConfidence] = useState(0);
-  const [locationFilter, setLocationFilter] = useState('');
+  const [minConfidence, setMinConfidence] = useState(
+    Number(searchParams.get('min_confidence') ?? 0),
+  );
+  const [locationFilter, setLocationFilter] = useState(
+    searchParams.get('governorate') ?? '',
+  );
   const [showResults, setShowResults] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+
+  const applyFilters = (gov: string, conf: number, species?: string) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (gov) next.set('governorate', gov); else next.delete('governorate');
+      if (conf > 0) next.set('min_confidence', String(conf)); else next.delete('min_confidence');
+      if (species !== undefined) {
+        if (species) next.set('species', species); else next.delete('species');
+      }
+      return next;
+    });
+  };
+
+  const applySearch = () => {
+    applyFilters(locationFilter, minConfidence, search.trim());
+    setShowResults(false);
+  };
 
   const ref = useRef<HTMLDivElement>(null);
 
@@ -120,9 +142,13 @@ export default function Header() {
           ref={ref}
         >
           <div className='flex items-center border border-gray-200 rounded-full bg-gray-50 focus-within:ring-2 focus-within:ring-teal-500 focus-within:border-teal-500 focus-within:bg-white transition-all'>
-            <div className='pl-3 flex items-center pointer-events-none'>
-              <Search className='h-4 w-4 text-gray-400 shrink-0' />
-            </div>
+            <button
+              className='pl-3 flex items-center text-gray-400 hover:text-teal-600 transition-colors shrink-0'
+              onClick={applySearch}
+              title='Search'
+            >
+              <Search className='h-4 w-4' />
+            </button>
             <input
               type='text'
               className='flex-1 w-full pl-2 pr-2 py-2 bg-transparent outline-none text-sm placeholder-gray-400 min-w-0'
@@ -136,12 +162,16 @@ export default function Header() {
                 setShowResults(true);
                 setIsSearchFocused(true);
               }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') applySearch();
+              }}
             />
             {search && (
               <button
                 onClick={() => {
                   setSearch('');
                   setShowResults(false);
+                  applyFilters(locationFilter, minConfidence, '');
                 }}
                 className='pr-2 text-gray-400 hover:text-gray-600 shrink-0'
                 aria-label='Clear search'
@@ -179,7 +209,11 @@ export default function Header() {
                   min={0}
                   max={100}
                   value={minConfidence}
-                  onChange={(e) => setMinConfidence(Number(e.target.value))}
+                  onChange={(e) => {
+                    const v = Number(e.target.value);
+                    setMinConfidence(v);
+                    applyFilters(locationFilter, v);
+                  }}
                   className='w-full mt-2 accent-teal-500'
                 />
               </div>
@@ -193,7 +227,11 @@ export default function Header() {
                 <select
                   id='location-filter'
                   value={locationFilter}
-                  onChange={(e) => setLocationFilter(e.target.value)}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setLocationFilter(v);
+                    applyFilters(v, minConfidence);
+                  }}
                   className='w-full mt-1 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-500 bg-white'
                 >
                   <option value=''>All Governorates</option>

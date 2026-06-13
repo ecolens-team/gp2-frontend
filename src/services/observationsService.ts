@@ -155,13 +155,27 @@ export const getObservations = async (): Promise<IObservation[]> => {
   return payload.map(mapObservation);
 };
 
+export interface IFeedFilters {
+  governorate?: string;
+  min_confidence?: number;
+  species?: string;
+}
+
 export const getObservationsPage = async ({
   pageParam,
+  filters = {},
 }: {
   pageParam: number;
+  filters?: IFeedFilters;
 }): Promise<IObservationPage> => {
+  const params = new URLSearchParams({ page: String(pageParam), page_size: '5' });
+  if (filters.governorate) params.set('governorate', filters.governorate);
+  if (filters.min_confidence && filters.min_confidence > 0)
+    params.set('min_confidence', String(filters.min_confidence));
+  if (filters.species) params.set('species', filters.species);
+
   const response = await api.get<IObservationListApiResponse>(
-    `/observations/?page=${pageParam}&page_size=5`,
+    `/observations/?${params.toString()}`,
   );
   return {
     observations: response.data.results.map(mapObservation),
@@ -170,9 +184,16 @@ export const getObservationsPage = async ({
   };
 };
 
-export const getObservationLocations = async (): Promise<IObservation[]> => {
+export const getObservationLocations = async (
+  filters: IFeedFilters = {},
+): Promise<IObservation[]> => {
+  const params = new URLSearchParams({ page_size: '200' });
+  if (filters.governorate) params.set('governorate', filters.governorate);
+  if (filters.min_confidence && filters.min_confidence > 0)
+    params.set('min_confidence', String(filters.min_confidence));
+  if (filters.species) params.set('species', filters.species);
   const response = await api.get<IObservationListApiResponse>(
-    '/observations/?page_size=200',
+    `/observations/?${params.toString()}`,
   );
   return response.data.results.map(mapObservation);
 };

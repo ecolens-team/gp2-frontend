@@ -211,6 +211,7 @@ export default function AddObservation() {
   const [selectedImage, setSelectedImage] = useState(0);
 
   const [isPredicting, setIsPredicting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [aiPrediction, setAiPrediction] = useState<{
     species: string;
     confidence: number;
@@ -284,6 +285,7 @@ export default function AddObservation() {
       governorate: governorate || undefined,
     };
 
+    setIsSubmitting(true);
     try {
       const obs = await createObservation(newObservationPayload);
       if (obs && selectedQuestId) {
@@ -300,6 +302,7 @@ export default function AddObservation() {
       if (obs) navigate('/');
     } catch {
       toast.error('Error creating observation');
+      setIsSubmitting(false);
     }
   }
 
@@ -537,13 +540,26 @@ export default function AddObservation() {
 
       <div className='fixed bottom-0 w-full p-4 bg-white border-t border-gray-100 z-50 flex items-center'>
         <button
-          disabled={isPredicting}
-          className='w-full max-w-xl bg-teal-500 hover:bg-teal-600 disabled:bg-teal-300 text-white font-bold py-4 rounded-full shadow-lg transition-colors text-lg flex justify-center items-center gap-2 '
+          disabled={isPredicting || isSubmitting}
+          className='w-full max-w-xl bg-teal-500 hover:bg-teal-600 disabled:bg-teal-300 text-white font-bold py-4 rounded-full shadow-lg transition-all text-lg flex justify-center items-center gap-2 active:scale-95'
           onClick={submitObservation}
         >
-          {isPredicting ? 'Processing...' : 'Submit Observation'}
+          {isPredicting ? 'Analyzing...' : isSubmitting ? (
+            <>
+              <Loader2 size={20} className='animate-spin' />
+              Submitting...
+            </>
+          ) : 'Submit Observation'}
         </button>
       </div>
+
+      {isSubmitting && (
+        <div className='fixed inset-0 z-[200] bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center gap-4'>
+          <Loader2 size={48} className='animate-spin text-teal-500' />
+          <p className='text-teal-700 font-bold text-lg'>Saving observation...</p>
+          <p className='text-gray-400 text-sm'>This may take a moment</p>
+        </div>
+      )}
     </div>
   );
 }

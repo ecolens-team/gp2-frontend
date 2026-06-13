@@ -17,7 +17,7 @@ import {
   MapPin,
   CheckCircle,
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 function Card({ item }: { item: IObservation }) {
   const [liked, setLiked] = useState(item.hasLiked);
@@ -241,10 +241,21 @@ function FeedList({
 }
 
 export default function Explore() {
+  const [searchParams] = useSearchParams();
+  const governorate = searchParams.get('governorate') ?? '';
+  const minConfidence = Number(searchParams.get('min_confidence') ?? 0);
+  const species = searchParams.get('species') ?? '';
+
+  const filters = {
+    ...(governorate ? { governorate } : {}),
+    ...(minConfidence > 0 ? { min_confidence: minConfidence } : {}),
+    ...(species ? { species } : {}),
+  };
+
   const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useInfiniteQuery({
-      queryKey: ['observations'],
-      queryFn: getObservationsPage,
+      queryKey: ['observations', filters],
+      queryFn: ({ pageParam }) => getObservationsPage({ pageParam, filters }),
       initialPageParam: 1,
       getNextPageParam: (lastPage) => lastPage.nextPage,
     });
