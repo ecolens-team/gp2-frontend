@@ -26,7 +26,7 @@ import {
   MapPin,
   ShieldCheck,
   Trophy,
-  AlignLeft
+  AlignLeft,
 } from 'lucide-react';
 import Select from 'react-select';
 import toast from 'react-hot-toast';
@@ -211,7 +211,6 @@ export default function ObservationDetail() {
         />
 
         <div className='px-4 mt-3 space-y-3'>
- 
           <div className='bg-white rounded-2xl z-100 border border-teal-100 shadow-sm p-5'>
             <div className='flex justify-between items-start mb-4 gap-2'>
               <button
@@ -237,7 +236,7 @@ export default function ObservationDetail() {
                 </svg>
               </button>
               <div className='bg-teal-50 text-teal-700 font-bold text-sm px-3 py-1 rounded-full border border-teal-200 shrink-0'>
-                {confidenceLabel} 
+                {confidenceLabel}
               </div>
             </div>
 
@@ -263,7 +262,7 @@ export default function ObservationDetail() {
                   </span>
                 </div>
               </button>
-              
+
               <button
                 onClick={() => !likeMutation.isPending && likeMutation.mutate()}
                 className='flex items-center gap-2 active:scale-90 transition-transform bg-slate-50 hover:bg-slate-100 px-3 py-1.5 rounded-full'
@@ -291,7 +290,7 @@ export default function ObservationDetail() {
               <MapPin size={18} className='text-teal-600' />
               Location & Details
             </div>
-            
+
             <div className='p-5 space-y-4'>
               <div className='h-64 rounded-xl overflow-hidden ring-1 ring-slate-200'>
                 <Map
@@ -312,22 +311,31 @@ export default function ObservationDetail() {
                       anchor='bottom'
                     >
                       <div className='drop-shadow-md hover:scale-110 transition-transform'>
-                        <MapPin size={36} fill='#0d9488' className='text-white' />
+                        <MapPin
+                          size={36}
+                          fill='#0d9488'
+                          className='text-white'
+                        />
                       </div>
                     </Marker>
                   )}
                 </Map>
               </div>
 
-              {observation.latitude != null && observation.longitude != null && (
-                <div className='text-xs font-mono text-slate-500 bg-slate-50 px-3 py-2 rounded-lg border border-slate-100 inline-block'>
-                  {Number(observation.latitude).toFixed(6)}, {Number(observation.longitude).toFixed(6)}
-                </div>
-              )}
+              {observation.latitude != null &&
+                observation.longitude != null && (
+                  <div className='text-xs font-mono text-slate-500 bg-slate-50 px-3 py-2 rounded-lg border border-slate-100 inline-block'>
+                    {Number(observation.latitude).toFixed(6)},{' '}
+                    {Number(observation.longitude).toFixed(6)}
+                  </div>
+                )}
 
               {observation.description && (
                 <div className='bg-teal-50/50 rounded-xl p-4 border border-teal-100/50 text-sm text-slate-600 leading-relaxed flex gap-3 items-start'>
-                  <AlignLeft size={16} className='text-teal-400 shrink-0 mt-0.5' />
+                  <AlignLeft
+                    size={16}
+                    className='text-teal-400 shrink-0 mt-0.5'
+                  />
                   <p>{observation.description}</p>
                 </div>
               )}
@@ -339,7 +347,7 @@ export default function ObservationDetail() {
             <div className='bg-white rounded-2xl border border-teal-200 shadow-sm overflow-hidden'>
               <div className='bg-teal-50/80 px-5 py-3.5 border-b border-teal-100 flex justify-between items-center'>
                 <div className='flex items-center gap-2 text-teal-800 font-bold text-sm tracking-wide'>
-                  <ShieldCheck size={18} className='text-teal-600' /> 
+                  <ShieldCheck size={18} className='text-teal-600' />
                   RESEARCHER TOOLS
                 </div>
                 {observation.verified ? (
@@ -618,7 +626,6 @@ export default function ObservationDetail() {
               </button>
             </div>
           </div>
-
         </div>
       </div>
     </div>

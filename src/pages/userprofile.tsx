@@ -174,7 +174,9 @@ export default function UserProfile() {
           >
             {following ? 'Following' : 'Follow'}
           </button>
-          <button className='btn-message' onClick={handleMessage}>Message</button>
+          <button className='btn-message' onClick={handleMessage}>
+            Message
+          </button>
         </div>
 
         <div className='profile-divider' />

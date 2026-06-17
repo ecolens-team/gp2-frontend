@@ -169,7 +169,10 @@ export const getObservationsPage = async ({
   pageParam: number;
   filters?: IFeedFilters;
 }): Promise<IObservationPage> => {
-  const params = new URLSearchParams({ page: String(pageParam), page_size: '5' });
+  const params = new URLSearchParams({
+    page: String(pageParam),
+    page_size: '5',
+  });
   if (filters.governorate) params.set('governorate', filters.governorate);
   if (filters.min_confidence && filters.min_confidence > 0)
     params.set('min_confidence', String(filters.min_confidence));

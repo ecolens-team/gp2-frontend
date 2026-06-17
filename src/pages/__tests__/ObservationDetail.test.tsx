@@ -214,7 +214,7 @@ describe('ObservationDetail page', () => {
     await screen.findByText('Quercus coccifera');
 
     expect(
-      screen.getByRole('button', { name: /add to quest/i }),
+      screen.getByRole('button', { name: /Select a Quest or Event/i }),
     ).toBeInTheDocument();
   });
 

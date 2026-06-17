@@ -24,10 +24,13 @@ export default function Header() {
   const applyFilters = (gov: string, conf: number, species?: string) => {
     setSearchParams((prev) => {
       const next = new URLSearchParams(prev);
-      if (gov) next.set('governorate', gov); else next.delete('governorate');
-      if (conf > 0) next.set('min_confidence', String(conf)); else next.delete('min_confidence');
+      if (gov) next.set('governorate', gov);
+      else next.delete('governorate');
+      if (conf > 0) next.set('min_confidence', String(conf));
+      else next.delete('min_confidence');
       if (species !== undefined) {
-        if (species) next.set('species', species); else next.delete('species');
+        if (species) next.set('species', species);
+        else next.delete('species');
       }
       return next;
     });

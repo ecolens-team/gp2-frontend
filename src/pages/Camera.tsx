@@ -544,19 +544,25 @@ export default function AddObservation() {
           className='w-full max-w-xl bg-teal-500 hover:bg-teal-600 disabled:bg-teal-300 text-white font-bold py-4 rounded-full shadow-lg transition-all text-lg flex justify-center items-center gap-2 active:scale-95'
           onClick={submitObservation}
         >
-          {isPredicting ? 'Analyzing...' : isSubmitting ? (
+          {isPredicting ? (
+            'Analyzing...'
+          ) : isSubmitting ? (
             <>
               <Loader2 size={20} className='animate-spin' />
               Submitting...
             </>
-          ) : 'Submit Observation'}
+          ) : (
+            'Submit Observation'
+          )}
         </button>
       </div>
 
       {isSubmitting && (
         <div className='fixed inset-0 z-[200] bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center gap-4'>
           <Loader2 size={48} className='animate-spin text-teal-500' />
-          <p className='text-teal-700 font-bold text-lg'>Saving observation...</p>
+          <p className='text-teal-700 font-bold text-lg'>
+            Saving observation...
+          </p>
           <p className='text-gray-400 text-sm'>This may take a moment</p>
         </div>
       )}

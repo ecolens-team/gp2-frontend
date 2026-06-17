@@ -73,7 +73,8 @@ const ChatPage: React.FC = () => {
   const myId = String(authUser?.id || '');
 
   useEffect(() => {
-    const incoming = (location.state as { selectedChat?: Chat } | null)?.selectedChat;
+    const incoming = (location.state as { selectedChat?: Chat } | null)
+      ?.selectedChat;
     if (incoming) {
       setSelectedChat(incoming);
       setSelectedUser(incoming.user);

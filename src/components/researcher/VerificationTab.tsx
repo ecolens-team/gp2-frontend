@@ -290,7 +290,11 @@ function VerifiedList() {
         >
           <div className='w-14 h-14 rounded-lg bg-gray-100 overflow-hidden shrink-0'>
             {item.thumbnail ? (
-              <img src={item.thumbnail} alt='' className='w-full h-full object-cover' />
+              <img
+                src={item.thumbnail}
+                alt=''
+                className='w-full h-full object-cover'
+              />
             ) : (
               <div className='w-full h-full bg-gray-200' />
             )}
@@ -301,7 +305,9 @@ function VerifiedList() {
             </p>
             <p className='text-xs text-gray-500 mt-0.5'>
               by {item.observer} ·{' '}
-              {item.governorate ?? formatLocation(item.latitude, item.longitude) ?? 'Unknown location'}
+              {item.governorate ??
+                formatLocation(item.latitude, item.longitude) ??
+                'Unknown location'}
             </p>
             <div className='flex items-center gap-2 mt-1.5'>
               <ConfidenceBadge value={item.confidence_level} />
@@ -310,7 +316,10 @@ function VerifiedList() {
               </span>
             </div>
           </div>
-          <ChevronRight size={18} className='text-gray-300 group-hover:text-teal-500 shrink-0 transition-colors' />
+          <ChevronRight
+            size={18}
+            className='text-gray-300 group-hover:text-teal-500 shrink-0 transition-colors'
+          />
         </button>
       ))}
 
@@ -337,7 +346,9 @@ function VerifiedList() {
 }
 
 export default function VerificationTab() {
-  const [active, setActive] = useState<'queue' | 'reports' | 'verified'>('queue');
+  const [active, setActive] = useState<'queue' | 'reports' | 'verified'>(
+    'queue',
+  );
 
   const TABS = [
     { id: 'queue', label: 'Verification Queue' },
