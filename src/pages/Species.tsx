@@ -69,9 +69,13 @@ export default function SpeciesProfile() {
       </div>
     );
 
-  const obsWithImages = observations.filter((o) => o.image);
-  const obsWithCoords = observations.filter(
-    (o) => o.latitude != null && o.longitude != null,
+  const obsWithImages = useMemo(
+    () => observations.filter((o) => o.image),
+    [observations],
+  );
+  const obsWithCoords = useMemo(
+    () => observations.filter((o) => o.latitude != null && o.longitude != null),
+    [observations],
   );
 
   const mapPreviewView = useMemo(() => {
