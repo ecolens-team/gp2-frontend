@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Info, MapPin, Map, CheckCircle, Target } from 'lucide-react';
+import MapGL, { Marker } from 'react-map-gl/mapbox';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import { useQuery } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
@@ -72,6 +74,18 @@ export default function SpeciesProfile() {
     (o) => o.latitude != null && o.longitude != null,
   );
 
+  const mapPreviewView = useMemo(() => {
+    if (obsWithCoords.length === 0)
+      return { longitude: 36.5, latitude: 31.5, zoom: 6 };
+    const lngs = obsWithCoords.map((o) => o.longitude!);
+    const lats = obsWithCoords.map((o) => o.latitude!);
+    return {
+      longitude: (Math.min(...lngs) + Math.max(...lngs)) / 2,
+      latitude: (Math.min(...lats) + Math.max(...lats)) / 2,
+      zoom: obsWithCoords.length === 1 ? 8 : 6,
+    };
+  }, [obsWithCoords]);
+
   return (
     <main className='max-w-7xl mx-auto px-4 sm:px-6 pt-6 pb-24 font-sans text-gray-900 selection:bg-teal-100 selection:text-teal-900'>
       <SpeciesHero species={species} />
@@ -139,9 +153,9 @@ export default function SpeciesProfile() {
                   <p className='text-xs font-bold text-gray-400 uppercase tracking-widest mb-2'>
                     Top Governorates
                   </p>
-                  {species.ecology.primaryGovernorates?.length > 0 ? (
+                  {species.ecology.topGovernorates?.length > 0 ? (
                     <div className='flex flex-wrap gap-2'>
-                      {species.ecology.primaryGovernorates.map((gov) => (
+                      {species.ecology.topGovernorates.map((gov) => (
                         <span
                           key={gov}
                           className='px-4 py-2 bg-teal-50 border border-teal-100 rounded-lg text-sm font-bold text-teal-800'
@@ -161,12 +175,35 @@ export default function SpeciesProfile() {
                   onClick={() => setActiveTab('MAP')}
                   className='relative group rounded-xl overflow-hidden shadow-md cursor-pointer h-40 bg-gray-200'
                 >
-                  <img
-                    className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110'
-                    alt='Map Preview'
-                    src='https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=800&auto=format&fit=crop'
-                  />
-                  <div className='absolute inset-0 bg-teal-900/10 group-hover:bg-teal-900/30 transition-colors flex items-center justify-center'>
+                  {obsWithCoords.length > 0 ? (
+                    <MapGL
+                      initialViewState={mapPreviewView}
+                      style={{ width: '100%', height: '100%' }}
+                      mapStyle='mapbox://styles/mapbox/outdoors-v12'
+                      mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
+                      interactive={false}
+                      attributionControl={false}
+                    >
+                      {obsWithCoords.map((m) => (
+                        <Marker
+                          key={m.id}
+                          longitude={m.longitude!}
+                          latitude={m.latitude!}
+                          anchor='bottom'
+                        >
+                          <div
+                            className='w-3 h-3 rounded-full border border-white shadow-sm'
+                            style={{ backgroundColor: 'rgb(13, 148, 136)' }}
+                          />
+                        </Marker>
+                      ))}
+                    </MapGL>
+                  ) : (
+                    <div className='w-full h-full bg-gray-100 flex items-center justify-center'>
+                      <MapPin className='text-gray-300' size={32} />
+                    </div>
+                  )}
+                  <div className='absolute inset-0 bg-teal-900/10 group-hover:bg-teal-900/30 transition-colors flex items-center justify-center pointer-events-none'>
                     <div className='bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2 shadow-lg scale-90 group-hover:scale-100 transition-transform'>
                       <Map className='text-teal-600' size={16} />
                       <span className='text-xs font-bold text-teal-900'>

@@ -12,7 +12,7 @@ export interface ISpecies {
     isEndangered: boolean;
     isInvasive: boolean;
     habitats: string[];
-    primaryGovernorates: string[];
+    topGovernorates: string[];
   };
   community: {
     totalObservations: number;
