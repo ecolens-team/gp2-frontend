@@ -39,6 +39,27 @@ export default function SpeciesProfile() {
     select: (obs) => obs.filter((o) => o.speciesId === Number(id)),
   });
 
+  const obsWithImages = useMemo(
+    () => observations.filter((o) => o.image),
+    [observations],
+  );
+  const obsWithCoords = useMemo(
+    () => observations.filter((o) => o.latitude != null && o.longitude != null),
+    [observations],
+  );
+
+  const mapPreviewView = useMemo(() => {
+    if (obsWithCoords.length === 0)
+      return { longitude: 36.5, latitude: 31.5, zoom: 6 };
+    const lngs = obsWithCoords.map((o) => o.longitude!);
+    const lats = obsWithCoords.map((o) => o.latitude!);
+    return {
+      longitude: (Math.min(...lngs) + Math.max(...lngs)) / 2,
+      latitude: (Math.min(...lats) + Math.max(...lats)) / 2,
+      zoom: obsWithCoords.length === 1 ? 8 : 6,
+    };
+  }, [obsWithCoords]);
+
   if (!species)
     return (
       <div className='max-w-7xl mx-auto px-4 sm:px-6 pt-6 pb-24 animate-pulse'>
@@ -68,27 +89,6 @@ export default function SpeciesProfile() {
         </div>
       </div>
     );
-
-  const obsWithImages = useMemo(
-    () => observations.filter((o) => o.image),
-    [observations],
-  );
-  const obsWithCoords = useMemo(
-    () => observations.filter((o) => o.latitude != null && o.longitude != null),
-    [observations],
-  );
-
-  const mapPreviewView = useMemo(() => {
-    if (obsWithCoords.length === 0)
-      return { longitude: 36.5, latitude: 31.5, zoom: 6 };
-    const lngs = obsWithCoords.map((o) => o.longitude!);
-    const lats = obsWithCoords.map((o) => o.latitude!);
-    return {
-      longitude: (Math.min(...lngs) + Math.max(...lngs)) / 2,
-      latitude: (Math.min(...lats) + Math.max(...lats)) / 2,
-      zoom: obsWithCoords.length === 1 ? 8 : 6,
-    };
-  }, [obsWithCoords]);
 
   return (
     <main className='max-w-7xl mx-auto px-4 sm:px-6 pt-6 pb-24 font-sans text-gray-900 selection:bg-teal-100 selection:text-teal-900'>
@@ -159,7 +159,7 @@ export default function SpeciesProfile() {
                   </p>
                   {species.ecology.topGovernorates?.length > 0 ? (
                     <div className='flex flex-wrap gap-2'>
-                      {species.ecology.topGovernorates.map((gov) => (
+                      {species.ecology.topGovernorates.filter(gov=>gov.length > 0).map((gov) => (
                         <span
                           key={gov}
                           className='px-4 py-2 bg-teal-50 border border-teal-100 rounded-lg text-sm font-bold text-teal-800'
